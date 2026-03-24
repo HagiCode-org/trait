@@ -1,150 +1,131 @@
-export type TraitCategory = "Drive" | "Rhythm" | "Social" | "Craft"
+import snapshotData from "@/data/generated/agent-catalog.json"
 
-export type TraitItem = {
-  id: string
-  name: string
-  archetype: string
-  category: TraitCategory
-  intensity: "Low" | "Medium" | "High"
-  summary: string
-  signals: string[]
-  tension: string
-  builderHint: string
+export const contentLanguages = ["en", "zh-CN", "tr"] as const
+export const uiLocales = ["en", "zh-CN"] as const
+export const agentTypes = ["reviewer", "build-resolver"] as const
+
+export type ContentLanguage = (typeof contentLanguages)[number]
+export type UiLocale = (typeof uiLocales)[number]
+export type AgentType = (typeof agentTypes)[number]
+export type FilterValue<T extends string> = T | "all"
+
+export type AgentWarning = {
+  code: string
+  agentId?: string
+  language?: string
+  sourceId?: string
+  sourcePath?: string
+  message: string
 }
 
-export const traitCatalog: TraitItem[] = [
-  {
-    id: "cold-strategist",
-    name: "Cold Strategist",
-    archetype: "Drive",
-    category: "Drive",
-    intensity: "High",
-    summary: "Operates on sequence, leverage, and timing instead of loud motivation.",
-    signals: ["long-range planning", "quiet execution", "risk framing"],
-    tension: "Can feel distant if warmth is never made explicit.",
-    builderHint: "Pair with one social trait that makes the strategy readable to others.",
-  },
-  {
-    id: "mercy-operator",
-    name: "Mercy Operator",
-    archetype: "Social",
-    category: "Social",
-    intensity: "Medium",
-    summary: "Protective, observant, and gentle under pressure without collapsing standards.",
-    signals: ["stable empathy", "boundary keeping", "repair instinct"],
-    tension: "May absorb too much emotional debt if the role is undefined.",
-    builderHint: "Use with a rhythm trait that prevents emotional overextension.",
-  },
-  {
-    id: "ritual-architect",
-    name: "Ritual Architect",
-    archetype: "Rhythm",
-    category: "Rhythm",
-    intensity: "High",
-    summary: "Builds repeatable systems that keep identity stable across chaotic weeks.",
-    signals: ["template thinking", "energy budgeting", "maintenance loops"],
-    tension: "Can become brittle when novelty arrives without warning.",
-    builderHint: "Balance with a drive trait that tolerates improvisation.",
-  },
-  {
-    id: "signal-poet",
-    name: "Signal Poet",
-    archetype: "Craft",
-    category: "Craft",
-    intensity: "Medium",
-    summary: "Turns abstract mood into concise symbols, copy, and visual cues.",
-    signals: ["image language", "compressed expression", "tone shaping"],
-    tension: "May over-refine expression and delay a clear decision.",
-    builderHint: "Works well when paired with a decisive drive trait.",
-  },
-  {
-    id: "storm-reader",
-    name: "Storm Reader",
-    archetype: "Drive",
-    category: "Drive",
-    intensity: "Medium",
-    summary: "Reads weak signals early and adjusts direction before the room notices.",
-    signals: ["pattern sensing", "calm pivots", "context reading"],
-    tension: "Can look overly cautious when evidence is still incomplete.",
-    builderHint: "Use with a craft trait to explain the intuition to collaborators.",
-  },
-  {
-    id: "velvet-boundary",
-    name: "Velvet Boundary",
-    archetype: "Social",
-    category: "Social",
-    intensity: "High",
-    summary: "Warm in tone, exact in limits, and hard to push off center.",
-    signals: ["clear no", "respectful distance", "composed care"],
-    tension: "Can be misread as aloof if context is not shared.",
-    builderHint: "Great for personas that need elegance without softness collapse.",
-  },
-  {
-    id: "deep-work-monk",
-    name: "Deep Work Monk",
-    archetype: "Rhythm",
-    category: "Rhythm",
-    intensity: "High",
-    summary: "Protects long focus windows and treats attention as a sacred resource.",
-    signals: ["focus blocks", "stimulus control", "single-threaded progress"],
-    tension: "Can disappear from the social layer for too long.",
-    builderHint: "Pair with a social trait that restores visibility and trust.",
-  },
-  {
-    id: "soft-provocateur",
-    name: "Soft Provocateur",
-    archetype: "Craft",
-    category: "Craft",
-    intensity: "Low",
-    summary: "Challenges old frames through subtle questions instead of confrontation.",
-    signals: ["framing shifts", "careful critique", "gentle disruption"],
-    tension: "May be too understated in high-noise environments.",
-    builderHint: "Combine with a stronger drive trait when you need decisive momentum.",
-  },
-  {
-    id: "aftermath-keeper",
-    name: "Aftermath Keeper",
-    archetype: "Social",
-    category: "Social",
-    intensity: "Low",
-    summary: "Stays after the moment, closes loops, and repairs what others forget.",
-    signals: ["follow-through", "care logistics", "quiet loyalty"],
-    tension: "Can feel invisible because the work happens after the spotlight.",
-    builderHint: "Pair with a visible craft trait if you want the care to be legible.",
-  },
-  {
-    id: "precision-editor",
-    name: "Precision Editor",
-    archetype: "Craft",
-    category: "Craft",
-    intensity: "High",
-    summary: "Refines language, structure, and interfaces until the signal becomes clean.",
-    signals: ["sharp taste", "micro-iteration", "clarity pressure"],
-    tension: "Perfection can slow launch velocity.",
-    builderHint: "Match with a rhythm trait that defines when refinement stops.",
-  },
-  {
-    id: "kinetic-sprinter",
-    name: "Kinetic Sprinter",
-    archetype: "Drive",
-    category: "Drive",
-    intensity: "High",
-    summary: "Builds heat fast, prototypes early, and learns by moving first.",
-    signals: ["fast experiments", "bias to action", "visible momentum"],
-    tension: "Can outrun reflection and make the story incoherent.",
-    builderHint: "Needs one rhythm trait to keep speed from becoming noise.",
-  },
-  {
-    id: "threshold-gardener",
-    name: "Threshold Gardener",
-    archetype: "Rhythm",
-    category: "Rhythm",
-    intensity: "Medium",
-    summary: "Designs entry rituals that make hard work feel emotionally safe to begin.",
-    signals: ["gentle starts", "environment design", "friction shaping"],
-    tension: "Can spend too long perfecting the setup instead of starting.",
-    builderHint: "Pair with a drive trait that commits to a finish line.",
-  },
-]
+export type AgentVariantAttributes = {
+  name?: string
+  description?: string
+  tools?: string[] | string
+  model?: string | null
+  [key: string]: unknown
+}
 
-export const traitCategories: TraitCategory[] = ["Drive", "Rhythm", "Social", "Craft"]
+export type AgentVariant = {
+  language: ContentLanguage
+  title: string
+  summary: string
+  body: string
+  bodyPlainText: string
+  sourcePath: string
+  sourceUrl: string
+  rawUrl: string
+  attributes: AgentVariantAttributes
+}
+
+export type AgentCatalogItem = {
+  traitCatalogId: string
+  agentId: string
+  name: string
+  summary: string
+  type: AgentType
+  tags: string[]
+  tools: string[]
+  model: string | null
+  sourceId: string
+  sourceLabel: string
+  sourceRepo: string
+  sourceType: string
+  sourceUrl: string
+  canonicalPath: string
+  defaultLanguage: ContentLanguage
+  availableLanguages: ContentLanguage[]
+  warnings: AgentWarning[]
+  variants: Partial<Record<ContentLanguage, AgentVariant>>
+}
+
+export type SourceMeta = {
+  id: string
+  label: string
+  repo: string
+  branch: string
+  homepageUrl: string
+  sourceType: string
+  status: "fresh" | "partial"
+  trackedAgents: number
+  syncedAgents: number
+  languages: ContentLanguage[]
+  warningCount: number
+  lastSyncedAt: string
+}
+
+export type LanguageIndex = Partial<Record<ContentLanguage, string[]>>
+
+export type AgentCatalogSnapshot = {
+  version: number
+  lastSyncedAt: string
+  warnings: AgentWarning[]
+  languageIndex: LanguageIndex
+  sources: SourceMeta[]
+  items: AgentCatalogItem[]
+}
+
+export type FilterState = {
+  query: string
+  sourceId: FilterValue<string>
+  contentLanguage: FilterValue<ContentLanguage>
+  agentType: FilterValue<AgentType>
+}
+
+export type DetailRouteState = {
+  agentId: string | null
+  language: ContentLanguage | null
+}
+
+export type RouteState = {
+  filters: FilterState
+  detail: DetailRouteState
+}
+
+export const defaultFilterState: FilterState = {
+  query: "",
+  sourceId: "all",
+  contentLanguage: "all",
+  agentType: "all",
+}
+
+export const emptyDetailRouteState: DetailRouteState = {
+  agentId: null,
+  language: null,
+}
+
+export const agentCatalogSnapshot = snapshotData as AgentCatalogSnapshot
+export const traitCatalog = agentCatalogSnapshot.items
+export const sourceCatalog = agentCatalogSnapshot.sources
+
+export function isContentLanguage(value: string | null | undefined): value is ContentLanguage {
+  return contentLanguages.includes(value as ContentLanguage)
+}
+
+export function isUiLocale(value: string | null | undefined): value is UiLocale {
+  return uiLocales.includes(value as UiLocale)
+}
+
+export function isAgentType(value: string | null | undefined): value is AgentType {
+  return agentTypes.includes(value as AgentType)
+}
