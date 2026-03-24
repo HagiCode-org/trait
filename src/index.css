@@ -1,0 +1,81 @@
+@import "tailwindcss";
+@import "@fontsource-variable/fraunces";
+@import "@fontsource-variable/manrope";
+
+:root {
+  --background: #08110d;
+  --foreground: #eff6ef;
+  --font-sans: "Manrope Variable", "Noto Sans", sans-serif;
+  --font-display: "Fraunces Variable", "Times New Roman", serif;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    color: var(--foreground);
+    background: var(--background);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    background:
+      linear-gradient(180deg, rgba(6, 12, 9, 0.92) 0%, rgba(9, 19, 15, 0.94) 45%, rgba(7, 11, 9, 1) 100%),
+      radial-gradient(circle at top left, rgba(116, 173, 128, 0.14), transparent 24%),
+      radial-gradient(circle at top right, rgba(255, 225, 172, 0.1), transparent 22%);
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(125deg, transparent 0%, rgba(255, 255, 255, 0.05) 46%, transparent 52%);
+    background-size: 220% 220%;
+    animation: drift 18s ease-in-out infinite;
+    opacity: 0.5;
+  }
+
+  button,
+  input,
+  textarea {
+    font: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  a {
+    color: inherit;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
