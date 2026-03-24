@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run sync:agents && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "sync:agents": "node ./scripts/sync-agents.mjs",
+    "sync:agents:update-source": "git submodule update --init --remote",
     "test": "vitest run"
   },
   "dependencies": {
@@ -28,6 +30,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "jsdom": "^29.0.1",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^8.0.2",
