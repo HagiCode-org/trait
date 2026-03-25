@@ -99,8 +99,7 @@
 .hero-shell,
 .source-panel,
 .detail-surface,
-.metric-panel,
-.warning-banner {
+.metric-panel {
   backdrop-filter: blur(16px);
 }
 
