@@ -30,13 +30,12 @@ export function SourceInsightPanel({ sources, locale, messages }: SourceInsightP
                 <h3 className="font-display text-2xl text-[color:var(--ink-strong)]">{source.label}</h3>
                 <p className="mt-1 text-sm text-[color:var(--ink-soft)]">{source.repo}</p>
               </div>
-              <span className="status-pill">{source.status === "partial" ? messages.statusPartial : messages.statusFresh}</span>
+              <span className="status-pill">{getFreshnessLabel(source.freshness, messages)}</span>
             </div>
 
             <dl className="mt-4 grid gap-3 text-sm text-[color:var(--ink-soft)]">
               <MetricRow label={messages.sourceCoverage} value={`${source.syncedAgents}/${source.trackedAgents}`} />
               <MetricRow label={messages.sourceLanguages} value={source.languages.join(" · ")} />
-              <MetricRow label={messages.sourceWarnings} value={String(source.warningCount)} />
               <MetricRow
                 label={messages.sourceLastSync}
                 value={new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(source.lastSyncedAt))}
@@ -54,6 +53,18 @@ export function SourceInsightPanel({ sources, locale, messages }: SourceInsightP
       </div>
     </aside>
   )
+}
+
+function getFreshnessLabel(freshness: SourceInsight["freshness"], messages: LocaleMessages) {
+  if (freshness === "watch") {
+    return messages.syncWatch
+  }
+
+  if (freshness === "stale") {
+    return messages.syncStale
+  }
+
+  return messages.syncFresh
 }
 
 function MetricRow({ label, value }: { label: string; value: string }) {

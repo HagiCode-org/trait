@@ -1,5 +1,6 @@
 import type { AgentCatalogItem, ContentLanguage } from "@/data/trait-catalog"
 import type { LocaleMessages } from "@/i18n/locales/en"
+import { humanizeCatalogValue } from "@/lib/trait-builder"
 
 type AgentCardProps = {
   item: AgentCatalogItem
@@ -9,6 +10,13 @@ type AgentCardProps = {
 }
 
 export function AgentCard({ item, isActive, messages, onOpen }: AgentCardProps) {
+  const typeLabel =
+    item.type === "reviewer"
+      ? messages.typeReviewer
+      : item.type === "build-resolver"
+        ? messages.typeBuildResolver
+        : humanizeCatalogValue(item.type)
+
   return (
     <button
       type="button"
@@ -32,7 +40,7 @@ export function AgentCard({ item, isActive, messages, onOpen }: AgentCardProps) 
           </div>
         </div>
         <span className="rounded-full border border-[color:var(--line-soft)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[color:var(--muted-ink)]">
-          {item.type === "reviewer" ? messages.typeReviewer : messages.typeBuildResolver}
+          {typeLabel}
         </span>
       </div>
 

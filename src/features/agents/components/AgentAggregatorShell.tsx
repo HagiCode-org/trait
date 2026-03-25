@@ -1,4 +1,10 @@
-import { buildDetailLink, getSourceMetrics, type AgentDetailView, type CatalogFilterOptions } from "@/lib/trait-builder"
+import {
+  buildDetailLink,
+  getSourceMetrics,
+  humanizeCatalogValue,
+  type AgentDetailView,
+  type CatalogFilterOptions,
+} from "@/lib/trait-builder"
 import type {
   AgentCatalogItem,
   AgentCatalogSnapshot,
@@ -14,7 +20,6 @@ import { AgentCard } from "./AgentCard"
 import { AgentDetailPanel } from "./AgentDetailPanel"
 import { CatalogEmptyState } from "./CatalogEmptyState"
 import { SourceInsightPanel } from "./SourceInsightPanel"
-import { WarningBanner } from "./WarningBanner"
 
 type AgentAggregatorShellProps = {
   snapshot: AgentCatalogSnapshot
@@ -96,14 +101,11 @@ export function AgentAggregatorShell({
             </div>
           </div>
 
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <div className="mt-8 grid gap-4 md:grid-cols-2">
             <MetricPanel label={messages.heroMetricAgents} value={String(snapshot.items.length).padStart(2, "0")} />
             <MetricPanel label={messages.heroMetricLanguages} value={String(totalLanguages).padStart(2, "0")} />
-            <MetricPanel label={messages.heroMetricWarnings} value={String(snapshot.warnings.length).padStart(2, "0")} />
           </div>
         </header>
-
-        <WarningBanner warnings={snapshot.warnings} messages={messages} />
 
         <section className="grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
           <SourceInsightPanel sources={sourceMetrics} locale={locale} messages={messages} />
@@ -159,7 +161,7 @@ export function AgentAggregatorShell({
                       ? messages.typeReviewer
                       : value === "build-resolver"
                         ? messages.typeBuildResolver
-                        : value
+                        : humanizeCatalogValue(value)
                   }
                 />
               </div>

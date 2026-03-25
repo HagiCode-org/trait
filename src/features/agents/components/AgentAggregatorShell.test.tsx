@@ -43,21 +43,20 @@ describe("AgentAggregatorShell", () => {
     expect(onResetFilters).toHaveBeenCalledTimes(1)
   })
 
-  it("shows warning status without blocking the catalog shell", () => {
-    const snapshot = structuredClone(agentCatalogSnapshot)
-    snapshot.warnings = [
-      {
-        code: "fetch_failed",
-        agentId: "typescript-reviewer",
-        language: "tr",
-        message: "fixture warning",
-      },
-    ]
+  it("keeps catalog shell stable without warning data", () => {
+    renderShell()
 
-    renderShell({ snapshot })
-
-    expect(container.textContent).toContain(zhCnMessages.warningTitle)
     expect(container.textContent).toContain(zhCnMessages.catalogTitle)
+  })
+
+  it("keeps not-found detail recovery actionable", () => {
+    renderShell({
+      detail: null,
+      detailNotFound: true,
+    })
+
+    expect(container.textContent).toContain(zhCnMessages.detailNotFoundTitle)
+    expect(container.textContent).toContain(zhCnMessages.closeDetail)
   })
 
   it("supports detail language switching and mobile close fallback", () => {

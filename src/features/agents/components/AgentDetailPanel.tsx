@@ -1,5 +1,5 @@
 import type { ContentLanguage, UiLocale } from "@/data/trait-catalog"
-import type { AgentDetailView } from "@/lib/trait-builder"
+import { humanizeCatalogValue, type AgentDetailView } from "@/lib/trait-builder"
 import type { LocaleMessages } from "@/i18n/locales/en"
 import { formatMessage } from "@/i18n/use-locale"
 
@@ -69,6 +69,12 @@ export function AgentDetailPanel({
   const lastSyncedLabel = detail.source
     ? new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(detail.source.lastSyncedAt))
     : "n/a"
+  const typeLabel =
+    detail.item.type === "reviewer"
+      ? messages.typeReviewer
+      : detail.item.type === "build-resolver"
+        ? messages.typeBuildResolver
+        : humanizeCatalogValue(detail.item.type)
 
   return (
     <section className={wrapperClassName} aria-label={mode === "mobile" ? messages.mobileDetail : messages.detailTitle}>
@@ -108,6 +114,7 @@ export function AgentDetailPanel({
 
       <div className="mt-5 grid gap-4 xl:grid-cols-2">
         <MetaCard label={messages.canonicalId} value={detail.item.agentId} />
+        <MetaCard label={messages.typeFilter} value={typeLabel} />
         <MetaCard label={messages.sourceRepo} value={detail.item.sourceRepo} />
         <MetaCard label={messages.sourceType} value={detail.item.sourceType} />
         <MetaCard label={messages.model} value={detail.item.model ?? "n/a"} />
