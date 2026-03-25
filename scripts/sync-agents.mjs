@@ -9,132 +9,84 @@ const __dirname = path.dirname(__filename)
 const repoRoot = path.resolve(__dirname, "..")
 const outputPath = path.join(repoRoot, "src/data/generated/agent-catalog.json")
 
-async function main() {
-  const startedAt = new Date().toISOString()
-  const warnings = []
-  const sourceMap = new Map(sourceManifest.sources.map((source) => [source.id, source]))
+const TYPE_PATTERNS = [
+  ["reviewer", /reviewer$/],
+  ["build-resolver", /(build|error)-resolver$/],
+  ["chief-of-staff", /chief-of-staff$/],
+  ["docs-lookup", /docs-lookup$/],
+  ["doc-updater", /doc-updater$/],
+  ["e2e-runner", /e2e-runner$/],
+  ["harness-optimizer", /harness-optimizer$/],
+  ["loop-operator", /loop-operator$/],
+  ["refactor-cleaner", /refactor-cleaner$/],
+  ["tdd-guide", /tdd-guide$/],
+  ["planner", /planner$/],
+  ["architect", /architect$/],
+]
 
-  await verifySourceRoots(sourceManifest.sources)
+export async function buildAgentCatalogSnapshot({
+  manifest = sourceManifest,
+  repoRootPath = repoRoot,
+  startedAt = new Date().toISOString(),
+} = {}) {
+  const discoveredCatalog = new Map()
 
-  const items = await Promise.all(
-    sourceManifest.agents.map(async (entry) => {
-      const source = sourceMap.get(entry.sourceId)
-      if (!source) {
-        const warning = createWarning("missing_source", {
-          agentId: entry.id,
-          sourceId: entry.sourceId,
-          message: `Source definition not found for ${entry.id}`,
-        })
-        warnings.push(warning)
-        return null
+  await verifySourceRoots(manifest.sources, repoRootPath)
+
+  const items = []
+  for (const source of manifest.sources) {
+    const entries = await discoverCanonicalAgentEntries(source, repoRootPath)
+    discoveredCatalog.set(source.id, entries)
+
+    const variantDirectories = await resolveVariantDirectories(source, repoRootPath)
+    for (const entry of entries) {
+      const item = await buildCatalogItem({
+        source,
+        entry,
+        repoRootPath,
+        variantDirectories,
+      })
+
+      if (item) {
+        items.push(item)
       }
+    }
+  }
 
-      const variants = {}
-      const itemWarnings = []
-
-      await Promise.all(
-        Object.entries(entry.variants).map(async ([language, sourcePath]) => {
-          const result = await readVariant({ source, agentId: entry.id, language, sourcePath })
-          if (!result.ok) {
-            const warning = createWarning(result.code, {
-              agentId: entry.id,
-              language,
-              sourceId: source.id,
-              sourcePath,
-              message: result.message,
-            })
-            warnings.push(warning)
-            itemWarnings.push(warning)
-            return
-          }
-
-          variants[language] = result.variant
-        })
-      )
-
-      const availableLanguages = Object.keys(variants)
-      if (availableLanguages.length === 0) {
-        const warning = createWarning("missing_all_variants", {
-          agentId: entry.id,
-          sourceId: source.id,
-          message: `No local variants were found for ${entry.id}`,
-        })
-        warnings.push(warning)
-        itemWarnings.push(warning)
-        return null
-      }
-
-      const defaultLanguage = variants[entry.defaultLanguage]
-        ? entry.defaultLanguage
-        : availableLanguages[0]
-      const canonicalVariant = variants[defaultLanguage]
-      const type = inferAgentType(entry.id, canonicalVariant.attributes.description, entry.type)
-      const mergedTags = Array.from(new Set([...(entry.tags ?? []), type, ...inferTags(canonicalVariant)]))
-      const tools = dedupeStrings([
-        ...toStringArray(canonicalVariant.attributes.tools),
-        ...availableLanguages.flatMap((language) => toStringArray(variants[language].attributes.tools)),
-      ])
-      const model =
-        canonicalVariant.attributes.model ??
-        findFirstValue(availableLanguages, (language) => variants[language].attributes.model)
-
-      return {
-        traitCatalogId: entry.id,
-        agentId: entry.id,
-        name: startCase(canonicalVariant.attributes.name ?? entry.id),
-        summary: canonicalVariant.attributes.description ?? `${startCase(entry.id)} sourced from ${source.label}.`,
-        type,
-        tags: mergedTags,
-        tools,
-        model: typeof model === "string" ? model : null,
-        sourceId: source.id,
-        sourceLabel: source.label,
-        sourceRepo: source.repo,
-        sourceType: source.sourceType,
-        sourceUrl: source.homepageUrl,
-        canonicalPath: canonicalVariant.sourcePath,
-        defaultLanguage,
-        availableLanguages,
-        warnings: itemWarnings,
-        variants,
-      }
+  const normalizedItems = items.sort((left, right) => left.name.localeCompare(right.name))
+  const languageIndex = buildLanguageIndex(normalizedItems)
+  const sources = manifest.sources.map((source) =>
+    buildSourceSnapshot({
+      source,
+      items: normalizedItems,
+      trackedAgents: discoveredCatalog.get(source.id)?.length ?? 0,
+      lastSyncedAt: startedAt,
     })
   )
 
-  const normalizedItems = items.filter(Boolean).sort((left, right) => left.name.localeCompare(right.name))
-  const languageIndex = buildLanguageIndex(normalizedItems)
-  const sources = sourceManifest.sources.map((source) =>
-    buildSourceSnapshot(source, normalizedItems, warnings, startedAt)
-  )
-
-  const snapshot = {
+  return {
     version: 1,
     lastSyncedAt: startedAt,
-    warnings,
     languageIndex,
     sources,
     items: normalizedItems,
   }
+}
+
+async function main() {
+  const snapshot = await buildAgentCatalogSnapshot()
 
   await fs.mkdir(path.dirname(outputPath), { recursive: true })
   await fs.writeFile(outputPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8")
 
-  console.log(`Synced ${normalizedItems.length} agents from local submodules to ${path.relative(repoRoot, outputPath)}`)
-  console.log(`lastSyncedAt=${startedAt}`)
-  if (warnings.length > 0) {
-    console.warn(`warnings=${warnings.length}`)
-    for (const warning of warnings) {
-      console.warn(`- ${warning.code}: ${warning.message}`)
-    }
-  } else {
-    console.log("warnings=0")
-  }
+  console.log(`Synced ${snapshot.items.length} agents from local submodules to ${path.relative(repoRoot, outputPath)}`)
+  console.log(`lastSyncedAt=${snapshot.lastSyncedAt}`)
 }
 
-async function verifySourceRoots(sources) {
+async function verifySourceRoots(sources, repoRootPath) {
   await Promise.all(
     sources.map(async (source) => {
-      const rootPath = resolveSourceRoot(source)
+      const rootPath = resolveSourceRoot(source, repoRootPath)
       try {
         const stat = await fs.stat(rootPath)
         if (!stat.isDirectory()) {
@@ -143,15 +95,118 @@ async function verifySourceRoots(sources) {
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error)
         throw new Error(
-          `Local source is not ready for ${source.id}: ${path.relative(repoRoot, rootPath)} (${message}). Run \`npm run sync:agents:update-source\` first.`
+          `Local source is not ready for ${source.id}: ${path.relative(repoRootPath, rootPath)} (${message}). Run \`npm run sync:agents:update-source\` first.`
         )
       }
     })
   )
 }
 
-async function readVariant({ source, agentId, language, sourcePath }) {
-  const localPath = path.join(resolveSourceRoot(source), sourcePath)
+export async function discoverCanonicalAgentEntries(source, repoRootPath = repoRoot) {
+  const discovery = source.discovery
+  const canonicalRoot = path.join(resolveSourceRoot(source, repoRootPath), discovery.canonical.directory)
+
+  let entries
+  try {
+    entries = await fs.readdir(canonicalRoot, { withFileTypes: true })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    throw new Error(
+      `Canonical discovery path is unavailable for ${source.id}: ${path.relative(repoRootPath, canonicalRoot)} (${message}).`
+    )
+  }
+
+  return entries
+    .filter((entry) => entry.isFile())
+    .map((entry) => entry.name)
+    .filter((fileName) => fileName.endsWith(discovery.canonical.extension))
+    .filter((fileName) => !isExcludedPath(fileName, discovery.canonical.exclude ?? []))
+    .map((fileName) => ({
+      agentId: deriveCanonicalAgentId(fileName),
+      fileName,
+      canonicalPath: toPosixPath(path.join(discovery.canonical.directory, fileName)),
+    }))
+    .sort((left, right) => left.agentId.localeCompare(right.agentId))
+}
+
+async function resolveVariantDirectories(source, repoRootPath) {
+  const rootPath = resolveSourceRoot(source, repoRootPath)
+  const directories = new Map()
+
+  for (const [language, directory] of Object.entries(source.discovery.variants)) {
+    const absolutePath = path.join(rootPath, directory)
+    const available = await isDirectory(absolutePath)
+    directories.set(language, { directory, available })
+  }
+
+  return directories
+}
+
+async function buildCatalogItem({ source, entry, repoRootPath, variantDirectories }) {
+  const variants = {}
+
+  for (const [language, variantDirectory] of variantDirectories.entries()) {
+    if (!variantDirectory.available) {
+      continue
+    }
+
+    const sourcePath = toPosixPath(path.join(variantDirectory.directory, entry.fileName))
+    const result = await readVariant({
+      source,
+      agentId: entry.agentId,
+      language,
+      sourcePath,
+      repoRootPath,
+    })
+
+    if (!result.ok) {
+      continue
+    }
+
+    variants[language] = result.variant
+  }
+
+  const availableLanguages = sortAvailableLanguages(Object.keys(variants), source.discovery)
+  if (availableLanguages.length === 0) {
+    return null
+  }
+
+  const defaultLanguage = pickDefaultLanguage(availableLanguages, source.discovery.canonical.language)
+  const canonicalVariant = variants[defaultLanguage] ?? variants[availableLanguages[0]]
+  if (!canonicalVariant) {
+    return null
+  }
+
+  const type = inferAgentType(entry.agentId, canonicalVariant)
+  const allVariants = availableLanguages.map((language) => variants[language]).filter(Boolean)
+  const tools = dedupeStrings(allVariants.flatMap((variant) => toStringArray(variant.attributes.tools)))
+  const model =
+    canonicalVariant.attributes.model ?? findFirstValue(availableLanguages, (language) => variants[language]?.attributes.model)
+  const tags = buildTags(entry.agentId, type, allVariants)
+
+  return {
+    traitCatalogId: entry.agentId,
+    agentId: entry.agentId,
+    name: canonicalVariant.title,
+    summary: canonicalVariant.summary || `${startCase(entry.agentId)} sourced from ${source.label}.`,
+    type,
+    tags,
+    tools,
+    model: typeof model === "string" ? model : null,
+    sourceId: source.id,
+    sourceLabel: source.label,
+    sourceRepo: source.repo,
+    sourceType: source.sourceType,
+    sourceUrl: source.homepageUrl,
+    canonicalPath: entry.canonicalPath,
+    defaultLanguage,
+    availableLanguages,
+    variants,
+  }
+}
+
+async function readVariant({ source, agentId, language, sourcePath, repoRootPath }) {
+  const localPath = path.join(resolveSourceRoot(source, repoRootPath), sourcePath)
   const sourceUrl = buildSourceUrl(source.repo, source.branch, sourcePath)
   const rawUrl = buildRawUrl(source.repo, source.branch, sourcePath)
 
@@ -180,13 +235,161 @@ async function readVariant({ source, agentId, language, sourcePath }) {
     return {
       ok: false,
       code: isMissingFileError(error) ? "missing_variant" : "read_failed",
-      message: `${agentId} (${language}) failed to read local file ${path.relative(repoRoot, localPath)}: ${error instanceof Error ? error.message : String(error)}`,
+      message: `${agentId} (${language}) failed to read local file ${path.relative(repoRootPath, localPath)}: ${error instanceof Error ? error.message : String(error)}`,
     }
   }
 }
 
-function resolveSourceRoot(source) {
-  return path.resolve(repoRoot, source.submodulePath)
+function buildLanguageIndex(items) {
+  const index = {}
+
+  for (const item of items) {
+    for (const language of item.availableLanguages) {
+      index[language] ??= []
+      index[language].push(item.agentId)
+    }
+  }
+
+  return Object.fromEntries(
+    Object.entries(index)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([language, agentIds]) => [language, agentIds.sort((left, right) => left.localeCompare(right))])
+  )
+}
+
+function buildSourceSnapshot({ source, items, trackedAgents, lastSyncedAt }) {
+  const sourceItems = items.filter((item) => item.sourceId === source.id)
+  const languages = Array.from(new Set(sourceItems.flatMap((item) => item.availableLanguages))).sort((left, right) =>
+    left.localeCompare(right)
+  )
+
+  return {
+    id: source.id,
+    label: source.label,
+    repo: source.repo,
+    branch: source.branch,
+    homepageUrl: source.homepageUrl,
+    sourceType: source.sourceType,
+    trackedAgents,
+    syncedAgents: sourceItems.length,
+    languages,
+    lastSyncedAt,
+  }
+}
+
+export function inferAgentType(agentId, canonicalVariant) {
+  const normalizedId = agentId.toLowerCase()
+  const sample = `${canonicalVariant.summary ?? ""} ${canonicalVariant.bodyPlainText ?? ""}`.toLowerCase()
+  for (const [type, pattern] of TYPE_PATTERNS) {
+    if (pattern.test(normalizedId)) {
+      return type
+    }
+  }
+
+  if (sample.includes("review")) {
+    return "reviewer"
+  }
+
+  if (sample.includes("build") && (sample.includes("resolver") || sample.includes("resolution"))) {
+    return "build-resolver"
+  }
+
+  return agentId
+}
+
+function buildTags(agentId, type, variants) {
+  const slugTags = agentId
+    .split("-")
+    .map((part) => part.trim().toLowerCase())
+    .filter(Boolean)
+  const inferredTags = variants.flatMap((variant) => inferTags(variant))
+
+  return dedupeStrings([type, ...slugTags, ...inferredTags])
+}
+
+function inferTags(variant) {
+  const sample = `${variant.title} ${variant.summary} ${variant.bodyPlainText}`.toLowerCase()
+  const tags = []
+
+  if (sample.includes("typescript") || sample.includes("javascript")) {
+    tags.push("typescript")
+  }
+  if (sample.includes("java")) {
+    tags.push("java")
+  }
+  if (sample.includes("kotlin")) {
+    tags.push("kotlin")
+  }
+  if (sample.includes("python") || sample.includes("pytorch")) {
+    tags.push("python")
+  }
+  if (sample.includes("gradle")) {
+    tags.push("gradle")
+  }
+  if (sample.includes("maven")) {
+    tags.push("maven")
+  }
+  if (sample.includes("security")) {
+    tags.push("security")
+  }
+  if (sample.includes("architecture")) {
+    tags.push("architecture")
+  }
+  if (sample.includes("plan")) {
+    tags.push("planning")
+  }
+
+  return tags
+}
+
+function pickDefaultLanguage(availableLanguages, preferredLanguage) {
+  return availableLanguages.includes(preferredLanguage) ? preferredLanguage : availableLanguages[0]
+}
+
+function sortAvailableLanguages(languages, discovery) {
+  const preferredOrder = Object.keys(discovery.variants)
+  return languages.sort((left, right) => {
+    const leftIndex = preferredOrder.indexOf(left)
+    const rightIndex = preferredOrder.indexOf(right)
+
+    if (leftIndex !== -1 || rightIndex !== -1) {
+      if (leftIndex === -1) {
+        return 1
+      }
+      if (rightIndex === -1) {
+        return -1
+      }
+      return leftIndex - rightIndex
+    }
+
+    return left.localeCompare(right)
+  })
+}
+
+function deriveCanonicalAgentId(fileName) {
+  return fileName.replace(/\.md$/i, "")
+}
+
+function resolveSourceRoot(source, repoRootPath = repoRoot) {
+  return path.resolve(repoRootPath, source.submodulePath)
+}
+
+async function isDirectory(targetPath) {
+  try {
+    const stat = await fs.stat(targetPath)
+    return stat.isDirectory()
+  } catch {
+    return false
+  }
+}
+
+function isExcludedPath(value, patterns) {
+  return patterns.some((pattern) => globToRegExp(pattern).test(value))
+}
+
+function globToRegExp(pattern) {
+  const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*")
+  return new RegExp(`^${escaped}$`)
 }
 
 function isMissingFileError(error) {
@@ -260,82 +463,6 @@ function parseFrontmatterValue(rawValue) {
   return rawValue
 }
 
-function buildLanguageIndex(items) {
-  return items.reduce((index, item) => {
-    for (const language of item.availableLanguages) {
-      index[language] ??= []
-      index[language].push(item.agentId)
-    }
-    return index
-  }, {})
-}
-
-function buildSourceSnapshot(source, items, warnings, lastSyncedAt) {
-  const sourceItems = items.filter((item) => item.sourceId === source.id)
-  const sourceWarnings = warnings.filter((warning) => warning.sourceId === source.id)
-  const languages = Array.from(new Set(sourceItems.flatMap((item) => item.availableLanguages))).sort()
-
-  return {
-    id: source.id,
-    label: source.label,
-    repo: source.repo,
-    branch: source.branch,
-    homepageUrl: source.homepageUrl,
-    sourceType: source.sourceType,
-    status: sourceWarnings.length > 0 ? "partial" : "fresh",
-    trackedAgents: sourceManifest.agents.filter((entry) => entry.sourceId === source.id).length,
-    syncedAgents: sourceItems.length,
-    languages,
-    warningCount: sourceWarnings.length,
-    lastSyncedAt,
-  }
-}
-
-function inferAgentType(agentId, description, fallback) {
-  const sample = `${agentId} ${description ?? ""}`.toLowerCase()
-  if (sample.includes("review")) {
-    return "reviewer"
-  }
-  if (sample.includes("build") || sample.includes("resolver")) {
-    return "build-resolver"
-  }
-  return fallback ?? "reviewer"
-}
-
-function inferTags(variant) {
-  const sample = `${variant.title} ${variant.summary} ${variant.bodyPlainText}`.toLowerCase()
-  const tags = []
-  if (sample.includes("typescript") || sample.includes("javascript")) {
-    tags.push("typescript")
-  }
-  if (sample.includes("java")) {
-    tags.push("java")
-  }
-  if (sample.includes("kotlin")) {
-    tags.push("kotlin")
-  }
-  if (sample.includes("python") || sample.includes("pytorch")) {
-    tags.push("python")
-  }
-  if (sample.includes("gradle")) {
-    tags.push("gradle")
-  }
-  if (sample.includes("maven")) {
-    tags.push("maven")
-  }
-  if (sample.includes("security")) {
-    tags.push("security")
-  }
-  return tags
-}
-
-function createWarning(code, payload) {
-  return {
-    code,
-    ...payload,
-  }
-}
-
 function buildRawUrl(repo, branch, sourcePath) {
   return `https://raw.githubusercontent.com/${repo}/${branch}/${sourcePath}`
 }
@@ -344,13 +471,14 @@ function buildSourceUrl(repo, branch, sourcePath) {
   return `https://github.com/${repo}/blob/${branch}/${sourcePath}`
 }
 
-function findFirstValue(languages, selector) {
-  for (const language of languages) {
-    const value = selector(language)
-    if (value != null && value !== "") {
-      return value
+function findFirstValue(values, selector) {
+  for (const value of values) {
+    const result = selector(value)
+    if (result != null && result !== "") {
+      return result
     }
   }
+
   return null
 }
 
@@ -393,7 +521,13 @@ function startCase(value) {
     .join(" ")
 }
 
-main().catch((error) => {
-  console.error(error)
-  process.exitCode = 1
-})
+function toPosixPath(value) {
+  return value.split(path.sep).join(path.posix.sep)
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {
+  main().catch((error) => {
+    console.error(error)
+    process.exitCode = 1
+  })
+}

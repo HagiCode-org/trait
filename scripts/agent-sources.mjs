@@ -1,3 +1,23 @@
+function createDiscoveryConfig() {
+  return {
+    canonical: {
+      language: "en",
+      directory: "agents",
+      extension: ".md",
+      exclude: [],
+    },
+    variants: {
+      en: "agents",
+      "zh-CN": "docs/zh-CN/agents",
+      "zh-TW": "docs/zh-TW/agents",
+      tr: "docs/tr/agents",
+      "ja-JP": "docs/ja-JP/agents",
+      "ko-KR": "docs/ko-KR/agents",
+      "pt-BR": "docs/pt-BR/agents",
+    },
+  }
+}
+
 export const sourceManifest = {
   sources: [
     {
@@ -8,29 +28,7 @@ export const sourceManifest = {
       homepageUrl: "https://github.com/affaan-m/everything-claude-code",
       sourceType: "git-submodule",
       submodulePath: "vendor/everything-claude-code",
+      discovery: createDiscoveryConfig(),
     },
   ],
-  agents: [
-    createAgentEntry("typescript-reviewer", "reviewer", ["typescript", "javascript", "code review"]),
-    createAgentEntry("pytorch-build-resolver", "build-resolver", ["python", "pytorch", "build"]),
-    createAgentEntry("java-build-resolver", "build-resolver", ["java", "gradle", "maven"]),
-    createAgentEntry("java-reviewer", "reviewer", ["java", "code review", "static analysis"]),
-    createAgentEntry("kotlin-reviewer", "reviewer", ["kotlin", "android", "code review"]),
-    createAgentEntry("kotlin-build-resolver", "build-resolver", ["kotlin", "gradle", "build"]),
-  ],
-}
-
-function createAgentEntry(id, type, tags) {
-  return {
-    id,
-    sourceId: "everything-claude-code",
-    type,
-    tags,
-    defaultLanguage: "en",
-    variants: {
-      en: `agents/${id}.md`,
-      "zh-CN": `docs/zh-CN/agents/${id}.md`,
-      tr: `docs/tr/agents/${id}.md`,
-    },
-  }
 }
