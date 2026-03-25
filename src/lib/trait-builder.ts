@@ -1,7 +1,5 @@
 import {
   agentCatalogSnapshot,
-  agentTypes,
-  contentLanguages,
   defaultFilterState,
   emptyDetailRouteState,
   isAgentType,
@@ -35,8 +33,10 @@ export type AgentDetailView = {
   activeLanguage: ContentLanguage
   requestedLanguage: ContentLanguage | null
   fallbackLanguage: ContentLanguage | null
-  activeVariant: NonNullable<AgentCatalogItem["variants"][ContentLanguage]>
+  activeVariant: AgentVariantRecordValue
 }
+
+type AgentVariantRecordValue = AgentCatalogItem["variants"][string]
 
 const SEARCH_QUERY_KEY = "q"
 const SEARCH_SOURCE_KEY = "source"
@@ -46,26 +46,32 @@ const SEARCH_AGENT_KEY = "agent"
 const SEARCH_VARIANT_KEY = "variant"
 
 export function buildFilterOptions(snapshot: AgentCatalogSnapshot = agentCatalogSnapshot): CatalogFilterOptions {
+  const sourceCounts = countBy(snapshot.items, (item) => item.sourceId)
+  const languageCounts = countByMany(snapshot.items, (item) => item.availableLanguages)
+  const typeCounts = countBy(snapshot.items, (item) => item.type)
+  const languages = Object.keys(snapshot.languageIndex).sort((left, right) => left.localeCompare(right))
+  const types = Array.from(new Set(snapshot.items.map((item) => item.type))).sort((left, right) => left.localeCompare(right))
+
   return {
     sources: [
       { value: "all", count: snapshot.items.length },
       ...snapshot.sources.map((source) => ({
         value: source.id,
-        count: snapshot.items.filter((item) => item.sourceId === source.id).length,
+        count: sourceCounts.get(source.id) ?? 0,
       })),
     ],
     languages: [
       { value: "all", count: snapshot.items.length },
-      ...contentLanguages.map((language) => ({
+      ...languages.map((language) => ({
         value: language,
-        count: snapshot.items.filter((item) => item.availableLanguages.includes(language)).length,
+        count: languageCounts.get(language) ?? 0,
       })),
     ],
     types: [
       { value: "all", count: snapshot.items.length },
-      ...agentTypes.map((agentType) => ({
+      ...types.map((agentType) => ({
         value: agentType,
-        count: snapshot.items.filter((item) => item.type === agentType).length,
+        count: typeCounts.get(agentType) ?? 0,
       })),
     ],
   }
@@ -122,8 +128,7 @@ export function resolveAgentDetail(
     source: snapshot.sources.find((source) => source.id === item.sourceId) ?? null,
     activeLanguage,
     requestedLanguage,
-    fallbackLanguage:
-      requestedLanguage && requestedLanguage !== activeLanguage ? activeLanguage : null,
+    fallbackLanguage: requestedLanguage && requestedLanguage !== activeLanguage ? activeLanguage : null,
     activeVariant,
   }
 }
@@ -137,7 +142,7 @@ export function pickDetailLanguage(item: AgentCatalogItem, requestedLanguage: Co
     return item.defaultLanguage
   }
 
-  return item.availableLanguages[0] ?? "en"
+  return item.availableLanguages[0] ?? item.defaultLanguage ?? "en"
 }
 
 export function readRouteStateFromSearch(search: string): RouteState {
@@ -214,6 +219,14 @@ export function getFreshnessState(lastSyncedAt: string): "fresh" | "watch" | "st
   return "stale"
 }
 
+export function humanizeCatalogValue(value: string) {
+  return value
+    .split(/[-_]/g)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ")
+}
+
 function sanitizeSource(value: string | null): FilterState["sourceId"] {
   if (!value || value === "all") {
     return "all"
@@ -244,18 +257,20 @@ function sanitizeDetailLanguage(value: string | null): DetailRouteState["languag
 
 function buildSearchIndex(item: AgentCatalogItem) {
   return [
+    item.agentId,
     item.name,
     item.summary,
     item.type,
     item.sourceLabel,
     item.sourceRepo,
     item.model ?? "",
+    item.canonicalPath,
     ...item.tags,
     ...item.tools,
     ...item.availableLanguages,
     ...item.availableLanguages.flatMap((language) => {
       const variant = item.variants[language]
-      return variant ? [variant.summary, variant.bodyPlainText] : []
+      return variant ? [variant.title, variant.summary, variant.bodyPlainText] : []
     }),
   ]
     .join(" ")
@@ -271,6 +286,8 @@ function scoreItem(item: AgentCatalogItem, normalizedQuery: string) {
   const name = item.name.toLowerCase()
   const summary = item.summary.toLowerCase()
   const tags = item.tags.join(" ").toLowerCase()
+  const agentId = item.agentId.toLowerCase()
+  const type = item.type.toLowerCase()
 
   if (name.includes(normalizedQuery)) {
     score += 6
@@ -281,6 +298,12 @@ function scoreItem(item: AgentCatalogItem, normalizedQuery: string) {
   if (tags.includes(normalizedQuery)) {
     score += 3
   }
+  if (agentId.includes(normalizedQuery)) {
+    score += 3
+  }
+  if (type.includes(normalizedQuery)) {
+    score += 2
+  }
   if (item.availableLanguages.includes(normalizedQuery as ContentLanguage)) {
     score += 2
   }
@@ -289,4 +312,27 @@ function scoreItem(item: AgentCatalogItem, normalizedQuery: string) {
   }
 
   return score
+}
+
+function countBy<T>(items: T[], selector: (item: T) => string) {
+  const counts = new Map()
+
+  for (const item of items) {
+    const key = selector(item)
+    counts.set(key, (counts.get(key) ?? 0) + 1)
+  }
+
+  return counts
+}
+
+function countByMany<T>(items: T[], selector: (item: T) => string[]) {
+  const counts = new Map()
+
+  for (const item of items) {
+    for (const key of selector(item)) {
+      counts.set(key, (counts.get(key) ?? 0) + 1)
+    }
+  }
+
+  return counts
 }

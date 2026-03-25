@@ -1,22 +1,11 @@
 import snapshotData from "@/data/generated/agent-catalog.json"
 
-export const contentLanguages = ["en", "zh-CN", "tr"] as const
 export const uiLocales = ["en", "zh-CN"] as const
-export const agentTypes = ["reviewer", "build-resolver"] as const
 
-export type ContentLanguage = (typeof contentLanguages)[number]
+export type ContentLanguage = string
 export type UiLocale = (typeof uiLocales)[number]
-export type AgentType = (typeof agentTypes)[number]
+export type AgentType = string
 export type FilterValue<T extends string> = T | "all"
-
-export type AgentWarning = {
-  code: string
-  agentId?: string
-  language?: string
-  sourceId?: string
-  sourcePath?: string
-  message: string
-}
 
 export type AgentVariantAttributes = {
   name?: string
@@ -55,8 +44,7 @@ export type AgentCatalogItem = {
   canonicalPath: string
   defaultLanguage: ContentLanguage
   availableLanguages: ContentLanguage[]
-  warnings: AgentWarning[]
-  variants: Partial<Record<ContentLanguage, AgentVariant>>
+  variants: Record<ContentLanguage, AgentVariant>
 }
 
 export type SourceMeta = {
@@ -66,20 +54,17 @@ export type SourceMeta = {
   branch: string
   homepageUrl: string
   sourceType: string
-  status: "fresh" | "partial"
   trackedAgents: number
   syncedAgents: number
   languages: ContentLanguage[]
-  warningCount: number
   lastSyncedAt: string
 }
 
-export type LanguageIndex = Partial<Record<ContentLanguage, string[]>>
+export type LanguageIndex = Record<ContentLanguage, string[]>
 
 export type AgentCatalogSnapshot = {
   version: number
   lastSyncedAt: string
-  warnings: AgentWarning[]
   languageIndex: LanguageIndex
   sources: SourceMeta[]
   items: AgentCatalogItem[]
@@ -117,9 +102,13 @@ export const emptyDetailRouteState: DetailRouteState = {
 export const agentCatalogSnapshot = snapshotData as AgentCatalogSnapshot
 export const traitCatalog = agentCatalogSnapshot.items
 export const sourceCatalog = agentCatalogSnapshot.sources
+export const contentLanguages = Object.keys(agentCatalogSnapshot.languageIndex).sort((left, right) => left.localeCompare(right))
+export const agentTypes = Array.from(new Set(agentCatalogSnapshot.items.map((item) => item.type))).sort((left, right) =>
+  left.localeCompare(right)
+)
 
 export function isContentLanguage(value: string | null | undefined): value is ContentLanguage {
-  return contentLanguages.includes(value as ContentLanguage)
+  return typeof value === "string" && contentLanguages.includes(value)
 }
 
 export function isUiLocale(value: string | null | undefined): value is UiLocale {
@@ -127,5 +116,5 @@ export function isUiLocale(value: string | null | undefined): value is UiLocale 
 }
 
 export function isAgentType(value: string | null | undefined): value is AgentType {
-  return agentTypes.includes(value as AgentType)
+  return typeof value === "string" && agentTypes.includes(value)
 }
