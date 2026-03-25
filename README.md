@@ -6,7 +6,7 @@ Trait is the frontend workspace for `trait.hagicode.com`, now positioned as an a
 
 - Aggregates tracked agent definitions from vendored git submodules into a static local catalog snapshot.
 - Lets users search and filter by keyword, source, content language, and agent type.
-- Keeps source traceability visible through repository metadata, sync warnings, and deep-linkable detail views.
+- Keeps source traceability visible through repository metadata and deep-linkable detail views.
 - Separates UI locale from content language so a Chinese interface can still browse English or Turkish agent content.
 
 ## Catalog sync workflow
@@ -29,10 +29,12 @@ npm run sync:agents
 
 The sync script:
 
-- Reads tracked Markdown files from the local submodule checkout.
+- Scans the canonical `agents/*.md` files from each configured source instead of relying on a fixed agent whitelist.
+- Uses the configured language directories in `scripts/agent-sources.mjs` to pair multilingual variants by canonical file name.
 - Parses frontmatter and body content.
 - Merges multilingual variants into one canonical agent record.
-- Writes `lastSyncedAt`, `warnings`, source metadata, and language availability into the generated snapshot.
+- Derives tracked coverage, synced counts, language coverage, and filterable agent types from the discovered catalog snapshot.
+- Writes `lastSyncedAt`, source metadata, and language availability into the generated snapshot.
 
 ## Internationalization boundary
 
