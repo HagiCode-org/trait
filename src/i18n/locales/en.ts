@@ -4,17 +4,14 @@ export type LocaleMessages = {
   heroSummary: string
   heroMetricAgents: string
   heroMetricLanguages: string
-  heroMetricWarnings: string
   localeLabel: string
   localeEnglish: string
   localeChinese: string
   syncFresh: string
-  syncPartial: string
   syncWatch: string
   syncStale: string
   sourcePanelTitle: string
   sourceCoverage: string
-  sourceWarnings: string
   sourceLastSync: string
   sourceTracked: string
   sourceBrowse: string
@@ -34,8 +31,6 @@ export type LocaleMessages = {
   catalogTitle: string
   openDetail: string
   activeCard: string
-  warningTitle: string
-  warningSummary: string
   emptyTitle: string
   emptySummary: string
   clearFilters: string
@@ -58,8 +53,6 @@ export type LocaleMessages = {
   closeDetail: string
   mobileDetail: string
   languageSwitch: string
-  statusFresh: string
-  statusPartial: string
   typeReviewer: string
   typeBuildResolver: string
 }
@@ -71,17 +64,14 @@ export const enMessages: LocaleMessages = {
     "Search prompt-ready reviewers and build resolvers, inspect language coverage, and keep source traceability visible before you copy anything.",
   heroMetricAgents: "Agents indexed",
   heroMetricLanguages: "Languages tracked",
-  heroMetricWarnings: "Sync warnings",
   localeLabel: "UI locale",
   localeEnglish: "EN",
   localeChinese: "中文",
   syncFresh: "Fresh sync",
-  syncPartial: "Partial sync",
   syncWatch: "Watch freshness",
   syncStale: "Stale snapshot",
   sourcePanelTitle: "Source intelligence",
   sourceCoverage: "Coverage",
-  sourceWarnings: "Warnings",
   sourceLastSync: "Last synced",
   sourceTracked: "Tracked entries",
   sourceBrowse: "Open source repo",
@@ -101,8 +91,6 @@ export const enMessages: LocaleMessages = {
   catalogTitle: "Agent catalog",
   openDetail: "Open detail",
   activeCard: "Selected",
-  warningTitle: "Sync warnings remain recoverable",
-  warningSummary: "Browsing stays available, but some variants or metadata were only partially synced.",
   emptyTitle: "No agents match the current filters.",
   emptySummary: "Adjust search terms or clear one facet to reopen the catalog.",
   clearFilters: "Clear filters",
@@ -125,8 +113,6 @@ export const enMessages: LocaleMessages = {
   closeDetail: "Close detail",
   mobileDetail: "Mobile detail view",
   languageSwitch: "Variant language",
-  statusFresh: "Fresh",
-  statusPartial: "Partial",
   typeReviewer: "Reviewer",
   typeBuildResolver: "Build resolver",
 }
