@@ -1,13 +1,20 @@
 # Trait
 
-Trait is the frontend workspace for `trait.hagicode.com`, now positioned as an agent aggregation surface instead of the previous trait blueprint builder.
+Trait is the frontend workspace for `trait.hagicode.com`, positioned as a searchable agent aggregation workbench rather than the previous trait blueprint builder.
+
+## Homepage layout principles
+
+- Search, filter chips, result count, and the catalog grid own the first viewport.
+- Source traceability is shown inside each agent detail instead of a homepage summary surface.
+- Detail opens as a contextual surface so users can inspect an agent without losing the current browsing state.
+- UI locale and content language remain separate, so a Chinese interface can still open English or Turkish agent content.
 
 ## What it does now
 
 - Aggregates tracked agent definitions from vendored git submodules into a static local catalog snapshot.
 - Lets users search and filter by keyword, source, content language, and agent type.
 - Keeps source traceability visible through repository metadata and deep-linkable detail views.
-- Separates UI locale from content language so a Chinese interface can still browse English or Turkish agent content.
+- Preserves shareable links for the current agent detail state while keeping the catalog browse context recoverable.
 
 ## Catalog sync workflow
 
@@ -38,7 +45,7 @@ The sync script:
 
 ## Internationalization boundary
 
-Trait now models two different language concerns:
+Trait models two separate language concerns:
 
 - `src/i18n/` controls UI locale strings for the interface itself.
 - Catalog metadata controls content language filtering for agent variants such as `en`, `zh-CN`, and `tr`.
@@ -53,7 +60,7 @@ npm run sync:agents:update-source
 npm run dev
 ```
 
-`npm run build` now performs the local pipeline in one pass: read submodule content, regenerate `agent-catalog.json`, then bundle the frontend.
+`npm run build` performs the local pipeline in one pass: read submodule content, regenerate `agent-catalog.json`, then bundle the frontend.
 
 ## Quality checks
 
