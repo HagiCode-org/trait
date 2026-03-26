@@ -6,7 +6,15 @@ import { formatMessage, useLocale } from "@/i18n/use-locale"
 import { SiteFooter } from "@/components/site/SiteFooter"
 import { SiteHeader } from "@/components/site/SiteHeader"
 import { MarkdownArticle } from "@/features/agents/components/MarkdownArticle"
-import { buildAgentLanguagePath, humanizeCatalogValue, pickDetailLanguage, resolveAgentDetail } from "@/lib/route-projection"
+import { buildAgentVariantMarkdown } from "@/lib/agent-markdown"
+import { copyText } from "@/lib/clipboard"
+import {
+  buildAgentLanguagePath,
+  humanizeCatalogValue,
+  pickDetailLanguage,
+  projectDetailLanguageToUiLocale,
+  resolveAgentDetail,
+} from "@/lib/route-projection"
 import { useAnalyticsBootstrap } from "@/lib/use-analytics"
 
 type AgentDetailPageShellProps = {
@@ -18,25 +26,79 @@ type AgentDetailPageShellProps = {
 const COPY_RESET_MS = 1600
 
 export function AgentDetailPageShell({ item, initialLanguage, initialLocale = "en" }: AgentDetailPageShellProps) {
-  const { locale, messages, setLocale } = useLocale(initialLocale)
+  const { locale, messages, setLocale } = useLocale(initialLocale, {
+    initializationMode: "explicit-preferred",
+  })
   const [activeLanguage, setActiveLanguage] = useState<ContentLanguage>(initialLanguage)
-  const [copyState, setCopyState] = useState<"idle" | "done" | "failed">("idle")
+  const [copyLinkState, setCopyLinkState] = useState<"idle" | "done" | "failed">("idle")
+  const [copyOriginalState, setCopyOriginalState] = useState<"idle" | "done" | "failed">("idle")
 
   useAnalyticsBootstrap()
 
   const detail = useMemo(() => resolveAgentDetail(item.agentId, activeLanguage), [item.agentId, activeLanguage])
 
   useEffect(() => {
-    if (copyState === "idle") {
+    if (copyLinkState === "idle") {
       return undefined
     }
 
-    const timer = window.setTimeout(() => setCopyState("idle"), COPY_RESET_MS)
+    const timer = window.setTimeout(() => setCopyLinkState("idle"), COPY_RESET_MS)
     return () => window.clearTimeout(timer)
-  }, [copyState])
+  }, [copyLinkState])
+
+  useEffect(() => {
+    if (copyOriginalState === "idle") {
+      return undefined
+    }
+
+    const timer = window.setTimeout(() => setCopyOriginalState("idle"), COPY_RESET_MS)
+    return () => window.clearTimeout(timer)
+  }, [copyOriginalState])
+
+  useEffect(() => {
+    if (typeof document === "undefined") {
+      return
+    }
+
+    document.documentElement.lang = locale
+
+    const path = buildAgentLanguagePath(item, detail?.activeLanguage ?? activeLanguage)
+    const href = typeof window === "undefined" ? path : new URL(path, window.location.origin).toString()
+    const canonicalLink = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')
+    if (canonicalLink) {
+      canonicalLink.href = href
+    }
+    const ogUrl = document.querySelector<HTMLMetaElement>('meta[property="og:url"]')
+    if (ogUrl) {
+      ogUrl.content = href
+    }
+  }, [activeLanguage, detail?.activeLanguage, item, locale])
 
   function handleSelectLanguage(language: ContentLanguage) {
     const nextLanguage = pickDetailLanguage(item, language)
+    setActiveLanguage(nextLanguage)
+    const projectedLocale = projectDetailLanguageToUiLocale(nextLanguage)
+    if (projectedLocale) {
+      setLocale(projectedLocale)
+    }
+
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, "", buildAgentLanguagePath(item, nextLanguage))
+    }
+  }
+
+  function handleLocaleChange(nextLocale: UiLocale) {
+    setLocale(nextLocale)
+
+    if (!item.availableLanguages.includes(nextLocale)) {
+      return
+    }
+
+    const nextLanguage = pickDetailLanguage(item, nextLocale)
+    if (nextLanguage === activeLanguage) {
+      return
+    }
+
     setActiveLanguage(nextLanguage)
 
     if (typeof window !== "undefined") {
@@ -49,13 +111,16 @@ export function AgentDetailPageShell({ item, initialLanguage, initialLocale = "e
       return
     }
 
-    try {
-      const href = new URL(buildAgentLanguagePath(item, activeLanguage), window.location.origin).toString()
-      await navigator.clipboard.writeText(href)
-      setCopyState("done")
-    } catch {
-      setCopyState("failed")
+    const href = new URL(buildAgentLanguagePath(item, detail?.activeLanguage ?? activeLanguage), window.location.origin).toString()
+    setCopyLinkState((await copyText(href)) ? "done" : "failed")
+  }
+
+  async function copyCurrentOriginal() {
+    if (typeof window === "undefined" || !detail) {
+      return
     }
+
+    setCopyOriginalState((await copyText(buildAgentVariantMarkdown(detail.activeVariant))) ? "done" : "failed")
   }
 
   if (!detail) {
@@ -66,7 +131,7 @@ export function AgentDetailPageShell({ item, initialLanguage, initialLocale = "e
     <div className="relative min-h-screen overflow-x-hidden bg-[color:var(--surface-base)] text-[color:var(--ink-strong)]">
       <div className="background-wash pointer-events-none fixed inset-0" />
       <div className="relative mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
-        <SiteHeader locale={locale} messages={messages} onLocaleChange={setLocale} />
+        <SiteHeader locale={locale} messages={messages} onLocaleChange={handleLocaleChange} />
       </div>
 
       <main className="relative mx-auto flex w-full max-w-[1120px] flex-col gap-4 px-4 pb-10 pt-4 sm:px-6 lg:px-8 lg:pb-12 lg:pt-6">
@@ -82,8 +147,15 @@ export function AgentDetailPageShell({ item, initialLanguage, initialLocale = "e
               <a className="secondary-link" href="/agents/">
                 {messages.backToCatalog}
               </a>
-              <button type="button" className="secondary-button" onClick={copyCurrentLink}>
-                {copyState === "done" ? messages.copied : copyState === "failed" ? messages.copyFailed : messages.copyLink}
+              <button type="button" data-copy-action="link" className="secondary-button" onClick={copyCurrentLink}>
+                {copyLinkState === "done" ? messages.copied : copyLinkState === "failed" ? messages.copyFailed : messages.copyLink}
+              </button>
+              <button type="button" data-copy-action="raw" className="secondary-button" onClick={copyCurrentOriginal}>
+                {copyOriginalState === "done"
+                  ? messages.copied
+                  : copyOriginalState === "failed"
+                    ? messages.copyFailed
+                    : messages.copyOriginal}
               </button>
               <a className="primary-button" href={detail.activeVariant.sourceUrl} target="_blank" rel="noreferrer">
                 {messages.openSource}

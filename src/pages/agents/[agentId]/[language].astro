@@ -2,6 +2,7 @@
 import { AgentDetailPageShell } from "@/components/agents/AgentDetailPageShell"
 import { loadCatalogSnapshot } from "@/lib/catalog-loader"
 import { buildAgentDetailMetadata } from "@/lib/metadata-builder"
+import { deriveDetailUiLocale } from "@/lib/route-projection"
 import BaseLayout from "@/layouts/BaseLayout.astro"
 
 export function getStaticPaths() {
@@ -22,8 +23,9 @@ export function getStaticPaths() {
 
 const { item, language } = Astro.props
 const metadata = buildAgentDetailMetadata(item, language)
+const initialLocale = deriveDetailUiLocale(language)
 ---
 
-<BaseLayout metadata={metadata} lang={language === "zh-CN" ? "zh-CN" : "en"}>
-  <AgentDetailPageShell client:load item={item} initialLanguage={language} initialLocale="en" />
+<BaseLayout metadata={metadata} lang={initialLocale}>
+  <AgentDetailPageShell client:load item={item} initialLanguage={language} initialLocale={initialLocale} />
 </BaseLayout>

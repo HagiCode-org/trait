@@ -11,9 +11,11 @@ type AgentDetailPanelProps = {
   locale: UiLocale
   messages: LocaleMessages
   mode: "desktop" | "mobile"
-  copyState: "idle" | "done" | "failed"
+  copyLinkState: "idle" | "done" | "failed"
+  copyOriginalState: "idle" | "done" | "failed"
   onClose: () => void
   onCopyLink: () => void
+  onCopyOriginal: () => void
   onSelectLanguage: (language: ContentLanguage) => void
 }
 
@@ -23,9 +25,11 @@ export function AgentDetailPanel({
   locale,
   messages,
   mode,
-  copyState,
+  copyLinkState,
+  copyOriginalState,
   onClose,
   onCopyLink,
+  onCopyOriginal,
   onSelectLanguage,
 }: AgentDetailPanelProps) {
   const isMobile = mode === "mobile"
@@ -62,11 +66,17 @@ export function AgentDetailPanel({
   }
 
   const copyLabel =
-    copyState === "done"
+    copyLinkState === "done"
       ? messages.copied
-      : copyState === "failed"
+      : copyLinkState === "failed"
         ? messages.copyFailed
         : messages.copyLink
+  const copyOriginalLabel =
+    copyOriginalState === "done"
+      ? messages.copied
+      : copyOriginalState === "failed"
+        ? messages.copyFailed
+        : messages.copyOriginal
   const lastSyncedLabel = detail.source
     ? new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(detail.source.lastSyncedAt))
     : "n/a"
@@ -135,8 +145,11 @@ export function AgentDetailPanel({
           <a className="primary-button" href={detail.activeVariant.sourceUrl} target="_blank" rel="noreferrer">
             {messages.openSource}
           </a>
-          <button type="button" className="secondary-button" onClick={onCopyLink}>
+          <button type="button" data-copy-action="link" className="secondary-button" onClick={onCopyLink}>
             {copyLabel}
+          </button>
+          <button type="button" data-copy-action="raw" className="secondary-button" onClick={onCopyOriginal}>
+            {copyOriginalLabel}
           </button>
           <a className="secondary-link" href={buildAgentLanguagePath(detail.item, detail.activeLanguage)}>
             {messages.viewCanonicalPage}
