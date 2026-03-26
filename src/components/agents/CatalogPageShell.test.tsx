@@ -76,6 +76,21 @@ describe("CatalogPageShell", () => {
     expect(window.location.search).toContain("variant=tr")
   })
 
+  it("copies the quick-view original markdown without leaving /agents/", async () => {
+    window.history.replaceState(null, "", "/agents/?agent=typescript-reviewer&variant=en")
+    await renderShell()
+
+    const copyOriginalButton = getRequiredElement('[data-testid="desktop-detail-panel"] [data-copy-action="raw"]') as HTMLButtonElement
+    await act(async () => {
+      copyOriginalButton.click()
+      await Promise.resolve()
+    })
+
+    expect(window.location.pathname).toBe("/agents/")
+    expect(window.navigator.clipboard.writeText).toHaveBeenCalled()
+    expect(vi.mocked(window.navigator.clipboard.writeText).mock.calls.at(-1)?.[0]).toContain("TypeScript")
+  })
+
   it("keeps the quick-view overlay open when switching UI locale", async () => {
     window.history.replaceState(null, "", "/agents/?agent=typescript-reviewer&variant=en")
     await renderShell()

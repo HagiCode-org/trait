@@ -32,7 +32,8 @@ type AgentAggregatorShellProps = {
   results: AgentCatalogItem[]
   detail: AgentDetailView | null
   detailNotFound: boolean
-  copyState: "idle" | "done" | "failed"
+  copyLinkState: "idle" | "done" | "failed"
+  copyOriginalState: "idle" | "done" | "failed"
   onLocaleChange: (locale: UiLocale) => void
   onQueryChange: (query: string) => void
   onSourceChange: (value: FilterState["sourceId"]) => void
@@ -43,6 +44,7 @@ type AgentAggregatorShellProps = {
   onCloseDetail: () => void
   onSelectDetailLanguage: (language: ContentLanguage) => void
   onCopyLink: () => void
+  onCopyOriginal: () => void
 }
 
 export function AgentAggregatorShell({
@@ -54,7 +56,8 @@ export function AgentAggregatorShell({
   results,
   detail,
   detailNotFound,
-  copyState,
+  copyLinkState,
+  copyOriginalState,
   onLocaleChange,
   onQueryChange,
   onSourceChange,
@@ -65,6 +68,7 @@ export function AgentAggregatorShell({
   onCloseDetail,
   onSelectDetailLanguage,
   onCopyLink,
+  onCopyOriginal,
 }: AgentAggregatorShellProps) {
   const resultLabel =
     results.length === 1
@@ -209,9 +213,11 @@ export function AgentAggregatorShell({
                 locale={locale}
                 messages={messages}
                 mode="desktop"
-                copyState={copyState}
+                copyLinkState={copyLinkState}
+                copyOriginalState={copyOriginalState}
                 onClose={onCloseDetail}
                 onCopyLink={onCopyLink}
+                onCopyOriginal={onCopyOriginal}
                 onSelectLanguage={onSelectDetailLanguage}
               />
             </div>
@@ -226,9 +232,11 @@ export function AgentAggregatorShell({
           locale={locale}
           messages={messages}
           mode="mobile"
-          copyState={copyState}
+          copyLinkState={copyLinkState}
+          copyOriginalState={copyOriginalState}
           onClose={onCloseDetail}
           onCopyLink={onCopyLink}
+          onCopyOriginal={onCopyOriginal}
           onSelectLanguage={onSelectDetailLanguage}
         />
       ) : null}

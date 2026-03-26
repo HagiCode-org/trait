@@ -9,6 +9,7 @@ import {
   type UiLocale,
 } from "@/data/trait-catalog"
 import { useLocale } from "@/i18n/use-locale"
+import { buildAgentVariantMarkdown } from "@/lib/agent-markdown"
 import {
   buildAgentLanguagePath,
   buildFilterOptions,
@@ -42,7 +43,8 @@ type CatalogPageShellProps = {
 export function CatalogPageShell({ snapshot, initialLocale = "en" }: CatalogPageShellProps) {
   const { locale, messages, setLocale } = useLocale(initialLocale)
   const [routeState, setRouteState] = useState<RouteState>(() => readInitialRouteState())
-  const [copyState, setCopyState] = useState<"idle" | "done" | "failed">("idle")
+  const [copyLinkState, setCopyLinkState] = useState<"idle" | "done" | "failed">("idle")
+  const [copyOriginalState, setCopyOriginalState] = useState<"idle" | "done" | "failed">("idle")
 
   useAnalyticsBootstrap()
 
@@ -88,13 +90,22 @@ export function CatalogPageShell({ snapshot, initialLocale = "en" }: CatalogPage
   }, [])
 
   useEffect(() => {
-    if (copyState === "idle") {
+    if (copyLinkState === "idle") {
       return undefined
     }
 
-    const timer = window.setTimeout(() => setCopyState("idle"), COPY_RESET_MS)
+    const timer = window.setTimeout(() => setCopyLinkState("idle"), COPY_RESET_MS)
     return () => window.clearTimeout(timer)
-  }, [copyState])
+  }, [copyLinkState])
+
+  useEffect(() => {
+    if (copyOriginalState === "idle") {
+      return undefined
+    }
+
+    const timer = window.setTimeout(() => setCopyOriginalState("idle"), COPY_RESET_MS)
+    return () => window.clearTimeout(timer)
+  }, [copyOriginalState])
 
   function updateFilters(partial: Partial<RouteState["filters"]>) {
     applyRouteState(
@@ -177,9 +188,22 @@ export function CatalogPageShell({ snapshot, initialLocale = "en" }: CatalogPage
     try {
       const href = new URL(buildAgentLanguagePath(detail.item, detail.activeLanguage), window.location.origin).toString()
       await navigator.clipboard.writeText(href)
-      setCopyState("done")
+      setCopyLinkState("done")
     } catch {
-      setCopyState("failed")
+      setCopyLinkState("failed")
+    }
+  }
+
+  async function copyCurrentOriginal() {
+    if (typeof window === "undefined" || !detail) {
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(buildAgentVariantMarkdown(detail.activeVariant))
+      setCopyOriginalState("done")
+    } catch {
+      setCopyOriginalState("failed")
     }
   }
 
@@ -194,7 +218,8 @@ export function CatalogPageShell({ snapshot, initialLocale = "en" }: CatalogPage
       results={results}
       detail={detail}
       detailNotFound={detailNotFound}
-      copyState={copyState}
+      copyLinkState={copyLinkState}
+      copyOriginalState={copyOriginalState}
       onLocaleChange={setLocale}
       onQueryChange={(query) => updateFilters({ query })}
       onSourceChange={(sourceId) => updateFilters({ sourceId })}
@@ -205,6 +230,7 @@ export function CatalogPageShell({ snapshot, initialLocale = "en" }: CatalogPage
       onCloseDetail={closeDetail}
       onSelectDetailLanguage={selectDetailLanguage}
       onCopyLink={copyCurrentLink}
+      onCopyOriginal={copyCurrentOriginal}
     />
   )
 }
