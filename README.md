@@ -1,26 +1,19 @@
 # Trait
 
-Trait is the frontend workspace for `trait.hagicode.com`, positioned as a searchable agent aggregation workbench rather than the previous trait blueprint builder.
+Trait is the Astro-powered frontend workspace for `trait.hagicode.com`, focused on a searchable agent catalog with crawlable canonical detail pages and client-side browsing enhancements.
 
-## Homepage layout principles
+## What changed
 
-- Search, filter chips, result count, and the catalog grid own the first viewport.
-- Source traceability is shown inside each agent detail instead of a homepage summary surface.
-- Detail opens as a contextual surface so users can inspect an agent without losing the current browsing state.
-- UI locale and content language remain separate, so a Chinese interface can still open English or Turkish agent content.
-
-## What it does now
-
-- Aggregates tracked agent definitions from vendored git submodules into a static local catalog snapshot.
-- Lets users search and filter by keyword, source, content language, and agent type.
-- Keeps source traceability visible through repository metadata and deep-linkable detail views.
-- Preserves shareable links for the current agent detail state while keeping the catalog browse context recoverable.
+- The production entry now uses Astro static routes instead of a single Vite SPA shell.
+- Home, catalog, and canonical detail pages render their primary content directly into HTML.
+- Search, filters, UI locale switching, and contextual quick-view overlays still run as React islands.
+- SEO metadata, JSON-LD, `robots.txt`, and `sitemap.xml` are generated from the catalog snapshot during build.
 
 ## Catalog sync workflow
 
 The catalog snapshot lives at `src/data/generated/agent-catalog.json`.
 
-Tracked sources are declared in `scripts/agent-sources.mjs`. The canonical source for `everything-claude-code` now lives in the local submodule at `vendor/everything-claude-code`.
+Tracked sources are declared in `scripts/agent-sources.mjs`. The canonical source for `everything-claude-code` lives in the local submodule at `vendor/everything-claude-code`.
 
 Refresh the submodule source first:
 
@@ -36,21 +29,11 @@ npm run sync:agents
 
 The sync script:
 
-- Scans the canonical `agents/*.md` files from each configured source instead of relying on a fixed agent whitelist.
-- Uses the configured language directories in `scripts/agent-sources.mjs` to pair multilingual variants by canonical file name.
-- Parses frontmatter and body content.
-- Merges multilingual variants into one canonical agent record.
-- Derives tracked coverage, synced counts, language coverage, and filterable agent types from the discovered catalog snapshot.
-- Writes `lastSyncedAt`, source metadata, and language availability into the generated snapshot.
-
-## Internationalization boundary
-
-Trait models two separate language concerns:
-
-- `src/i18n/` controls UI locale strings for the interface itself.
-- Catalog metadata controls content language filtering for agent variants such as `en`, `zh-CN`, and `tr`.
-
-These two layers are intentionally separate.
+- scans canonical `agents/*.md` files from each configured source;
+- pairs multilingual variants by canonical file name;
+- parses frontmatter and body content;
+- merges multilingual variants into one canonical agent record;
+- writes source metadata, language coverage, and sync timestamps into the generated snapshot.
 
 ## Development
 
@@ -60,12 +43,28 @@ npm run sync:agents:update-source
 npm run dev
 ```
 
-`npm run build` performs the local pipeline in one pass: read submodule content, regenerate `agent-catalog.json`, then bundle the frontend.
+`npm run dev` regenerates the catalog snapshot first, then starts the Astro dev server.
 
-## Quality checks
+## Build and verification
 
 ```bash
-npm run lint
 npm run test
 npm run build
+npm run seo:check
 ```
+
+`npm run build` runs the full local quality gate in one pass:
+
+1. regenerate `agent-catalog.json`;
+2. run `astro check`;
+3. build the static Astro site;
+4. verify the built HTML, metadata, JSON-LD, robots, and sitemap output.
+
+## Route model
+
+- `/` - marketing-style landing page with SSR catalog preview
+- `/agents/` - canonical catalog route with React-enhanced filtering and quick-view overlay
+- `/agents/[agentId]/` - canonical default-language detail page
+- `/agents/[agentId]/[language]/` - canonical language-specific detail page for non-default variants
+
+Legacy root-level query links such as `/?agent=architect&variant=zh-CN` are redirected to `/agents/` and restored there.
