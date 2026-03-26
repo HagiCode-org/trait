@@ -50,6 +50,7 @@ export type LocaleMessages = {
   tags: string
   openSource: string
   copyLink: string
+  copyOriginal: string
   copied: string
   copyFailed: string
   closeDetail: string
@@ -139,6 +140,7 @@ export const enMessages: LocaleMessages = {
   tags: "Tags",
   openSource: "Open source",
   copyLink: "Copy link",
+  copyOriginal: "Copy original",
   copied: "Copied",
   copyFailed: "Copy failed",
   closeDetail: "Close detail",

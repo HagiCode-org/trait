@@ -52,6 +52,7 @@ export const zhCnMessages: LocaleMessages = {
   tags: "标签",
   openSource: "打开来源",
   copyLink: "复制链接",
+  copyOriginal: "复制原文",
   copied: "已复制",
   copyFailed: "复制失败",
   closeDetail: "关闭详情",

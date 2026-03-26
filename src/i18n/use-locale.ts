@@ -10,9 +10,20 @@ const localeMessages: Record<UiLocale, LocaleMessages> = {
   "zh-CN": zhCnMessages,
 }
 
-function readInitialLocale(preferredLocale?: UiLocale): UiLocale {
+export type UseLocaleOptions = {
+  initializationMode?: "stored-preferred" | "explicit-preferred"
+}
+
+function readInitialLocale(
+  preferredLocale?: UiLocale,
+  initializationMode: UseLocaleOptions["initializationMode"] = "stored-preferred"
+): UiLocale {
   if (typeof window === "undefined") {
     return preferredLocale ?? "en"
+  }
+
+  if (initializationMode === "explicit-preferred" && preferredLocale) {
+    return preferredLocale
   }
 
   const stored = window.localStorage.getItem(STORAGE_KEY)
@@ -27,8 +38,10 @@ function readInitialLocale(preferredLocale?: UiLocale): UiLocale {
   return window.navigator.language.startsWith("zh") ? "zh-CN" : "en"
 }
 
-export function useLocale(preferredLocale?: UiLocale) {
-  const [locale, setLocaleState] = useState<UiLocale>(() => readInitialLocale(preferredLocale))
+export function useLocale(preferredLocale?: UiLocale, options?: UseLocaleOptions) {
+  const [locale, setLocaleState] = useState<UiLocale>(() =>
+    readInitialLocale(preferredLocale, options?.initializationMode)
+  )
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, locale)
