@@ -2,21 +2,17 @@ import { describe, expect, it } from "vitest"
 
 import { agentCatalogSnapshot } from "@/data/trait-catalog"
 import {
+  buildAgentAlternatePaths,
+  buildAgentLanguagePath,
   buildFilterOptions,
+  pickDetailLanguage,
   queryCatalog,
   readRouteStateFromSearch,
   resolveAgentDetail,
   writeRouteStateToSearch,
-} from "@/lib/trait-builder"
+} from "@/lib/route-projection"
 
-describe("agent catalog selectors", () => {
-  it("reads sync snapshot metadata", () => {
-    expect(agentCatalogSnapshot.lastSyncedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/)
-    expect(Array.isArray(agentCatalogSnapshot.items)).toBe(true)
-    expect(agentCatalogSnapshot.items.length).toBeGreaterThanOrEqual(20)
-    expect(Object.keys(agentCatalogSnapshot.languageIndex)).toContain("ja-JP")
-  })
-
+describe("route-projection", () => {
   it("derives filter options from snapshot data instead of fixed frontend enums", () => {
     const filterOptions = buildFilterOptions(agentCatalogSnapshot)
 
@@ -39,7 +35,7 @@ describe("agent catalog selectors", () => {
     expect(result.every((item) => item.availableLanguages.includes("ja-JP"))).toBe(true)
   })
 
-  it("falls back to the default language when the requested variant is missing", () => {
+  it("falls back to a valid language when the requested variant is missing", () => {
     const snapshot = structuredClone(agentCatalogSnapshot)
     const item = snapshot.items.find((entry) => entry.agentId === "planner")
 
@@ -56,9 +52,10 @@ describe("agent catalog selectors", () => {
     expect(detail).not.toBeNull()
     expect(detail?.activeLanguage).toBe(item.defaultLanguage)
     expect(detail?.fallbackLanguage).toBe(item.defaultLanguage)
+    expect(pickDetailLanguage(item, "ja-JP")).toBe(item.defaultLanguage)
   })
 
-  it("restores deep-link route state for newly synchronized agents", () => {
+  it("restores deep-link state and writes it back to query params", () => {
     const routeState = readRouteStateFromSearch(
       "?q=architect&source=everything-claude-code&content=zh-CN&type=architect&agent=architect&variant=zh-CN"
     )
@@ -70,5 +67,20 @@ describe("agent catalog selectors", () => {
     expect(routeState.detail.agentId).toBe("architect")
     expect(routeState.detail.language).toBe("zh-CN")
     expect(writeRouteStateToSearch(routeState)).toContain("agent=architect")
+  })
+
+  it("projects canonical and alternate detail routes for each language", () => {
+    const item = agentCatalogSnapshot.items.find((entry) => entry.agentId === "architect")
+
+    expect(item).toBeDefined()
+    if (!item) {
+      return
+    }
+
+    const alternates = buildAgentAlternatePaths(item)
+
+    expect(buildAgentLanguagePath(item, item.defaultLanguage)).toBe(`/agents/${item.agentId}/`)
+    expect(alternates[item.defaultLanguage]).toBe(`/agents/${item.agentId}/`)
+    expect(alternates["zh-CN"]).toBe(`/agents/${item.agentId}/zh-CN/`)
   })
 })

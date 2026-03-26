@@ -72,7 +72,6 @@ export async function bootstrapAnalytics(options: BootstrapAnalyticsOptions = {}
 
     const script = documentLike.createElement("script")
     script.id = FIFTY_ONE_LA_SCRIPT_ID
-    script.charset = "UTF-8"
     script.src = FIFTY_ONE_LA_SDK_SRC
     script.async = true
 

@@ -1,11 +1,12 @@
 import {
   agentCatalogSnapshot,
+  agentTypes,
+  contentLanguages,
   defaultFilterState,
   emptyDetailRouteState,
   isAgentType,
   isContentLanguage,
   sourceCatalog,
-  traitCatalog,
   type AgentCatalogItem,
   type AgentCatalogSnapshot,
   type AgentType,
@@ -33,10 +34,15 @@ export type AgentDetailView = {
   activeLanguage: ContentLanguage
   requestedLanguage: ContentLanguage | null
   fallbackLanguage: ContentLanguage | null
-  activeVariant: AgentVariantRecordValue
+  activeVariant: AgentCatalogItem["variants"][string]
 }
 
-type AgentVariantRecordValue = AgentCatalogItem["variants"][string]
+export type CatalogSummary = {
+  totalAgents: number
+  totalSources: number
+  totalLanguages: number
+  totalTypes: number
+}
 
 const SEARCH_QUERY_KEY = "q"
 const SEARCH_SOURCE_KEY = "source"
@@ -49,8 +55,6 @@ export function buildFilterOptions(snapshot: AgentCatalogSnapshot = agentCatalog
   const sourceCounts = countBy(snapshot.items, (item) => item.sourceId)
   const languageCounts = countByMany(snapshot.items, (item) => item.availableLanguages)
   const typeCounts = countBy(snapshot.items, (item) => item.type)
-  const languages = Object.keys(snapshot.languageIndex).sort((left, right) => left.localeCompare(right))
-  const types = Array.from(new Set(snapshot.items.map((item) => item.type))).sort((left, right) => left.localeCompare(right))
 
   return {
     sources: [
@@ -62,14 +66,14 @@ export function buildFilterOptions(snapshot: AgentCatalogSnapshot = agentCatalog
     ],
     languages: [
       { value: "all", count: snapshot.items.length },
-      ...languages.map((language) => ({
+      ...contentLanguages.map((language) => ({
         value: language,
         count: languageCounts.get(language) ?? 0,
       })),
     ],
     types: [
       { value: "all", count: snapshot.items.length },
-      ...types.map((agentType) => ({
+      ...agentTypes.map((agentType) => ({
         value: agentType,
         count: typeCounts.get(agentType) ?? 0,
       })),
@@ -77,7 +81,7 @@ export function buildFilterOptions(snapshot: AgentCatalogSnapshot = agentCatalog
   }
 }
 
-export function queryCatalog(filters: FilterState, items: AgentCatalogItem[] = traitCatalog): AgentCatalogItem[] {
+export function queryCatalog(filters: FilterState, items: AgentCatalogItem[] = agentCatalogSnapshot.items): AgentCatalogItem[] {
   const normalizedQuery = filters.query.trim().toLowerCase()
 
   return items
@@ -147,15 +151,14 @@ export function pickDetailLanguage(item: AgentCatalogItem, requestedLanguage: Co
 
 export function readRouteStateFromSearch(search: string): RouteState {
   const params = new URLSearchParams(search)
-  const nextFilters: FilterState = {
-    query: params.get(SEARCH_QUERY_KEY)?.trim() ?? defaultFilterState.query,
-    sourceId: sanitizeSource(params.get(SEARCH_SOURCE_KEY)),
-    contentLanguage: sanitizeLanguage(params.get(SEARCH_LANGUAGE_KEY)),
-    agentType: sanitizeType(params.get(SEARCH_TYPE_KEY)),
-  }
 
   return {
-    filters: nextFilters,
+    filters: {
+      query: params.get(SEARCH_QUERY_KEY)?.trim() ?? defaultFilterState.query,
+      sourceId: sanitizeSource(params.get(SEARCH_SOURCE_KEY)),
+      contentLanguage: sanitizeLanguage(params.get(SEARCH_LANGUAGE_KEY)),
+      agentType: sanitizeType(params.get(SEARCH_TYPE_KEY)),
+    },
     detail: {
       agentId: params.get(SEARCH_AGENT_KEY)?.trim() || emptyDetailRouteState.agentId,
       language: sanitizeDetailLanguage(params.get(SEARCH_VARIANT_KEY)),
@@ -197,6 +200,40 @@ export function buildDetailLink(state: RouteState, agentId: string, language: Co
       language,
     },
   })
+}
+
+export function buildCatalogSummary(snapshot: AgentCatalogSnapshot = agentCatalogSnapshot): CatalogSummary {
+  return {
+    totalAgents: snapshot.items.length,
+    totalSources: snapshot.sources.length,
+    totalLanguages: Object.keys(snapshot.languageIndex).length,
+    totalTypes: agentTypes.length,
+  }
+}
+
+export function buildAgentPath(agentId: string): string {
+  return `/agents/${agentId}/`
+}
+
+export function buildAgentLanguagePath(item: Pick<AgentCatalogItem, "agentId" | "defaultLanguage">, language: ContentLanguage): string {
+  if (language === item.defaultLanguage) {
+    return buildAgentPath(item.agentId)
+  }
+
+  return `/agents/${item.agentId}/${language}/`
+}
+
+export function buildAgentAlternatePaths(item: AgentCatalogItem): Record<ContentLanguage, string> {
+  return Object.fromEntries(item.availableLanguages.map((language) => [language, buildAgentLanguagePath(item, language)]))
+}
+
+export function buildCatalogPagePath(state: RouteState): string {
+  const search = writeRouteStateToSearch(state)
+  return `/agents/${search}`
+}
+
+export function buildLegacyCatalogRedirect(search: string): string {
+  return `/agents/${search || ""}`
 }
 
 export function getSourceMetrics(snapshot: AgentCatalogSnapshot = agentCatalogSnapshot) {
@@ -315,7 +352,7 @@ function scoreItem(item: AgentCatalogItem, normalizedQuery: string) {
 }
 
 function countBy<T>(items: T[], selector: (item: T) => string) {
-  const counts = new Map()
+  const counts = new Map<string, number>()
 
   for (const item of items) {
     const key = selector(item)
@@ -326,7 +363,7 @@ function countBy<T>(items: T[], selector: (item: T) => string) {
 }
 
 function countByMany<T>(items: T[], selector: (item: T) => string[]) {
-  const counts = new Map()
+  const counts = new Map<string, number>()
 
   for (const item of items) {
     for (const key of selector(item)) {
