@@ -88,6 +88,29 @@ describe("CatalogPageShell", () => {
     expect(getPanel("desktop").textContent).toContain("Close detail")
     expect(container.querySelector('[data-testid="desktop-detail-layer"]')).not.toBeNull()
   })
+
+  it("hides singleton type filters and caps the type filter height", async () => {
+    await renderShell()
+
+    const typeCounts = new Map<string, number>()
+    for (const item of agentCatalogSnapshot.items) {
+      typeCounts.set(item.type, (typeCounts.get(item.type) ?? 0) + 1)
+    }
+
+    const singletonType = [...typeCounts.entries()].find(([, count]) => count < 2)?.[0]
+    const visibleType = [...typeCounts.entries()].find(([, count]) => count >= 2)?.[0]
+
+    expect(singletonType).toBeDefined()
+    expect(visibleType).toBeDefined()
+
+    const typeGroup = getRequiredElement('[data-testid="filter-group-type"]')
+    const typeOptions = getRequiredElement('[data-testid="filter-options-type"]')
+
+    expect(typeOptions.className).toContain("max-h-44")
+    expect(typeOptions.className).toContain("overflow-y-auto")
+    expect(typeGroup.querySelector(`[data-filter-option="${singletonType}"]`)).toBeNull()
+    expect(typeGroup.querySelector(`[data-filter-option="${visibleType}"]`)).not.toBeNull()
+  })
 })
 
 async function renderShell() {

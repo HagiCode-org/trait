@@ -114,6 +114,7 @@ export function AgentAggregatorShell({
 
             <div className="mt-4 grid gap-3 lg:grid-cols-3" data-testid="filter-toolbar">
               <FilterGroup
+                groupKey="source"
                 label={messages.sourceFilter}
                 options={filterOptions.sources}
                 currentValue={filterState.sourceId}
@@ -121,6 +122,7 @@ export function AgentAggregatorShell({
                 onSelect={(value) => onSourceChange(value as FilterState["sourceId"])}
               />
               <FilterGroup
+                groupKey="language"
                 label={messages.contentLanguageFilter}
                 options={filterOptions.languages}
                 currentValue={filterState.contentLanguage}
@@ -128,11 +130,14 @@ export function AgentAggregatorShell({
                 onSelect={(value) => onLanguageFilterChange(value as FilterState["contentLanguage"])}
               />
               <FilterGroup
+                groupKey="type"
                 label={messages.typeFilter}
                 options={filterOptions.types}
                 currentValue={filterState.agentType}
                 allLabel={messages.allTypes}
                 onSelect={(value) => onTypeChange(value as FilterState["agentType"])}
+                minCount={2}
+                bodyClassName="max-h-44 overflow-y-auto pr-1 xl:max-h-52"
                 transformLabel={(value) =>
                   value === "reviewer"
                     ? messages.typeReviewer
@@ -232,31 +237,50 @@ export function AgentAggregatorShell({
 }
 
 function FilterGroup<T extends string>({
+  groupKey,
   label,
   options,
   currentValue,
   allLabel,
   onSelect,
+  minCount = 0,
+  bodyClassName,
   transformLabel,
 }: {
+  groupKey: string
   label: string
   options: Array<{ value: T | "all"; count: number }>
   currentValue: T | "all"
   allLabel: string
   onSelect: (value: T | "all") => void
+  minCount?: number
+  bodyClassName?: string
   transformLabel?: (value: T) => string
 }) {
+  const visibleOptions = options.filter((option) => {
+    if (option.value === "all") {
+      return true
+    }
+
+    if (option.value === currentValue) {
+      return true
+    }
+
+    return option.count >= minCount
+  })
+
   return (
-    <div className="rounded-[1.2rem] border border-[color:var(--line-soft)] bg-white/66 p-3">
+    <div data-testid={`filter-group-${groupKey}`} className="rounded-[1.2rem] border border-[color:var(--line-soft)] bg-white/66 p-3">
       <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-[color:var(--muted-ink)]">{label}</p>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {options.map((option) => {
+      <div data-testid={`filter-options-${groupKey}`} className={["mt-3 flex flex-wrap gap-2", bodyClassName ?? ""].join(" ").trim()}>
+        {visibleOptions.map((option) => {
           const isAll = option.value === "all"
           const labelText = isAll ? allLabel : transformLabel ? transformLabel(option.value as T) : String(option.value)
 
           return (
             <button
               key={`${label}-${option.value}`}
+              data-filter-option={String(option.value)}
               type="button"
               onClick={() => onSelect(option.value)}
               className={["filter-pill", currentValue === option.value ? "is-active" : ""].join(" ")}
