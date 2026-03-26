@@ -1,4 +1,4 @@
-import snapshotData from "@/data/generated/agent-catalog.json"
+import { loadCatalogSnapshot } from "@/lib/catalog-loader"
 
 export const uiLocales = ["en", "zh-CN"] as const
 
@@ -99,7 +99,7 @@ export const emptyDetailRouteState: DetailRouteState = {
   language: null,
 }
 
-export const agentCatalogSnapshot = snapshotData as AgentCatalogSnapshot
+export const agentCatalogSnapshot = loadCatalogSnapshot()
 export const traitCatalog = agentCatalogSnapshot.items
 export const sourceCatalog = agentCatalogSnapshot.sources
 export const contentLanguages = Object.keys(agentCatalogSnapshot.languageIndex).sort((left, right) => left.localeCompare(right))

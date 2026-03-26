@@ -1,21 +1,19 @@
 export type LocaleMessages = {
-  brandEyebrow: string
-  heroTitle: string
-  heroSummary: string
-  heroMetricAgents: string
-  heroMetricLanguages: string
-  localeLabel: string
   localeEnglish: string
   localeChinese: string
-  syncFresh: string
-  syncWatch: string
-  syncStale: string
-  sourcePanelTitle: string
-  sourceCoverage: string
-  sourceLastSync: string
-  sourceTracked: string
-  sourceBrowse: string
-  sourceLanguages: string
+  homeEyebrow: string
+  homeTitle: string
+  homeSummary: string
+  homePrimaryCta: string
+  homeSecondaryCta: string
+  homeGalleryEyebrow: string
+  homeFeaturedTitle: string
+  homeFeaturedSummary: string
+  homeSourcesTitle: string
+  homeMetricAgents: string
+  homeMetricLanguages: string
+  homeMetricSources: string
+  homeMetricTypes: string
   filtersTitle: string
   searchLabel: string
   searchPlaceholder: string
@@ -29,8 +27,12 @@ export type LocaleMessages = {
   resultCount_one: string
   resultCount_other: string
   catalogTitle: string
+  catalogSummary: string
+  catalogIntro: string
   openDetail: string
+  quickView: string
   activeCard: string
+  viewCanonicalPage: string
   emptyTitle: string
   emptySummary: string
   clearFilters: string
@@ -53,6 +55,8 @@ export type LocaleMessages = {
   closeDetail: string
   mobileDetail: string
   languageSwitch: string
+  backToCatalog: string
+  shareableLink: string
   headerBrandBadge: string
   headerDescription: string
   headerNavAria: string
@@ -79,30 +83,28 @@ export type LocaleMessages = {
   siteLinksPublicSecurityAria: string
   typeReviewer: string
   typeBuildResolver: string
+  sourceLastSync: string
 }
 
 export const enMessages: LocaleMessages = {
-  brandEyebrow: "HagiCode / Trait Aggregator",
-  heroTitle: "Search audited agents before you open a full detail surface.",
-  heroSummary:
-    "Keep the first viewport focused on query, facets, result count, and catalog scan speed, then inspect source context inside each agent detail.",
-  heroMetricAgents: "Agents indexed",
-  heroMetricLanguages: "Languages tracked",
-  localeLabel: "UI locale",
   localeEnglish: "EN",
   localeChinese: "中文",
-  syncFresh: "Fresh sync",
-  syncWatch: "Watch freshness",
-  syncStale: "Stale snapshot",
-  sourcePanelTitle: "Source summary",
-  sourceCoverage: "Coverage",
-  sourceLastSync: "Last synced",
-  sourceTracked: "Tracked entries",
-  sourceBrowse: "Open source repo",
-  sourceLanguages: "Languages",
-  filtersTitle: "Search and facet filters",
-  searchLabel: "Search agents",
-  searchPlaceholder: "Type reviewer, build, kotlin, security, gradle...",
+  homeEyebrow: "HagiCode",
+  homeTitle: "HagiTrait",
+  homeSummary: "Searchable agent catalog · Multilingual detail pages · Shareable canonical links.",
+  homePrimaryCta: "Enter Gallery",
+  homeSecondaryCta: "Learn HagiCode",
+  homeGalleryEyebrow: "Gallery",
+  homeFeaturedTitle: "Essential traits of high-performance agents",
+  homeFeaturedSummary: "Browse reliable agent descriptions collected from the internet and validated extensively.",
+  homeSourcesTitle: "Tracked sources",
+  homeMetricAgents: "Canonical agents",
+  homeMetricLanguages: "Languages",
+  homeMetricSources: "Sources",
+  homeMetricTypes: "Agent types",
+  filtersTitle: "Find faster",
+  searchLabel: "Search target agents",
+  searchPlaceholder: "Search reviewer, build, kotlin, security, gradle, and other high-signal capabilities...",
   resetFilters: "Reset filters",
   sourceFilter: "Source",
   contentLanguageFilter: "Content language",
@@ -112,16 +114,20 @@ export const enMessages: LocaleMessages = {
   allTypes: "All types",
   resultCount_one: "1 result",
   resultCount_other: "{{count}} results",
-  catalogTitle: "Agent catalog",
+  catalogTitle: "Reliable Agent Gallery",
+  catalogSummary: "Browse validated agent descriptions in one place and lock onto the traits that fit the current task.",
+  catalogIntro: "Filter reliable agents by source, language, and type, then jump straight into shareable specs.",
   openDetail: "Open detail",
+  quickView: "Quick view",
   activeCard: "Selected",
+  viewCanonicalPage: "Open page",
   emptyTitle: "No agents match the current filters.",
-  emptySummary: "Change the query or clear one facet and the catalog returns immediately.",
+  emptySummary: "Try another query or relax one filter to keep finding reusable agents.",
   clearFilters: "Clear filters",
   detailTitle: "Agent detail",
-  detailSummary: "Detail opens on demand so the catalog stays available for comparison.",
+  detailSummary: "Read and share canonical specs directly so reliable agent capabilities stay easy to reuse.",
   detailNotFoundTitle: "This deep link no longer resolves to a tracked agent.",
-  detailNotFoundSummary: "Return to the catalog or open a different entry from the current results.",
+  detailNotFoundSummary: "Return to the directory and keep searching tracked reliable agents.",
   fallbackNotice: "Requested variant unavailable. Showing {{language}} instead.",
   canonicalId: "Canonical ID",
   sourceRepo: "Source repo",
@@ -137,9 +143,11 @@ export const enMessages: LocaleMessages = {
   closeDetail: "Close detail",
   mobileDetail: "Mobile detail view",
   languageSwitch: "Variant language",
+  backToCatalog: "Back to catalog",
+  shareableLink: "Shareable route",
   typeReviewer: "Reviewer",
   typeBuildResolver: "Build resolver",
-  headerBrandBadge: "TRAIT AGGREGATOR",
+  headerBrandBadge: "ASTRO CATALOG",
   headerDescription: "Search and browse audited agent catalogs for the HagiCode platform.",
   headerNavAria: "Main navigation",
   siteLinksDocs: "Docs",
@@ -157,11 +165,12 @@ export const enMessages: LocaleMessages = {
   siteLinksEmail: "Email",
   siteLinksEmailAria: "Send email to HagiCode support",
   footerDescription:
-    "HagiTrait is a searchable workspace for browsing audited agent catalogs, source summaries, and contextual detail views within the HagiCode ecosystem.",
-  footerCopyright: "\u00A9 {{year}} HagiCode. All rights reserved.",
+    "HagiTrait is a searchable workspace for browsing audited agent catalogs, source summaries, and crawlable canonical detail pages within the HagiCode ecosystem.",
+  footerCopyright: "© {{year}} HagiCode. All rights reserved.",
   footerBrandSectionAria: "Brand information",
   footerSectionRelated: "Related",
   footerSectionCommunity: "Community",
   siteLinksIcpAria: "ICP filing information",
   siteLinksPublicSecurityAria: "Public security filing information",
+  sourceLastSync: "Last synced",
 }
