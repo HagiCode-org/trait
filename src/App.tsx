@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import {
   agentCatalogSnapshot,
@@ -51,6 +51,24 @@ export default function App() {
   )
   const detailNotFound = Boolean(routeState.detail.agentId) && !detail
 
+  const applyRouteState = useCallback((nextState: RouteState, historyMode: "push" | "replace") => {
+    setRouteState(nextState)
+
+    if (typeof window === "undefined") {
+      return
+    }
+
+    const nextSearch = writeRouteStateToSearch(nextState)
+    const nextUrl = buildUrl(nextSearch)
+
+    if (historyMode === "push") {
+      window.history.pushState(null, "", nextUrl)
+      return
+    }
+
+    window.history.replaceState(null, "", nextUrl)
+  }, [])
+
   useEffect(() => {
     function handlePopState() {
       setRouteState(readRouteStateFromSearch(window.location.search))
@@ -68,24 +86,6 @@ export default function App() {
     const timer = window.setTimeout(() => setCopyState("idle"), COPY_RESET_MS)
     return () => window.clearTimeout(timer)
   }, [copyState])
-
-  function applyRouteState(nextState: RouteState, historyMode: "push" | "replace") {
-    setRouteState(nextState)
-
-    if (typeof window === "undefined") {
-      return
-    }
-
-    const nextSearch = writeRouteStateToSearch(nextState)
-    const nextUrl = buildUrl(nextSearch)
-
-    if (historyMode === "push") {
-      window.history.pushState(null, "", nextUrl)
-      return
-    }
-
-    window.history.replaceState(null, "", nextUrl)
-  }
 
   function updateFilters(partial: Partial<RouteState["filters"]>) {
     applyRouteState(
@@ -120,6 +120,10 @@ export default function App() {
       ? pickDetailLanguage(item, routeState.filters.contentLanguage)
       : pickDetailLanguage(item, language)
 
+    if (routeState.detail.agentId === agentId && routeState.detail.language === preferredLanguage) {
+      return
+    }
+
     applyRouteState(
       {
         filters: routeState.filters,
@@ -133,6 +137,10 @@ export default function App() {
   }
 
   function closeDetail() {
+    if (!routeState.detail.agentId && !detailNotFound) {
+      return
+    }
+
     applyRouteState(
       {
         filters: routeState.filters,
@@ -143,7 +151,7 @@ export default function App() {
   }
 
   function selectDetailLanguage(language: ContentLanguage) {
-    if (!routeState.detail.agentId) {
+    if (!routeState.detail.agentId || routeState.detail.language === language) {
       return
     }
 
