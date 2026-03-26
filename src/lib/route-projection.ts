@@ -295,6 +295,7 @@ function sanitizeDetailLanguage(value: string | null): DetailRouteState["languag
 function buildSearchIndex(item: AgentCatalogItem) {
   return [
     item.agentId,
+    item.sourceAgentId,
     item.name,
     item.summary,
     item.type,

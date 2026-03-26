@@ -15,8 +15,9 @@ import {
 describe("route-projection", () => {
   it("derives filter options from snapshot data instead of fixed frontend enums", () => {
     const filterOptions = buildFilterOptions(agentCatalogSnapshot)
+    const everythingCount = agentCatalogSnapshot.items.filter((item) => item.sourceId === "everything-claude-code").length
 
-    expect(filterOptions.sources.find((option) => option.value === "everything-claude-code")?.count).toBe(agentCatalogSnapshot.items.length)
+    expect(filterOptions.sources.find((option) => option.value === "everything-claude-code")?.count).toBe(everythingCount)
     expect(filterOptions.languages.find((option) => option.value === "ja-JP")?.count).toBeGreaterThan(0)
     expect(filterOptions.types.find((option) => option.value === "planner")?.count).toBeGreaterThan(0)
   })
