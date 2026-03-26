@@ -4,9 +4,9 @@ import { act, type ComponentProps } from "react"
 import { createRoot } from "react-dom/client"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { agentCatalogSnapshot, defaultFilterState, emptyDetailRouteState, type RouteState } from "@/data/trait-catalog"
+import { agentCatalogSnapshot, defaultFilterState, emptyDetailRouteState, type AgentCatalogSnapshot, type RouteState } from "@/data/trait-catalog"
 import { zhCnMessages } from "@/i18n/locales/zh-CN"
-import { buildFilterOptions, resolveAgentDetail } from "@/lib/trait-builder"
+import { buildFilterOptions } from "@/lib/trait-builder"
 
 import { AgentAggregatorShell } from "./AgentAggregatorShell"
 
@@ -25,6 +25,17 @@ describe("AgentAggregatorShell", () => {
     container.remove()
   })
 
+  it("keeps the first viewport focused on the workbench and catalog grid", () => {
+    renderShell()
+
+    const workbench = getByTestId("catalog-workbench")
+    const catalogGrid = getByTestId("catalog-grid")
+
+    expect(workbench.compareDocumentPosition(catalogGrid) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(container.querySelector('[data-testid="source-summary-strip"]')).toBeNull()
+    expect(container.querySelector('[data-testid="desktop-detail-layer"]')).toBeNull()
+  })
+
   it("renders an actionable empty state and resets filters", () => {
     const onResetFilters = vi.fn()
 
@@ -34,7 +45,7 @@ describe("AgentAggregatorShell", () => {
     })
 
     const resetButton = getButton(zhCnMessages.clearFilters)
-    expect(container.textContent).toContain(zhCnMessages.emptyTitle)
+    expect(getByTestId("catalog-empty-state").textContent).toContain(zhCnMessages.emptyTitle)
 
     act(() => {
       resetButton.click()
@@ -43,52 +54,37 @@ describe("AgentAggregatorShell", () => {
     expect(onResetFilters).toHaveBeenCalledTimes(1)
   })
 
-  it("keeps catalog shell stable without warning data", () => {
-    renderShell()
+  it("keeps cards dense by capping the visible tool preview", () => {
+    const baseItem = agentCatalogSnapshot.items[0]
+    const denseItem = {
+      ...baseItem,
+      agentId: "dense-agent",
+      name: "Dense Agent",
+      tools: ["git", "bash", "docker", "pnpm", "node"],
+    }
+    const snapshot: AgentCatalogSnapshot = {
+      ...agentCatalogSnapshot,
+      items: [denseItem],
+    }
 
-    expect(container.textContent).toContain(zhCnMessages.catalogTitle)
+    renderShell({
+      snapshot,
+      results: [denseItem],
+    })
+
+    const card = container.querySelector('[data-agent-card-id="dense-agent"]')
+    expect(card?.querySelectorAll("[data-tool-chip]")).toHaveLength(3)
+    expect(card?.textContent).toContain("+2")
   })
 
-  it("keeps not-found detail recovery actionable", () => {
+  it("renders contextual recovery when a deep link no longer resolves", () => {
     renderShell({
       detail: null,
       detailNotFound: true,
     })
 
-    expect(container.textContent).toContain(zhCnMessages.detailNotFoundTitle)
-    expect(container.textContent).toContain(zhCnMessages.closeDetail)
-  })
-
-  it("supports detail language switching and mobile close fallback", () => {
-    const onSelectDetailLanguage = vi.fn()
-    const onCloseDetail = vi.fn()
-
-    renderShell({
-      detail: resolveAgentDetail("typescript-reviewer", "en", agentCatalogSnapshot),
-      onSelectDetailLanguage,
-      onCloseDetail,
-    })
-
-    const trButtons = Array.from(container.querySelectorAll("button")).filter(
-      (button) => button.textContent?.trim() === "tr"
-    )
-    const closeButtons = Array.from(container.querySelectorAll("button")).filter(
-      (button) => button.textContent?.trim() === zhCnMessages.closeDetail
-    )
-
-    expect(container.textContent).toContain("typescript-reviewer")
-    expect(trButtons.length).toBeGreaterThan(0)
-    expect(closeButtons.length).toBeGreaterThan(0)
-
-    act(() => {
-      trButtons[0]?.click()
-    })
-    act(() => {
-      closeButtons.at(-1)?.click()
-    })
-
-    expect(onSelectDetailLanguage).toHaveBeenCalledWith("tr")
-    expect(onCloseDetail).toHaveBeenCalledTimes(1)
+    expect(container.querySelector('[data-testid="desktop-detail-layer"]')).not.toBeNull()
+    expect(getByTestId("desktop-detail-panel").textContent).toContain(zhCnMessages.detailNotFoundTitle)
   })
 })
 
@@ -138,4 +134,14 @@ function getButton(label: string) {
   }
 
   return button
+}
+
+function getByTestId(testId: string) {
+  const node = container.querySelector(`[data-testid="${testId}"]`)
+
+  if (!node) {
+    throw new Error(`Test id not found: ${testId}`)
+  }
+
+  return node
 }

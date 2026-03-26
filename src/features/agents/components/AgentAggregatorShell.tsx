@@ -1,6 +1,5 @@
 import {
   buildDetailLink,
-  getSourceMetrics,
   humanizeCatalogValue,
   type AgentDetailView,
   type CatalogFilterOptions,
@@ -19,7 +18,8 @@ import { formatMessage } from "@/i18n/use-locale"
 import { AgentCard } from "./AgentCard"
 import { AgentDetailPanel } from "./AgentDetailPanel"
 import { CatalogEmptyState } from "./CatalogEmptyState"
-import { SourceInsightPanel } from "./SourceInsightPanel"
+import { SiteHeader } from "@/components/site/SiteHeader"
+import { SiteFooter } from "@/components/site/SiteFooter"
 
 type AgentAggregatorShellProps = {
   snapshot: AgentCatalogSnapshot
@@ -45,7 +45,6 @@ type AgentAggregatorShellProps = {
 }
 
 export function AgentAggregatorShell({
-  snapshot,
   locale,
   messages,
   routeState,
@@ -66,159 +65,153 @@ export function AgentAggregatorShell({
   onSelectDetailLanguage,
   onCopyLink,
 }: AgentAggregatorShellProps) {
-  const sourceMetrics = getSourceMetrics(snapshot)
-  const totalLanguages = Object.keys(snapshot.languageIndex).length
   const resultLabel =
     results.length === 1
       ? messages.resultCount_one
       : formatMessage(messages.resultCount_other, { count: results.length })
+  const detailLink = routeState.detail.agentId
+    ? buildDetailLink(routeState, routeState.detail.agentId, routeState.detail.language)
+    : null
+  const hasContextualDetail = Boolean(detail) || detailNotFound
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[color:var(--surface-base)] text-[color:var(--ink-strong)]">
       <div className="background-wash pointer-events-none fixed inset-0" />
 
-      <main className="relative mx-auto flex min-h-screen w-full max-w-[1440px] flex-col gap-6 px-4 pb-10 pt-5 sm:px-6 lg:px-8 lg:pt-7">
-        <header className="hero-shell rounded-[2.2rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] lg:p-8">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div className="max-w-3xl">
-              <p className="text-[0.72rem] font-semibold uppercase tracking-[0.42em] text-[color:var(--muted-ink)]">{messages.brandEyebrow}</p>
-              <h1 className="mt-4 max-w-3xl font-display text-5xl leading-[0.96] text-[color:var(--ink-strong)] sm:text-6xl lg:text-7xl">
-                {messages.heroTitle}
-              </h1>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-[color:var(--ink-soft)] sm:text-base">{messages.heroSummary}</p>
-            </div>
+      <div className="relative mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
+        <SiteHeader locale={locale} messages={messages} onLocaleChange={onLocaleChange} />
+      </div>
 
-            <div className="locale-switch rounded-[1.6rem] border border-[color:var(--line-soft)] bg-white/55 p-4">
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.32em] text-[color:var(--muted-ink)]">{messages.localeLabel}</p>
-              <div className="mt-3 flex gap-2">
-                <button type="button" className={["filter-pill", locale === "en" ? "is-active" : ""].join(" ")} onClick={() => onLocaleChange("en")}>
-                  {messages.localeEnglish}
-                </button>
-                <button type="button" className={["filter-pill", locale === "zh-CN" ? "is-active" : ""].join(" ")} onClick={() => onLocaleChange("zh-CN")}>
-                  {messages.localeChinese}
-                </button>
-              </div>
-            </div>
-          </div>
+      <main className="relative mx-auto flex min-h-screen w-full max-w-[1480px] flex-col gap-4 px-4 pb-10 pt-4 sm:px-6 lg:px-8 lg:pb-12 lg:pt-6">
+        <header className="workbench-shell rounded-[1.8rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-5 shadow-[var(--shadow-soft)] sm:p-6 lg:p-7">
+          <div data-testid="catalog-workbench">
+            <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center">
+              <label className="search-field flex items-center gap-3 rounded-[1.35rem] border border-[color:var(--line-soft)] bg-white/72 px-4 py-3 focus-within:border-[color:var(--accent-strong)] focus-within:shadow-[var(--shadow-soft)]">
+                <span className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-[color:var(--muted-ink)]">{messages.searchLabel}</span>
+                <input
+                  aria-label={messages.searchLabel}
+                  value={filterState.query}
+                  onChange={(event) => onQueryChange(event.target.value)}
+                  placeholder={messages.searchPlaceholder}
+                  className="w-full min-w-0 bg-transparent text-sm text-[color:var(--ink-strong)] outline-none placeholder:text-[color:var(--muted-ink)]/70"
+                />
+              </label>
 
-          <div className="mt-8 grid gap-4 md:grid-cols-2">
-            <MetricPanel label={messages.heroMetricAgents} value={String(snapshot.items.length).padStart(2, "0")} />
-            <MetricPanel label={messages.heroMetricLanguages} value={String(totalLanguages).padStart(2, "0")} />
-          </div>
-        </header>
-
-        <section className="grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
-          <SourceInsightPanel sources={sourceMetrics} locale={locale} messages={messages} />
-
-          <div className="space-y-6">
-            <section className="rounded-[2rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
-              <div className="flex flex-col gap-5 border-b border-[color:var(--line-soft)] pb-5 xl:flex-row xl:items-end xl:justify-between">
-                <div>
-                  <p className="text-[0.7rem] font-semibold uppercase tracking-[0.34em] text-[color:var(--muted-ink)]">Facet</p>
-                  <h2 className="mt-2 font-display text-3xl text-[color:var(--ink-strong)]">{messages.filtersTitle}</h2>
-                </div>
-                <div className="status-pill">{resultLabel}</div>
-              </div>
-
-              <div className="mt-5 grid gap-4 xl:grid-cols-[minmax(0,1fr)_auto]">
-                <label className="search-field flex items-center gap-3 rounded-[1.5rem] border border-[color:var(--line-soft)] bg-white/55 px-4 py-3 focus-within:border-[color:var(--accent-strong)]">
-                  <span className="text-[0.7rem] font-semibold uppercase tracking-[0.32em] text-[color:var(--muted-ink)]">{messages.searchLabel}</span>
-                  <input
-                    value={filterState.query}
-                    onChange={(event) => onQueryChange(event.target.value)}
-                    placeholder={messages.searchPlaceholder}
-                    className="w-full bg-transparent text-sm text-[color:var(--ink-strong)] outline-none placeholder:text-[color:var(--muted-ink)]/70"
-                  />
-                </label>
+              <div className="flex flex-wrap items-center gap-2 xl:justify-end">
+                <span className="status-pill" data-testid="result-summary">{resultLabel}</span>
                 <button type="button" className="secondary-button" onClick={onResetFilters}>
                   {messages.resetFilters}
                 </button>
               </div>
+            </div>
 
-              <div className="mt-5 grid gap-4 lg:grid-cols-3">
-                <FilterGroup
-                  label={messages.sourceFilter}
-                  options={filterOptions.sources}
-                  currentValue={filterState.sourceId}
-                  allLabel={messages.allSources}
-                  onSelect={(value) => onSourceChange(value as FilterState["sourceId"])}
-                />
-                <FilterGroup
-                  label={messages.contentLanguageFilter}
-                  options={filterOptions.languages}
-                  currentValue={filterState.contentLanguage}
-                  allLabel={messages.allLanguages}
-                  onSelect={(value) => onLanguageFilterChange(value as FilterState["contentLanguage"])}
-                />
-                <FilterGroup
-                  label={messages.typeFilter}
-                  options={filterOptions.types}
-                  currentValue={filterState.agentType}
-                  allLabel={messages.allTypes}
-                  onSelect={(value) => onTypeChange(value as FilterState["agentType"])}
-                  transformLabel={(value) =>
-                    value === "reviewer"
-                      ? messages.typeReviewer
-                      : value === "build-resolver"
-                        ? messages.typeBuildResolver
-                        : humanizeCatalogValue(value)
-                  }
-                />
+            <div className="mt-4 grid gap-3 lg:grid-cols-3" data-testid="filter-toolbar">
+              <FilterGroup
+                label={messages.sourceFilter}
+                options={filterOptions.sources}
+                currentValue={filterState.sourceId}
+                allLabel={messages.allSources}
+                onSelect={(value) => onSourceChange(value as FilterState["sourceId"])}
+              />
+              <FilterGroup
+                label={messages.contentLanguageFilter}
+                options={filterOptions.languages}
+                currentValue={filterState.contentLanguage}
+                allLabel={messages.allLanguages}
+                onSelect={(value) => onLanguageFilterChange(value as FilterState["contentLanguage"])}
+              />
+              <FilterGroup
+                label={messages.typeFilter}
+                options={filterOptions.types}
+                currentValue={filterState.agentType}
+                allLabel={messages.allTypes}
+                onSelect={(value) => onTypeChange(value as FilterState["agentType"])}
+                transformLabel={(value) =>
+                  value === "reviewer"
+                    ? messages.typeReviewer
+                    : value === "build-resolver"
+                      ? messages.typeBuildResolver
+                      : humanizeCatalogValue(value)
+                }
+              />
+            </div>
+
+            <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-[color:var(--muted-ink)]">
+              <span className="rounded-full border border-[color:var(--line-soft)] bg-white/66 px-3 py-2 font-semibold text-[color:var(--ink-strong)]">
+                {messages.catalogTitle}
+              </span>
+              {detailLink ? (
+                <span className="truncate rounded-full border border-[color:var(--line-soft)] bg-white/50 px-3 py-2 text-[0.78rem] text-[color:var(--ink-soft)]">
+                  {detailLink}
+                </span>
+              ) : null}
+            </div>
+          </div>
+        </header>
+
+        <section className="rounded-[1.8rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-4 shadow-[var(--shadow-soft)] sm:p-5 lg:p-6">
+          <div className="flex flex-col gap-2 border-b border-[color:var(--line-soft)] pb-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.32em] text-[color:var(--muted-ink)]">Catalog</p>
+              <h2 className="mt-2 font-display text-[2.2rem] leading-none text-[color:var(--ink-strong)]">{messages.catalogTitle}</h2>
+            </div>
+            <span className="text-sm text-[color:var(--muted-ink)]">{detailLink ?? resultLabel}</span>
+          </div>
+
+          <div className="mt-4">
+            {results.length === 0 ? (
+              <CatalogEmptyState messages={messages} onReset={onResetFilters} />
+            ) : (
+              <div
+                className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [content-visibility:auto]"
+                data-testid="catalog-grid"
+              >
+                {results.map((item) => (
+                  <AgentCard
+                    key={item.agentId}
+                    item={item}
+                    isActive={item.agentId === detail?.item.agentId}
+                    messages={messages}
+                    onOpen={onOpenAgent}
+                  />
+                ))}
               </div>
-            </section>
-
-            <section className="grid gap-6 lg:grid-cols-1 xl:grid-cols-[minmax(0,1fr)_420px]">
-              <div className="rounded-[2rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
-                <div className="flex items-center justify-between gap-4 border-b border-[color:var(--line-soft)] pb-5">
-                  <div>
-                    <p className="text-[0.7rem] font-semibold uppercase tracking-[0.34em] text-[color:var(--muted-ink)]">Catalog</p>
-                    <h2 className="mt-2 font-display text-3xl text-[color:var(--ink-strong)]">{messages.catalogTitle}</h2>
-                  </div>
-                  <span className="text-sm text-[color:var(--muted-ink)]">
-                    {routeState.detail.agentId
-                      ? buildDetailLink(routeState, routeState.detail.agentId, routeState.detail.language)
-                      : resultLabel}
-                  </span>
-                </div>
-
-                <div className="mt-5">
-                  {results.length === 0 ? (
-                    <CatalogEmptyState messages={messages} onReset={onResetFilters} />
-                  ) : (
-                    <div className="grid gap-4 md:grid-cols-2">
-                      {results.map((item) => (
-                        <AgentCard
-                          key={item.agentId}
-                          item={item}
-                          isActive={item.agentId === detail?.item.agentId}
-                          messages={messages}
-                          onOpen={onOpenAgent}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="hidden lg:block">
-                <AgentDetailPanel
-                  detail={detail}
-                  detailNotFound={detailNotFound}
-                  locale={locale}
-                  messages={messages}
-                  mode="desktop"
-                  copyState={copyState}
-                  onClose={onCloseDetail}
-                  onCopyLink={onCopyLink}
-                  onSelectLanguage={onSelectDetailLanguage}
-                />
-              </div>
-            </section>
+            )}
           </div>
         </section>
       </main>
 
-      {detail || detailNotFound ? (
+      <div className="relative mx-auto w-full max-w-[1480px] px-4 pb-6 sm:px-6 lg:px-8">
+        <SiteFooter messages={messages} />
+      </div>
+
+      {hasContextualDetail ? (
+        <>
+          <button
+            type="button"
+            aria-label={messages.closeDetail}
+            className="detail-backdrop fixed inset-0 z-30 hidden bg-[color:var(--surface-overlay)] lg:block"
+            onClick={onCloseDetail}
+          />
+          <div className="pointer-events-none fixed inset-y-0 right-0 z-40 hidden w-full justify-end p-3 lg:flex xl:p-4">
+            <div className="pointer-events-auto flex h-full w-[90vw] max-w-[90vw]" data-testid="desktop-detail-layer">
+              <AgentDetailPanel
+                detail={detail}
+                detailNotFound={detailNotFound}
+                locale={locale}
+                messages={messages}
+                mode="desktop"
+                copyState={copyState}
+                onClose={onCloseDetail}
+                onCopyLink={onCopyLink}
+                onSelectLanguage={onSelectDetailLanguage}
+              />
+            </div>
+          </div>
+        </>
+      ) : null}
+
+      {hasContextualDetail ? (
         <AgentDetailPanel
           detail={detail}
           detailNotFound={detailNotFound}
@@ -231,15 +224,6 @@ export function AgentAggregatorShell({
           onSelectLanguage={onSelectDetailLanguage}
         />
       ) : null}
-    </div>
-  )
-}
-
-function MetricPanel({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="metric-panel rounded-[1.6rem] border border-[color:var(--line-soft)] bg-white/55 p-5">
-      <p className="text-[0.7rem] font-semibold uppercase tracking-[0.34em] text-[color:var(--muted-ink)]">{label}</p>
-      <p className="mt-4 font-display text-5xl text-[color:var(--ink-strong)]">{value}</p>
     </div>
   )
 }
@@ -261,8 +245,8 @@ function FilterGroup<T extends string>({
 }) {
   return (
     <div>
-      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.32em] text-[color:var(--muted-ink)]">{label}</p>
-      <div className="mt-3 flex flex-wrap gap-2">
+      <p className="text-[0.66rem] font-semibold uppercase tracking-[0.3em] text-[color:var(--muted-ink)]">{label}</p>
+      <div className="mt-2 flex flex-wrap gap-2">
         {options.map((option) => {
           const labelText = option.value === "all" ? allLabel : transformLabel?.(option.value) ?? option.value
 

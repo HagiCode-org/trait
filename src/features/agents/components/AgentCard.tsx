@@ -9,6 +9,8 @@ type AgentCardProps = {
   onOpen: (agentId: string, language: ContentLanguage | null) => void
 }
 
+const MAX_VISIBLE_TOOLS = 3
+
 export function AgentCard({ item, isActive, messages, onOpen }: AgentCardProps) {
   const typeLabel =
     item.type === "reviewer"
@@ -16,49 +18,62 @@ export function AgentCard({ item, isActive, messages, onOpen }: AgentCardProps) 
       : item.type === "build-resolver"
         ? messages.typeBuildResolver
         : humanizeCatalogValue(item.type)
+  const visibleTools = item.tools.slice(0, MAX_VISIBLE_TOOLS)
+  const overflowTools = Math.max(0, item.tools.length - visibleTools.length)
 
   return (
     <button
       type="button"
       aria-pressed={isActive}
+      data-agent-card-id={item.agentId}
       onClick={() => onOpen(item.agentId, item.defaultLanguage)}
       className={[
-        "catalog-card group flex h-full flex-col rounded-[1.7rem] border p-5 text-left transition duration-200",
+        "catalog-card group flex h-full flex-col gap-4 rounded-[1.45rem] border p-4 text-left transition duration-200 sm:p-4.5",
         isActive
-          ? "border-[color:var(--accent-strong)] bg-[color:var(--surface-highlight)] shadow-[0_18px_50px_rgba(145,67,36,0.18)]"
-          : "border-[color:var(--line-soft)] bg-[color:var(--surface-card)] hover:-translate-y-1 hover:border-[color:var(--line-strong)] hover:shadow-[0_18px_50px_rgba(15,23,42,0.08)]",
+          ? "border-[color:var(--accent-strong)] bg-[color:var(--surface-highlight)] shadow-[var(--shadow-lift)]"
+          : "border-[color:var(--line-soft)] bg-[color:var(--surface-card)] hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] hover:shadow-[var(--shadow-soft)]",
       ].join(" ")}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="space-y-3">
-          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.34em] text-[color:var(--muted-ink)]">
+        <div className="min-w-0 flex-1">
+          <p className="text-[0.64rem] font-semibold uppercase tracking-[0.32em] text-[color:var(--muted-ink)]">
             {item.sourceLabel}
           </p>
-          <div>
-            <h3 className="font-display text-2xl leading-tight text-[color:var(--ink-strong)]">{item.name}</h3>
-            <p className="mt-2 text-sm leading-7 text-[color:var(--ink-soft)]">{item.summary}</p>
-          </div>
+          <h3 className="mt-2 font-display text-[1.55rem] leading-[1.05] text-[color:var(--ink-strong)] sm:text-[1.7rem]">
+            {item.name}
+          </h3>
         </div>
-        <span className="rounded-full border border-[color:var(--line-soft)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[color:var(--muted-ink)]">
+        <span className="rounded-full border border-[color:var(--line-soft)] bg-white/78 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-[color:var(--muted-ink)]">
           {typeLabel}
         </span>
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-2">
+      <p className="text-sm leading-6 text-[color:var(--ink-soft)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3] overflow-hidden">
+        {item.summary}
+      </p>
+
+      <div className="flex flex-wrap gap-2">
         {item.availableLanguages.map((language) => (
-          <span key={language} className="tag-chip">{language}</span>
+          <span key={language} className="tag-chip">
+            {language}
+          </span>
         ))}
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-2">
-        {item.tools.slice(0, 4).map((tool) => (
-          <span key={tool} className="tool-chip">{tool}</span>
+      <div className="flex flex-wrap gap-2" data-tool-preview-count={String(visibleTools.length)}>
+        {visibleTools.map((tool) => (
+          <span key={tool} className="tool-chip" data-tool-chip>
+            {tool}
+          </span>
         ))}
+        {overflowTools > 0 ? <span className="tool-chip">+{overflowTools}</span> : null}
       </div>
 
-      <div className="mt-auto flex items-center justify-between pt-6 text-sm text-[color:var(--muted-ink)]">
-        <span>{item.model ?? "model:n/a"}</span>
-        <span className="font-semibold text-[color:var(--ink-strong)]">{isActive ? messages.activeCard : messages.openDetail}</span>
+      <div className="mt-auto flex items-center justify-between gap-3 border-t border-[color:var(--line-soft)]/80 pt-3 text-[0.78rem] text-[color:var(--muted-ink)]">
+        <span className="truncate">{item.model ?? "model:n/a"}</span>
+        <span className="font-semibold uppercase tracking-[0.18em] text-[color:var(--ink-strong)]">
+          {isActive ? messages.activeCard : messages.openDetail}
+        </span>
       </div>
     </button>
   )
