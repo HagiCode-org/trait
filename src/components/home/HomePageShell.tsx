@@ -1,12 +1,15 @@
+import { useEffect, useState } from "react"
+
 import type { AgentCatalogItem, SourceMeta, UiLocale } from "@/data/trait-catalog"
 import { SiteFooter } from "@/components/site/SiteFooter"
 import { SiteHeader } from "@/components/site/SiteHeader"
 import { useLocale } from "@/i18n/use-locale"
-import { buildAgentPath, humanizeCatalogValue } from "@/lib/route-projection"
+import { chunkFeaturedItems, type FeaturedItemsByLocale } from "@/lib/featured-selection"
+import { buildAgentLanguagePath, humanizeCatalogValue } from "@/lib/route-projection"
 import { useAnalyticsBootstrap } from "@/lib/use-analytics"
 
 type HomePageShellProps = {
-  featuredItems: AgentCatalogItem[]
+  featuredItemsByLocale: FeaturedItemsByLocale
   sources: SourceMeta[]
   metrics: {
     totalAgents: number
@@ -17,10 +20,29 @@ type HomePageShellProps = {
   initialLocale?: UiLocale
 }
 
-export function HomePageShell({ featuredItems, sources, metrics, initialLocale = "en" }: HomePageShellProps) {
+export function HomePageShell({ featuredItemsByLocale, sources, metrics, initialLocale = "en" }: HomePageShellProps) {
   const { locale, messages, setLocale } = useLocale(initialLocale)
+  const activeFeaturedItems = featuredItemsByLocale[locale] ?? featuredItemsByLocale[initialLocale] ?? []
+  const featuredSlides = chunkFeaturedItems(activeFeaturedItems)
+  const [activeSlide, setActiveSlide] = useState(0)
 
   useAnalyticsBootstrap()
+
+  useEffect(() => {
+    setActiveSlide(0)
+  }, [locale, activeFeaturedItems.length])
+
+  useEffect(() => {
+    if (featuredSlides.length <= 1) {
+      return
+    }
+
+    const timer = window.setInterval(() => {
+      setActiveSlide((currentSlide) => (currentSlide + 1) % featuredSlides.length)
+    }, 4500)
+
+    return () => window.clearInterval(timer)
+  }, [featuredSlides.length])
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[color:var(--surface-base)] text-[color:var(--ink-strong)]">
@@ -82,36 +104,69 @@ export function HomePageShell({ featuredItems, sources, metrics, initialLocale =
           data-testid="home-gallery-grid"
           className="rounded-[1.8rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-5 shadow-[var(--shadow-soft)] sm:p-6 lg:p-7"
         >
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {featuredItems.map((item) => (
-              <article key={item.agentId}>
-                <a
-                  className="catalog-card group flex h-full flex-col rounded-[1.45rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-4 transition duration-200 hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] hover:shadow-[var(--shadow-soft)]"
-                  href={buildAgentPath(item.agentId)}
-                >
-                  <p className="text-[0.64rem] font-semibold uppercase tracking-[0.32em] text-[color:var(--muted-ink)]">{item.sourceLabel}</p>
-                  <h3 className="mt-2 font-display text-[1.75rem] leading-[1.02] text-[color:var(--ink-strong)]">{item.name}</h3>
-                  <p className="mt-3 text-sm leading-6 text-[color:var(--ink-soft)]">{item.summary}</p>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {item.availableLanguages.map((language) => (
-                      <span key={language} className="tag-chip">
-                        {language}
-                      </span>
-                    ))}
+          <div className="overflow-hidden">
+            <div
+              className="flex transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+              style={{ transform: `translateX(-${activeSlide * 100}%)` }}
+            >
+              {featuredSlides.map((slideItems, slideIndex) => (
+                <div key={`${locale}-${slideIndex}`} className="min-w-full">
+                  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                    {slideItems.map((item) => {
+                      const activeVariant = pickFeaturedVariant(item, locale)
+
+                      return (
+                        <article key={`${locale}-${item.agentId}`}>
+                          <a
+                            className="catalog-card group flex h-full flex-col rounded-[1.45rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-4 transition duration-200 hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] hover:shadow-[var(--shadow-soft)]"
+                            href={buildAgentLanguagePath(item, activeVariant.language)}
+                          >
+                            <p className="text-[0.64rem] font-semibold uppercase tracking-[0.32em] text-[color:var(--muted-ink)]">{item.sourceLabel}</p>
+                            <h3 className="mt-2 font-display text-[1.75rem] leading-[1.02] text-[color:var(--ink-strong)]">{activeVariant.title}</h3>
+                            <p className="mt-3 text-sm leading-6 text-[color:var(--ink-soft)]">{activeVariant.summary}</p>
+                            <div className="mt-4 flex flex-wrap gap-2">
+                              {item.availableLanguages.map((language) => (
+                                <span key={language} className="tag-chip">
+                                  {language}
+                                </span>
+                              ))}
+                            </div>
+                            <div className="mt-auto flex items-center justify-between gap-3 border-t border-[color:var(--line-soft)]/80 pt-3 text-[0.78rem] text-[color:var(--muted-ink)]">
+                              <span>{humanizeCatalogValue(item.type)}</span>
+                              <span
+                                aria-hidden="true"
+                                className="font-semibold text-[color:var(--accent-strong)] transition-transform duration-200 group-hover:translate-x-1"
+                              >
+                                -&gt;
+                              </span>
+                            </div>
+                          </a>
+                        </article>
+                      )
+                    })}
                   </div>
-                  <div className="mt-auto flex items-center justify-between gap-3 border-t border-[color:var(--line-soft)]/80 pt-3 text-[0.78rem] text-[color:var(--muted-ink)]">
-                    <span>{humanizeCatalogValue(item.type)}</span>
-                    <span
-                      aria-hidden="true"
-                      className="font-semibold text-[color:var(--accent-strong)] transition-transform duration-200 group-hover:translate-x-1"
-                    >
-                      -&gt;
-                    </span>
-                  </div>
-                </a>
-              </article>
-            ))}
+                </div>
+              ))}
+            </div>
           </div>
+
+          {featuredSlides.length > 1 ? (
+            <div className="mt-4 flex items-center justify-center gap-2">
+              {featuredSlides.map((_, index) => (
+                <button
+                  key={`${locale}-slide-${index}`}
+                  type="button"
+                  aria-label={`slide ${index + 1}`}
+                  aria-pressed={index === activeSlide}
+                  className={[
+                    "h-2.5 rounded-full transition-all duration-300",
+                    index === activeSlide ? "w-8 bg-[color:var(--accent-strong)]" : "w-2.5 bg-[color:var(--line-strong)]/30",
+                  ].join(" ")}
+                  onClick={() => setActiveSlide(index)}
+                />
+              ))}
+            </div>
+          ) : null}
         </section>
 
         <section className="rounded-[1.8rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-5 shadow-[var(--shadow-soft)] sm:p-6 lg:p-7">
@@ -124,24 +179,44 @@ export function HomePageShell({ featuredItems, sources, metrics, initialLocale =
           </div>
 
           <div className="mt-5 grid gap-3 lg:grid-cols-2">
-            {sources.map((source) => (
-              <article key={source.id} className="rounded-[1.35rem] border border-[color:var(--line-soft)] bg-white/72 p-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h3 className="font-display text-[1.6rem] leading-none text-[color:var(--ink-strong)]">{source.label}</h3>
-                    <p className="mt-2 text-sm leading-6 text-[color:var(--ink-soft)]">{source.repo}</p>
+            {sources.map((source) => {
+              const metadataChips = [source.sourceKind, source.layoutType].filter(Boolean)
+              const pathSummary = Array.isArray(source.pathPatterns) ? source.pathPatterns.join(" · ") : ""
+
+              return (
+                <article key={source.id} className="rounded-[1.35rem] border border-[color:var(--line-soft)] bg-white/72 p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <h3 className="font-display text-[1.6rem] leading-none text-[color:var(--ink-strong)]">{source.label}</h3>
+                      <p className="mt-2 text-sm leading-6 text-[color:var(--ink-soft)]">{source.repo}</p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {metadataChips.map((value) => (
+                          <span key={value} className="tag-chip">
+                            {humanizeCatalogValue(value)}
+                          </span>
+                        ))}
+                        {source.warningCount > 0 ? <span className="tag-chip">{`! ${source.warningCount}`}</span> : null}
+                      </div>
+                      {pathSummary ? <p className="mt-3 text-xs leading-6 text-[color:var(--muted-ink)]">{pathSummary}</p> : null}
+                    </div>
+                    <a className="secondary-link" href={source.homepageUrl} target="_blank" rel="noreferrer">
+                      {messages.openSource}
+                    </a>
                   </div>
-                  <a className="secondary-link" href={source.homepageUrl} target="_blank" rel="noreferrer">
-                    {messages.openSource}
-                  </a>
-                </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                  <MetricCard label={messages.homeMetricAgents} value={String(source.syncedAgents)} compact />
-                  <MetricCard label={messages.homeMetricLanguages} value={String(source.languages.length)} compact />
-                  <MetricCard label={messages.sourceLastSync} value={new Date(source.lastSyncedAt).toLocaleDateString(locale)} compact />
-                </div>
-              </article>
-            ))}
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                    <MetricCard label={messages.homeMetricAgents} value={formatMetricValue(source.syncedAgents, locale)} compact />
+                    <MetricCard label={messages.homeMetricLanguages} value={formatMetricValue(source.languages.length, locale)} compact />
+                    <MetricCard label={messages.sourceStars} value={formatMetricValue(source.stargazerCount, locale)} compact />
+                    <MetricCard label={messages.sourceLastSync} value={new Date(source.lastSyncedAt).toLocaleDateString(locale)} compact />
+                  </div>
+                  {source.warningCount > 0 ? (
+                    <p className="mt-3 text-xs leading-6 text-[color:var(--muted-ink)]">{source.warnings[0]}</p>
+                  ) : (
+                    <p className="mt-3 text-xs leading-6 text-[color:var(--muted-ink)]">{`${source.syncedAgents}/${source.trackedAgents}`}</p>
+                  )}
+                </article>
+              )
+            })}
           </div>
         </section>
       </main>
@@ -151,6 +226,19 @@ export function HomePageShell({ featuredItems, sources, metrics, initialLocale =
       </div>
     </div>
   )
+}
+
+function formatMetricValue(value: number | null, locale: UiLocale) {
+  if (typeof value !== "number") {
+    return "-"
+  }
+
+  return new Intl.NumberFormat(locale).format(value)
+}
+
+function pickFeaturedVariant(item: AgentCatalogItem, locale: UiLocale) {
+  const requestedLanguage = locale === "zh-CN" ? "zh-CN" : "en"
+  return item.variants[requestedLanguage] ?? item.variants[item.defaultLanguage] ?? item.variants[item.availableLanguages[0]]
 }
 
 function MetricCard({ label, value, compact = false }: { label: string; value: string; compact?: boolean }) {

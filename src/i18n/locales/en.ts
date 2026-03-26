@@ -84,6 +84,7 @@ export type LocaleMessages = {
   typeReviewer: string
   typeBuildResolver: string
   sourceLastSync: string
+  sourceStars: string
 }
 
 export const enMessages: LocaleMessages = {
@@ -173,4 +174,5 @@ export const enMessages: LocaleMessages = {
   siteLinksIcpAria: "ICP filing information",
   siteLinksPublicSecurityAria: "Public security filing information",
   sourceLastSync: "Last synced",
+  sourceStars: "Stars",
 }

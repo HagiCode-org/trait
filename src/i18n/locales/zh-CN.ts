@@ -86,4 +86,5 @@ export const zhCnMessages: LocaleMessages = {
   siteLinksIcpAria: "ICP 备案信息",
   siteLinksPublicSecurityAria: "公安备案信息",
   sourceLastSync: "最近同步",
+  sourceStars: "Star 数",
 }

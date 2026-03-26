@@ -30,6 +30,7 @@ export type AgentVariant = {
 export type AgentCatalogItem = {
   traitCatalogId: string
   agentId: string
+  sourceAgentId: string
   name: string
   summary: string
   type: AgentType
@@ -54,10 +55,23 @@ export type SourceMeta = {
   branch: string
   homepageUrl: string
   sourceType: string
+  cliFamily: string
+  sourceKind: string
+  layoutType: string
+  fileFormat: string
+  pathPatterns: string[]
+  directCompatible: boolean
+  needsRecursiveScan: boolean
+  needsCustomParser: boolean
   trackedAgents: number
   syncedAgents: number
   languages: ContentLanguage[]
+  stargazerCount: number | null
+  stargazerCountLastFetchedAt: string | null
   lastSyncedAt: string
+  available: boolean
+  warningCount: number
+  warnings: string[]
 }
 
 export type LanguageIndex = Record<ContentLanguage, string[]>
