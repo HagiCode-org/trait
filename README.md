@@ -13,7 +13,29 @@ Trait is the Astro-powered frontend workspace for `trait.hagicode.com`, focused 
 
 The catalog snapshot lives at `src/data/generated/agent-catalog.json`.
 
-Tracked sources are declared in `scripts/agent-sources.mjs`. The canonical source for `everything-claude-code` lives in the local submodule at `vendor/everything-claude-code`.
+Tracked sources are declared in `scripts/agent-sources.mjs` as a multi-source registry. Each entry declares stable metadata such as:
+
+- `cliFamily`
+- `sourceKind`
+- `layoutType`
+- `fileFormat`
+- `pathPatterns`
+- `directCompatible`
+- `needsRecursiveScan`
+- `needsCustomParser`
+- `enabled`
+
+The current registry supports two markdown source kinds:
+
+- `agent_markdown_flat` for fixed layouts such as `agents/*.md` or repository-root `*.md`
+- `agent_markdown_recursive` for categorized layouts such as `categories/**/*.md` or `marketing/**/*.md`
+
+Vendor sources live under `vendor/` as git submodules. The current registry tracks:
+
+- `affaan-m/everything-claude-code`
+- `0xfurai/claude-code-subagents`
+- `VoltAgent/awesome-claude-code-subagents`
+- `iannuttall/claude-agents`
 
 Refresh the submodule source first:
 
@@ -29,11 +51,23 @@ npm run sync:agents
 
 The sync script:
 
-- scans canonical `agents/*.md` files from each configured source;
-- pairs multilingual variants by canonical file name;
+- dispatches canonical discovery by `layoutType` and `pathPatterns`;
+- supports both flat markdown and recursive markdown sources;
+- pairs multilingual variants by canonical file path and configured variant roots;
 - parses frontmatter and body content;
 - merges multilingual variants into one canonical agent record;
-- writes source metadata, language coverage, and sync timestamps into the generated snapshot.
+- scopes colliding cross-source slugs into stable source-qualified route ids;
+- records source-scoped warnings and only hard fails when every enabled source fails;
+- enriches each source summary with GitHub stargazer counts;
+- writes source metadata, coverage metrics, language coverage, and sync timestamps into the generated snapshot.
+
+## Adding a new source
+
+1. Add the upstream repository as a `vendor/` submodule.
+2. Declare a new registry entry in `scripts/agent-sources.mjs`.
+3. Set `sourceKind`, `layoutType`, `pathPatterns`, canonical base path, and any variant directories.
+4. Add exclude patterns when the upstream repository mixes in README or tooling markdown files.
+5. Run `npm run test`, `npm run sync:agents`, and `npm run build`.
 
 ## Development
 
