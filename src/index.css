@@ -99,6 +99,62 @@
     radial-gradient(circle at 52% 100%, rgba(170, 106, 74, 0.12), transparent 24%);
 }
 
+.gallery-spotlight-card::before,
+.gallery-spotlight-card::after {
+  content: "";
+  position: absolute;
+  inset: auto;
+  pointer-events: none;
+}
+
+.gallery-spotlight-card::before {
+  inset: -18% auto auto -6%;
+  width: 20rem;
+  height: 20rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(235, 159, 113, 0.3) 0%, rgba(235, 159, 113, 0) 70%);
+  animation: galleryGlow 7.5s ease-in-out infinite;
+}
+
+.gallery-spotlight-card::after {
+  inset: auto -8% -30% auto;
+  width: 22rem;
+  height: 22rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(181, 216, 201, 0.24) 0%, rgba(181, 216, 201, 0) 72%);
+  animation: galleryGlow 9s ease-in-out infinite reverse;
+}
+
+.gallery-spotlight-chip {
+  border: 1px solid rgba(156, 79, 43, 0.16);
+  background: rgba(255, 255, 255, 0.74);
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  box-shadow: 0 10px 24px rgba(156, 79, 43, 0.08);
+}
+
+.gallery-spotlight-cta {
+  box-shadow: 0 18px 34px rgba(156, 79, 43, 0.12);
+  transition: transform 220ms ease, box-shadow 220ms ease, background-color 220ms ease;
+}
+
+.gallery-spotlight-card:hover .gallery-spotlight-cta,
+.gallery-spotlight-card:focus-visible .gallery-spotlight-cta {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 42px rgba(156, 79, 43, 0.16);
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.gallery-spotlight-arrow {
+  display: inline-block;
+  transition: transform 220ms ease;
+}
+
+.gallery-spotlight-card:hover .gallery-spotlight-arrow,
+.gallery-spotlight-card:focus-visible .gallery-spotlight-arrow {
+  transform: translateX(4px);
+}
+
 .workbench-shell,
 .source-summary-panel,
 .detail-surface,
@@ -207,6 +263,19 @@
 
 .detail-backdrop {
   backdrop-filter: blur(4px);
+}
+
+@keyframes galleryGlow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.82;
+  }
+
+  50% {
+    transform: translate3d(0.85rem, -0.65rem, 0) scale(1.08);
+    opacity: 1;
+  }
 }
 
 .detail-drawer-panel {

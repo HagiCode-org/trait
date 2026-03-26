@@ -1,6 +1,6 @@
 import type { AgentCatalogItem, ContentLanguage } from "@/data/trait-catalog"
 import type { LocaleMessages } from "@/i18n/locales/en"
-import { humanizeCatalogValue } from "@/lib/trait-builder"
+import { buildAgentPath, humanizeCatalogValue } from "@/lib/route-projection"
 
 type AgentCardProps = {
   item: AgentCatalogItem
@@ -20,13 +20,12 @@ export function AgentCard({ item, isActive, messages, onOpen }: AgentCardProps) 
         : humanizeCatalogValue(item.type)
   const visibleTools = item.tools.slice(0, MAX_VISIBLE_TOOLS)
   const overflowTools = Math.max(0, item.tools.length - visibleTools.length)
+  const detailHref = buildAgentPath(item.agentId)
 
   return (
-    <button
-      type="button"
-      aria-pressed={isActive}
+    <article
+      aria-current={isActive ? "true" : undefined}
       data-agent-card-id={item.agentId}
-      onClick={() => onOpen(item.agentId, item.defaultLanguage)}
       className={[
         "catalog-card group flex h-full flex-col gap-4 rounded-[1.45rem] border p-4 text-left transition duration-200 sm:p-4.5",
         isActive
@@ -39,9 +38,11 @@ export function AgentCard({ item, isActive, messages, onOpen }: AgentCardProps) 
           <p className="text-[0.64rem] font-semibold uppercase tracking-[0.32em] text-[color:var(--muted-ink)]">
             {item.sourceLabel}
           </p>
-          <h3 className="mt-2 font-display text-[1.55rem] leading-[1.05] text-[color:var(--ink-strong)] sm:text-[1.7rem]">
-            {item.name}
-          </h3>
+          <h2 className="mt-2 font-display text-[1.55rem] leading-[1.05] text-[color:var(--ink-strong)] sm:text-[1.7rem]">
+            <a className="outline-none" href={detailHref}>
+              {item.name}
+            </a>
+          </h2>
         </div>
         <span className="rounded-full border border-[color:var(--line-soft)] bg-white/78 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-[color:var(--muted-ink)]">
           {typeLabel}
@@ -71,10 +72,15 @@ export function AgentCard({ item, isActive, messages, onOpen }: AgentCardProps) 
 
       <div className="mt-auto flex items-center justify-between gap-3 border-t border-[color:var(--line-soft)]/80 pt-3 text-[0.78rem] text-[color:var(--muted-ink)]">
         <span className="truncate">{item.model ?? "model:n/a"}</span>
-        <span className="font-semibold uppercase tracking-[0.18em] text-[color:var(--ink-strong)]">
-          {isActive ? messages.activeCard : messages.openDetail}
-        </span>
+        <div className="flex items-center gap-2">
+          <a className="secondary-link" href={detailHref}>
+            {messages.viewCanonicalPage}
+          </a>
+          <button type="button" className="primary-button" onClick={() => onOpen(item.agentId, item.defaultLanguage)}>
+            {isActive ? messages.activeCard : messages.quickView}
+          </button>
+        </div>
       </div>
-    </button>
+    </article>
   )
 }

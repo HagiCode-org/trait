@@ -1,7 +1,7 @@
 import type { ContentLanguage, UiLocale } from "@/data/trait-catalog"
-import { humanizeCatalogValue, type AgentDetailView } from "@/lib/trait-builder"
-import type { LocaleMessages } from "@/i18n/locales/en"
 import { formatMessage } from "@/i18n/use-locale"
+import type { LocaleMessages } from "@/i18n/locales/en"
+import { buildAgentLanguagePath, humanizeCatalogValue, type AgentDetailView } from "@/lib/route-projection"
 
 import { MarkdownArticle } from "./MarkdownArticle"
 
@@ -104,7 +104,6 @@ export function AgentDetailPanel({
           </div>
         ) : null}
 
-        {/* Keep the detail layer contextual: top summary first, supporting metadata second. */}
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
           <MetaCard label={messages.canonicalId} value={detail.item.agentId} />
           <MetaCard label={messages.typeFilter} value={typeLabel} />
@@ -112,17 +111,24 @@ export function AgentDetailPanel({
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2" aria-label={messages.languageSwitch}>
-          {detail.item.availableLanguages.map((language) => (
-            <button
-              key={language}
-              type="button"
-              data-detail-language={language}
-              onClick={() => onSelectLanguage(language)}
-              className={["filter-pill", detail.activeLanguage === language ? "is-active" : ""].join(" ")}
-            >
-              {language}
-            </button>
-          ))}
+          {detail.item.availableLanguages.map((language) => {
+            const href = buildAgentLanguagePath(detail.item, language)
+
+            return (
+              <a
+                key={language}
+                href={href}
+                data-detail-language={language}
+                onClick={(event) => {
+                  event.preventDefault()
+                  onSelectLanguage(language)
+                }}
+                className={["filter-pill", detail.activeLanguage === language ? "is-active" : ""].join(" ")}
+              >
+                {language}
+              </a>
+            )
+          })}
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -132,6 +138,9 @@ export function AgentDetailPanel({
           <button type="button" className="secondary-button" onClick={onCopyLink}>
             {copyLabel}
           </button>
+          <a className="secondary-link" href={buildAgentLanguagePath(detail.item, detail.activeLanguage)}>
+            {messages.viewCanonicalPage}
+          </a>
           <span className="rounded-full border border-[color:var(--line-soft)] bg-white/72 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--muted-ink)]">
             {messages.sourceLastSync}: {lastSyncedLabel}
           </span>

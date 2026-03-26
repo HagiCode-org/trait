@@ -1,9 +1,3 @@
-import {
-  buildDetailLink,
-  humanizeCatalogValue,
-  type AgentDetailView,
-  type CatalogFilterOptions,
-} from "@/lib/trait-builder"
 import type {
   AgentCatalogItem,
   AgentCatalogSnapshot,
@@ -14,12 +8,19 @@ import type {
 } from "@/data/trait-catalog"
 import type { LocaleMessages } from "@/i18n/locales/en"
 import { formatMessage } from "@/i18n/use-locale"
+import {
+  buildDetailLink,
+  humanizeCatalogValue,
+  type AgentDetailView,
+  type CatalogFilterOptions,
+} from "@/lib/route-projection"
+
+import { SiteHeader } from "@/components/site/SiteHeader"
+import { SiteFooter } from "@/components/site/SiteFooter"
 
 import { AgentCard } from "./AgentCard"
 import { AgentDetailPanel } from "./AgentDetailPanel"
 import { CatalogEmptyState } from "./CatalogEmptyState"
-import { SiteHeader } from "@/components/site/SiteHeader"
-import { SiteFooter } from "@/components/site/SiteFooter"
 
 type AgentAggregatorShellProps = {
   snapshot: AgentCatalogSnapshot
@@ -85,7 +86,13 @@ export function AgentAggregatorShell({
       <main className="relative mx-auto flex min-h-screen w-full max-w-[1480px] flex-col gap-4 px-4 pb-10 pt-4 sm:px-6 lg:px-8 lg:pb-12 lg:pt-6">
         <header className="workbench-shell rounded-[1.8rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-5 shadow-[var(--shadow-soft)] sm:p-6 lg:p-7">
           <div data-testid="catalog-workbench">
-            <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center">
+            <div>
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-[color:var(--muted-ink)]">{messages.filtersTitle}</p>
+              <h1 className="mt-3 font-display text-[2.7rem] leading-[0.92] text-[color:var(--ink-strong)]">{messages.catalogTitle}</h1>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-[color:var(--ink-soft)]">{messages.catalogIntro}</p>
+            </div>
+
+            <div className="mt-5 grid gap-3 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center">
               <label className="search-field flex items-center gap-3 rounded-[1.35rem] border border-[color:var(--line-soft)] bg-white/72 px-4 py-3 focus-within:border-[color:var(--accent-strong)] focus-within:shadow-[var(--shadow-soft)]">
                 <span className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-[color:var(--muted-ink)]">{messages.searchLabel}</span>
                 <input
@@ -138,7 +145,7 @@ export function AgentAggregatorShell({
 
             <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-[color:var(--muted-ink)]">
               <span className="rounded-full border border-[color:var(--line-soft)] bg-white/66 px-3 py-2 font-semibold text-[color:var(--ink-strong)]">
-                {messages.catalogTitle}
+                {messages.catalogSummary}
               </span>
               {detailLink ? (
                 <span className="truncate rounded-full border border-[color:var(--line-soft)] bg-white/50 px-3 py-2 text-[0.78rem] text-[color:var(--ink-soft)]">
@@ -151,10 +158,6 @@ export function AgentAggregatorShell({
 
         <section className="rounded-[1.8rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-4 shadow-[var(--shadow-soft)] sm:p-5 lg:p-6">
           <div className="flex flex-col gap-2 border-b border-[color:var(--line-soft)] pb-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.32em] text-[color:var(--muted-ink)]">Catalog</p>
-              <h2 className="mt-2 font-display text-[2.2rem] leading-none text-[color:var(--ink-strong)]">{messages.catalogTitle}</h2>
-            </div>
             <span className="text-sm text-[color:var(--muted-ink)]">{detailLink ?? resultLabel}</span>
           </div>
 
@@ -241,24 +244,25 @@ function FilterGroup<T extends string>({
   currentValue: T | "all"
   allLabel: string
   onSelect: (value: T | "all") => void
-  transformLabel?: (value: T | "all") => string
+  transformLabel?: (value: T) => string
 }) {
   return (
-    <div>
-      <p className="text-[0.66rem] font-semibold uppercase tracking-[0.3em] text-[color:var(--muted-ink)]">{label}</p>
-      <div className="mt-2 flex flex-wrap gap-2">
+    <div className="rounded-[1.2rem] border border-[color:var(--line-soft)] bg-white/66 p-3">
+      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-[color:var(--muted-ink)]">{label}</p>
+      <div className="mt-3 flex flex-wrap gap-2">
         {options.map((option) => {
-          const labelText = option.value === "all" ? allLabel : transformLabel?.(option.value) ?? option.value
+          const isAll = option.value === "all"
+          const labelText = isAll ? allLabel : transformLabel ? transformLabel(option.value as T) : String(option.value)
 
           return (
             <button
-              key={option.value}
+              key={`${label}-${option.value}`}
               type="button"
               onClick={() => onSelect(option.value)}
               className={["filter-pill", currentValue === option.value ? "is-active" : ""].join(" ")}
             >
               {labelText}
-              <span className="ml-2 text-[0.72em] opacity-70">{option.count}</span>
+              <span className="ml-2 text-[0.72rem] opacity-80">{option.count}</span>
             </button>
           )
         })}

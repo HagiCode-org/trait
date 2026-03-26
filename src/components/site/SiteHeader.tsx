@@ -17,14 +17,16 @@ export function SiteHeader({ locale, messages, onLocaleChange }: SiteHeaderProps
       <div className="site-header-inner">
         <div className="flex min-w-0 items-center gap-3">
           <a
-            href="https://trait.hagicode.com"
+            href="/"
             className="flex size-11 shrink-0 items-center justify-center rounded-full border border-[color:var(--accent-strong)]/25 bg-[color:var(--accent-strong)]/12 text-base font-semibold text-[color:var(--accent-strong)] shadow-[0_8px_28px_-14px_rgba(156,79,43,0.6)]"
           >
             T
           </a>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="font-display text-xl tracking-[0.03em] text-[color:var(--ink-strong)]">HagiTrait</span>
+              <a href="/" className="font-display text-xl tracking-[0.03em] text-[color:var(--ink-strong)]">
+                HagiTrait
+              </a>
               <span className="text-[0.62rem] font-semibold uppercase tracking-[0.28em] text-[color:var(--muted-ink)]">{messages.headerBrandBadge}</span>
             </div>
             <p className="mt-0.5 text-xs leading-5 text-[color:var(--ink-soft)]">{messages.headerDescription}</p>
@@ -33,6 +35,9 @@ export function SiteHeader({ locale, messages, onLocaleChange }: SiteHeaderProps
 
         <div className="flex flex-col items-start gap-2.5 lg:items-end">
           <nav className="flex flex-wrap items-center gap-1.5" aria-label={messages.headerNavAria}>
+            <a className="site-link-chip" href="/agents/">
+              {messages.catalogTitle}
+            </a>
             {links.map((link) => (
               <a
                 key={link.id}
