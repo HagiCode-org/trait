@@ -4,18 +4,21 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "npm run sync:agents && tsc -b && vite build",
+    "dev": "npm run sync:agents && astro dev",
+    "build": "npm run sync:agents && astro check && astro build && npm run seo:check",
     "lint": "eslint .",
-    "preview": "vite preview",
+    "preview": "astro preview",
     "sync:agents": "node ./scripts/sync-agents.mjs",
     "sync:agents:update-source": "git submodule update --init --remote",
+    "seo:check": "node ./scripts/check-seo.mjs",
     "test": "vitest run"
   },
   "dependencies": {
+    "@astrojs/react": "^4.4.0",
     "@fontsource-variable/fraunces": "^5.2.9",
     "@fontsource-variable/manrope": "^5.2.8",
     "@tailwindcss/vite": "^4.2.2",
+    "astro": "^5.14.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-markdown": "^10.1.0",
@@ -23,11 +26,11 @@
     "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.8",
     "@eslint/js": "^9.39.1",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
