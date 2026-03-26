@@ -20,8 +20,31 @@
   --warning-ink: #9b5627;
   --shadow-soft: 0 14px 34px rgba(44, 29, 20, 0.08);
   --shadow-lift: 0 28px 56px rgba(44, 29, 20, 0.16);
-  --font-sans: "Manrope Variable", "Noto Sans SC", sans-serif;
-  --font-display: "Fraunces Variable", "Noto Serif SC", serif;
+  /* Keep Chinese body text on native CJK fonts before decorative Latin fonts. */
+  --font-sans:
+    "PingFang SC",
+    "Hiragino Sans GB",
+    "Microsoft YaHei UI",
+    "Microsoft YaHei",
+    "Noto Sans CJK SC",
+    "Noto Sans SC",
+    "Source Han Sans SC",
+    "WenQuanYi Micro Hei",
+    "Manrope Variable",
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+  --font-display:
+    "Fraunces Variable",
+    "Songti SC",
+    "STSong",
+    "Hiragino Mincho ProN",
+    "SimSun",
+    "NSimSun",
+    "Noto Serif CJK SC",
+    "Noto Serif SC",
+    "Source Han Serif SC",
+    serif;
 }
 
 @theme inline {
