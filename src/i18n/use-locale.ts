@@ -16,8 +16,8 @@ const SITE_TITLE: Record<UiLocale, string> = {
 }
 
 const SITE_DESCRIPTION: Record<UiLocale, string> = {
-  en: "Trait Builder is a searchable HagiCode workspace for assembling identity traits and drafting self-built persona stacks.",
-  "zh-CN": "Trait Builder 是一个可搜索的 HagiCode 工作空间，用于组装身份特征和构建自定义角色堆栈。",
+  en: "Trait is a searchable HagiCode workspace for browsing audited agent catalogs, source summaries, and contextual detail views.",
+  "zh-CN": "Trait 是一个可搜索的 HagiCode 工作台，用于浏览可追溯的 Agent 目录、来源摘要和按需展开的详情视图。",
 }
 
 function updateDocumentHead(locale: UiLocale) {
