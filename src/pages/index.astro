@@ -1,0 +1,25 @@
+---
+import { HomePageShell } from "@/components/home/HomePageShell"
+import { loadCatalogSnapshot } from "@/lib/catalog-loader"
+import { buildHomeMetadata } from "@/lib/metadata-builder"
+import { buildCatalogSummary } from "@/lib/route-projection"
+import { LEGACY_ROUTE_KEYS } from "@/lib/site-config"
+import BaseLayout from "@/layouts/BaseLayout.astro"
+
+const snapshot = loadCatalogSnapshot()
+const metrics = buildCatalogSummary(snapshot)
+const featuredItems = snapshot.items.slice(0, 6)
+const metadata = buildHomeMetadata(snapshot.items.length)
+---
+
+<BaseLayout metadata={metadata} lang="en">
+  <HomePageShell client:load featuredItems={featuredItems} sources={snapshot.sources} metrics={metrics} initialLocale="en" />
+  <script is:inline define:vars={{ legacyRouteKeys: LEGACY_ROUTE_KEYS }}>
+    const params = new URLSearchParams(window.location.search)
+    const shouldRestoreLegacy = legacyRouteKeys.some((key) => params.has(key))
+    if (shouldRestoreLegacy) {
+      const nextUrl = `/agents/${window.location.search}${window.location.hash}`
+      window.location.replace(nextUrl)
+    }
+  </script>
+</BaseLayout>

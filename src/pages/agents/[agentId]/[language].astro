@@ -1,0 +1,29 @@
+---
+import { AgentDetailPageShell } from "@/components/agents/AgentDetailPageShell"
+import { loadCatalogSnapshot } from "@/lib/catalog-loader"
+import { buildAgentDetailMetadata } from "@/lib/metadata-builder"
+import BaseLayout from "@/layouts/BaseLayout.astro"
+
+export function getStaticPaths() {
+  const snapshot = loadCatalogSnapshot()
+
+  return snapshot.items.flatMap((item) =>
+    item.availableLanguages
+      .filter((language) => language !== item.defaultLanguage)
+      .map((language) => ({
+        params: { agentId: item.agentId, language },
+        props: {
+          item,
+          language,
+        },
+      }))
+  )
+}
+
+const { item, language } = Astro.props
+const metadata = buildAgentDetailMetadata(item, language)
+---
+
+<BaseLayout metadata={metadata} lang={language === "zh-CN" ? "zh-CN" : "en"}>
+  <AgentDetailPageShell client:load item={item} initialLanguage={language} initialLocale="en" />
+</BaseLayout>

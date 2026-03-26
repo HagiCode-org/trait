@@ -1,0 +1,39 @@
+---
+import "@/index.css"
+import type { PageMetadata } from "@/lib/metadata-builder"
+
+type Props = {
+  metadata: PageMetadata
+  lang?: string
+}
+
+const { metadata, lang = "en" } = Astro.props as Props
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{metadata.title}</title>
+    <meta name="description" content={metadata.description} />
+    <meta name="robots" content="index,follow" />
+    <link rel="canonical" href={metadata.canonical} />
+    {metadata.alternates.map((alternate) => <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />)}
+    <meta property="og:site_name" content="HagiTrait" />
+    <meta property="og:title" content={metadata.openGraph.title} />
+    <meta property="og:description" content={metadata.openGraph.description} />
+    <meta property="og:type" content={metadata.openGraph.type} />
+    <meta property="og:url" content={metadata.openGraph.url} />
+    <meta property="og:image" content={metadata.openGraph.image} />
+    <meta name="twitter:card" content={metadata.twitter.card} />
+    <meta name="twitter:title" content={metadata.twitter.title} />
+    <meta name="twitter:description" content={metadata.twitter.description} />
+    <meta name="twitter:image" content={metadata.twitter.image} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {metadata.jsonLd.map((payload) => <script is:inline type="application/ld+json" set:html={JSON.stringify(payload)} />)}
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

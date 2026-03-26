@@ -1,0 +1,13 @@
+---
+import { CatalogPageShell } from "@/components/agents/CatalogPageShell"
+import { loadCatalogSnapshot } from "@/lib/catalog-loader"
+import { buildCatalogMetadata } from "@/lib/metadata-builder"
+import BaseLayout from "@/layouts/BaseLayout.astro"
+
+const snapshot = loadCatalogSnapshot()
+const metadata = buildCatalogMetadata(snapshot.items.length)
+---
+
+<BaseLayout metadata={metadata} lang="en">
+  <CatalogPageShell client:load snapshot={snapshot} initialLocale="en" />
+</BaseLayout>
