@@ -2,3 +2,15 @@
 	path = vendor/everything-claude-code
 	url = https://github.com/affaan-m/everything-claude-code
 	branch = main
+[submodule "vendor/0xfurai__claude-code-subagents"]
+	path = vendor/0xfurai__claude-code-subagents
+	url = https://github.com/0xfurai/claude-code-subagents
+	branch = main
+[submodule "vendor/VoltAgent__awesome-claude-code-subagents"]
+	path = vendor/VoltAgent__awesome-claude-code-subagents
+	url = https://github.com/VoltAgent/awesome-claude-code-subagents
+	branch = main
+[submodule "vendor/iannuttall__claude-agents"]
+	path = vendor/iannuttall__claude-agents
+	url = https://github.com/iannuttall/claude-agents
+	branch = main
