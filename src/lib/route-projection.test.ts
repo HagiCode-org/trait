@@ -5,7 +5,9 @@ import {
   buildAgentAlternatePaths,
   buildAgentLanguagePath,
   buildFilterOptions,
+  deriveDetailUiLocale,
   pickDetailLanguage,
+  projectDetailLanguageToUiLocale,
   queryCatalog,
   readRouteStateFromSearch,
   resolveAgentDetail,
@@ -54,6 +56,14 @@ describe("route-projection", () => {
     expect(detail?.activeLanguage).toBe(item.defaultLanguage)
     expect(detail?.fallbackLanguage).toBe(item.defaultLanguage)
     expect(pickDetailLanguage(item, "ja-JP")).toBe(item.defaultLanguage)
+  })
+
+  it("projects supported detail languages into UI locales with a predictable fallback", () => {
+    expect(projectDetailLanguageToUiLocale("zh-CN")).toBe("zh-CN")
+    expect(projectDetailLanguageToUiLocale("en")).toBe("en")
+    expect(projectDetailLanguageToUiLocale("ja-JP")).toBeNull()
+    expect(deriveDetailUiLocale("ja-JP")).toBe("en")
+    expect(deriveDetailUiLocale("ko-KR", "zh-CN")).toBe("zh-CN")
   })
 
   it("restores deep-link state and writes it back to query params", () => {

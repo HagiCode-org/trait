@@ -6,6 +6,7 @@ import {
   emptyDetailRouteState,
   isAgentType,
   isContentLanguage,
+  isUiLocale,
   sourceCatalog,
   type AgentCatalogItem,
   type AgentCatalogSnapshot,
@@ -15,6 +16,7 @@ import {
   type FilterState,
   type RouteState,
   type SourceMeta,
+  type UiLocale,
 } from "@/data/trait-catalog"
 
 export type FilterOption<T extends string> = {
@@ -147,6 +149,17 @@ export function pickDetailLanguage(item: AgentCatalogItem, requestedLanguage: Co
   }
 
   return item.availableLanguages[0] ?? item.defaultLanguage ?? "en"
+}
+
+export function projectDetailLanguageToUiLocale(language: ContentLanguage | null | undefined): UiLocale | null {
+  return isUiLocale(language) ? language : null
+}
+
+export function deriveDetailUiLocale(
+  language: ContentLanguage | null | undefined,
+  fallbackLocale: UiLocale = "en"
+): UiLocale {
+  return projectDetailLanguageToUiLocale(language) ?? fallbackLocale
 }
 
 export function readRouteStateFromSearch(search: string): RouteState {

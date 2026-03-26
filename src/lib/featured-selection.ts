@@ -1,7 +1,7 @@
 import type { AgentCatalogItem, AgentCatalogSnapshot, UiLocale } from "@/data/trait-catalog"
 
 export const FEATURED_SELECTION_SIZE = 24
-export const FEATURED_SLIDE_SIZE = 4
+export const FEATURED_SLIDE_SIZE = 8
 
 type FeaturedSelectionOptions = {
   targetSize?: number

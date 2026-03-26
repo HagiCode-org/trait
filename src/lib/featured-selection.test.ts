@@ -27,8 +27,8 @@ describe("featured-selection", () => {
 
     const slides = chunkFeaturedItems(items)
 
-    expect(slides).toHaveLength(6)
-    expect(slides.every((slide) => slide.length === 4)).toBe(true)
+    expect(slides).toHaveLength(3)
+    expect(slides.every((slide) => slide.length === 8)).toBe(true)
   })
 })
 
