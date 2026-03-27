@@ -94,6 +94,13 @@ npm run seo:check
 3. build the static Astro site;
 4. verify the built HTML, metadata, JSON-LD, robots, and sitemap output.
 
+## Hero Agent Template Export
+
+- Hero Trait 模板的 canonical 输出位于 `src/data/generated/agent-templates/`。
+- 生成命令是 `npm run sync:agent-templates`，脚本入口是 `scripts/generate-agent-templates.mjs`。
+- 输出内容固定包含 `index.json` 与 `templates/*.json`，并带有 `tags`、`tagGroups.languages`、`tagGroups.domains`、`tagGroups.roles`。
+- `repos/index` 会镜像这些 JSON 到 `/agent-templates/trait/**`，因此不要把 `repos/index` 当作 Trait 模板主编辑位置。
+
 ## Route model
 
 - `/` - marketing-style landing page with SSR catalog preview
