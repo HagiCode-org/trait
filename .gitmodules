@@ -14,3 +14,7 @@
 	path = vendor/iannuttall__claude-agents
 	url = https://github.com/iannuttall/claude-agents
 	branch = main
+[submodule "vendor/gsd-build__get-shit-done"]
+	path = vendor/gsd-build__get-shit-done
+	url = https://github.com/gsd-build/get-shit-done
+	branch = main
