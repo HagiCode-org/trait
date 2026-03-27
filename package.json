@@ -11,7 +11,8 @@
     "sync:agents": "node ./scripts/sync-agents.mjs",
     "sync:agents:update-source": "git submodule update --init --remote",
     "seo:check": "node ./scripts/check-seo.mjs",
-    "test": "vitest run"
+    "test": "vitest run",
+    "sync:agent-templates": "node ./scripts/generate-agent-templates.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.0",
