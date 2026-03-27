@@ -97,5 +97,18 @@ export const sourceManifest = {
       pathPatterns: ["agents/*.md"],
       canonicalBaseDir: "agents",
     }),
+    createMarkdownSource({
+      id: "get-shit-done",
+      label: "get-shit-done",
+      repo: "gsd-build/get-shit-done",
+      submodulePath: "vendor/gsd-build__get-shit-done",
+      sourceKind: "agent_markdown_flat",
+      layoutType: "flat",
+      pathPatterns: ["agents/*.md"],
+      canonicalBaseDir: "agents",
+      variantDirectories: {
+        en: "agents",
+      },
+    }),
   ],
 }
