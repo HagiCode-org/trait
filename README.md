@@ -36,6 +36,9 @@ Vendor sources live under `vendor/` as git submodules. The current registry trac
 - `0xfurai/claude-code-subagents`
 - `VoltAgent/awesome-claude-code-subagents`
 - `iannuttall/claude-agents`
+- `gsd-build/get-shit-done`
+
+`gsd-build/get-shit-done` is currently synced as a single-language English source. Trait only scans `agents/*.md` from that vendor checkout and does not ingest its `commands/`, `hooks/`, or `skills/` directories.
 
 Refresh the submodule source first:
 
@@ -47,6 +50,15 @@ Then regenerate the catalog snapshot:
 
 ```bash
 npm run sync:agents
+```
+
+Recommended maintenance flow:
+
+```bash
+npm run sync:agents:update-source
+npm run sync:agents
+npm run test
+npm run build
 ```
 
 The sync script:
