@@ -76,6 +76,59 @@ describe("sync-agents discovery pipeline", () => {
     )
   })
 
+  it("ingests get-shit-done style flat markdown sources into the snapshot", async () => {
+    const { manifest, repoRoot } = await createFixtureRepo({
+      sources: [
+        createMockSource({
+          id: "get-shit-done",
+          label: "get-shit-done",
+          repo: "gsd-build/get-shit-done",
+          submodulePath: "vendor/gsd-build__get-shit-done",
+          pathPatterns: ["agents/*.md"],
+          canonicalBaseDir: "agents",
+          variantDirectories: {
+            en: "agents",
+          },
+          files: {
+            "agents/gsd-planner.md": {
+              name: "gsd-planner",
+              description: "Goal-oriented planning specialist.",
+            },
+            "agents/gsd-executor.md": {
+              name: "gsd-executor",
+              description: "Execution specialist for active workstreams.",
+            },
+          },
+        }),
+      ],
+    })
+
+    const entries = await discoverCanonicalAgentEntries(manifest.sources[0], repoRoot)
+    const snapshot = await buildAgentCatalogSnapshot({
+      manifest,
+      repoRootPath: repoRoot,
+      startedAt: "2026-03-25T00:00:00.000Z",
+      sourceMetricsFetcher: createMockSourceMetricsFetcher({
+        "get-shit-done": 89,
+      }),
+    })
+
+    expect(entries.map((entry) => entry.agentId)).toEqual(["gsd-executor", "gsd-planner"])
+    expect(snapshot.items.map((item) => item.agentId)).toEqual(["gsd-executor", "gsd-planner"])
+    expect(snapshot.sources[0]).toMatchObject({
+      id: "get-shit-done",
+      label: "get-shit-done",
+      repo: "gsd-build/get-shit-done",
+      sourceKind: "agent_markdown_flat",
+      layoutType: "flat",
+      pathPatterns: ["agents/*.md"],
+      trackedAgents: 2,
+      syncedAgents: 2,
+      languages: ["en"],
+      stargazerCount: 89,
+    })
+  })
+
   it("discovers recursive markdown sources and derives stable ids from relative paths", async () => {
     const { manifest, repoRoot } = await createFixtureRepo({
       sources: [
@@ -168,25 +221,33 @@ describe("sync-agents discovery pipeline", () => {
     )
   })
 
-  it("scopes colliding agent ids across sources to keep routes unique", async () => {
+  it("scopes colliding get-shit-done style agent ids across sources to keep routes unique", async () => {
     const { manifest, repoRoot } = await createFixtureRepo({
       sources: [
         createMockSource({
-          id: "source-a",
-          submodulePath: "vendor/source-a",
+          id: "get-shit-done",
+          label: "get-shit-done",
+          repo: "gsd-build/get-shit-done",
+          submodulePath: "vendor/gsd-build__get-shit-done",
           pathPatterns: ["agents/*.md"],
           canonicalBaseDir: "agents",
           files: {
-            "agents/planner.md": { name: "planner", description: "Planning specialist." },
+            "agents/gsd-planner.md": {
+              name: "gsd-planner",
+              description: "Goal-oriented planning specialist.",
+            },
           },
         }),
         createMockSource({
-          id: "source-b",
-          submodulePath: "vendor/source-b",
+          id: "legacy-source",
+          submodulePath: "vendor/legacy-source",
           pathPatterns: ["agents/*.md"],
           canonicalBaseDir: "agents",
           files: {
-            "agents/planner.md": { name: "planner", description: "Another planning specialist." },
+            "agents/gsd-planner.md": {
+              name: "gsd-planner",
+              description: "Another planning specialist.",
+            },
           },
         }),
       ],
@@ -197,13 +258,16 @@ describe("sync-agents discovery pipeline", () => {
       repoRootPath: repoRoot,
       startedAt: "2026-03-25T00:00:00.000Z",
       sourceMetricsFetcher: createMockSourceMetricsFetcher({
-        "source-a": 5,
-        "source-b": 7,
+        "get-shit-done": 5,
+        "legacy-source": 7,
       }),
     })
 
-    expect(snapshot.items.map((item) => item.agentId).sort()).toEqual(["source-a-planner", "source-b-planner"])
-    expect(snapshot.items.map((item) => item.sourceAgentId)).toEqual(["planner", "planner"])
+    expect(snapshot.items.map((item) => item.agentId).sort()).toEqual([
+      "get-shit-done-gsd-planner",
+      "legacy-source-gsd-planner",
+    ])
+    expect(snapshot.items.map((item) => item.sourceAgentId)).toEqual(["gsd-planner", "gsd-planner"])
   })
 
   it("warns when recursive paths collapse to the same slug", async () => {
