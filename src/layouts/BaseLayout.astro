@@ -30,6 +30,7 @@ const { metadata, lang = "en" } = Astro.props as Props
     <meta name="twitter:title" content={metadata.twitter.title} />
     <meta name="twitter:description" content={metadata.twitter.description} />
     <meta name="twitter:image" content={metadata.twitter.image} />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     {metadata.jsonLd.map((payload) => <script is:inline type="application/ld+json" set:html={JSON.stringify(payload)} />)}
   </head>
