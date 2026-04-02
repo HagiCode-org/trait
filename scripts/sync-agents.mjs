@@ -11,6 +11,7 @@ const __dirname = path.dirname(__filename)
 const repoRoot = path.resolve(__dirname, "..")
 const outputPath = path.join(repoRoot, "src/data/generated/agent-catalog.json")
 const execFileAsync = promisify(execFile)
+const ALLOW_STALE_OUTPUT_FLAG = "--allow-stale-output"
 
 const TYPE_PATTERNS = [
   ["reviewer", /reviewer$/],
@@ -85,17 +86,52 @@ export async function buildAgentCatalogSnapshot({
 }
 
 async function main() {
-  const snapshot = await buildAgentCatalogSnapshot()
+  const options = parseCliOptions(process.argv.slice(2))
+  let snapshot
+  let usedStaleOutput = false
 
-  await fs.mkdir(path.dirname(outputPath), { recursive: true })
-  await fs.writeFile(outputPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8")
+  try {
+    snapshot = await buildAgentCatalogSnapshot()
+    await fs.mkdir(path.dirname(outputPath), { recursive: true })
+    await fs.writeFile(outputPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8")
+  } catch (error) {
+    if (!options.allowStaleOutput) {
+      throw error
+    }
 
-  console.log(`Synced ${snapshot.items.length} agents from ${snapshot.sources.length} enabled sources to ${path.relative(repoRoot, outputPath)}`)
-  console.log(`lastSyncedAt=${snapshot.lastSyncedAt}`)
+    snapshot = await loadExistingSnapshot(outputPath, error)
+    usedStaleOutput = true
+  }
 
-  const warningSources = snapshot.sources.filter((source) => source.warningCount > 0)
+  if (usedStaleOutput) {
+    console.warn(
+      `[warn] Agent sync failed. Reusing stale snapshot from ${path.relative(repoRoot, outputPath)} lastSyncedAt=${snapshot.lastSyncedAt ?? "unknown"}.`
+    )
+  } else {
+    console.log(`Synced ${snapshot.items.length} agents from ${snapshot.sources.length} enabled sources to ${path.relative(repoRoot, outputPath)}`)
+    console.log(`lastSyncedAt=${snapshot.lastSyncedAt}`)
+  }
+
+  const warningSources = Array.isArray(snapshot.sources) ? snapshot.sources.filter((source) => source.warningCount > 0) : []
   for (const source of warningSources) {
     console.warn(`[warn] ${source.id}: ${source.warningCount} warning(s)`)
+  }
+}
+
+function parseCliOptions(args) {
+  return {
+    allowStaleOutput: args.includes(ALLOW_STALE_OUTPUT_FLAG),
+  }
+}
+
+async function loadExistingSnapshot(snapshotPath, originalError) {
+  try {
+    const raw = await fs.readFile(snapshotPath, "utf8")
+    return JSON.parse(raw)
+  } catch (fallbackError) {
+    const failureMessage = originalError instanceof Error ? originalError.message : String(originalError)
+    const fallbackMessage = fallbackError instanceof Error ? fallbackError.message : String(fallbackError)
+    throw new Error(`Agent sync failed and no stale snapshot could be reused.\n${failureMessage}\nFailed to read ${path.relative(repoRoot, snapshotPath)}: ${fallbackMessage}`)
   }
 }
 

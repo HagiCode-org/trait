@@ -89,7 +89,13 @@ npm run sync:agents:update-source
 npm run dev
 ```
 
-`npm run dev` regenerates the catalog snapshot first, then starts the Astro dev server.
+`npm run dev` tries to regenerate the catalog snapshot first, then starts the Astro dev server. If the vendor submodules are not ready but `src/data/generated/agent-catalog.json` already exists, the dev flow reuses that stale snapshot so local UI work is not blocked.
+
+```bash
+npm run dev:static
+```
+
+`npm run dev:static` is an alias for the same Astro static-site dev flow and accepts the same extra CLI flags, for example `npm run dev:static -- --host 0.0.0.0 --port 36292`.
 
 ## Build and verification
 
