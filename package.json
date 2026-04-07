@@ -6,12 +6,13 @@
   "scripts": {
     "dev": "node ./scripts/dev-server.mjs",
     "dev:static": "node ./scripts/dev-server.mjs",
-    "build": "npm run sync:agents && astro check && astro build && npm run seo:check",
+    "build": "npm run sync:agents && npm run sync:footer-sites && astro check && astro build && npm run seo:check",
     "lint": "eslint .",
     "preview": "astro preview",
     "sync:agents": "node ./scripts/sync-agents.mjs",
     "sync:agents:dev": "node ./scripts/sync-agents.mjs --allow-stale-output",
     "sync:agents:update-source": "git submodule update --init --remote",
+    "sync:footer-sites": "node ./scripts/fetch-sites-snapshot.mjs",
     "seo:check": "node ./scripts/check-seo.mjs",
     "test": "vitest run",
     "sync:agent-templates": "node ./scripts/generate-agent-templates.mjs"
