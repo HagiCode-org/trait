@@ -194,7 +194,7 @@ export function AgentAggregatorShell({
       </main>
 
       <div className="relative mx-auto w-full max-w-[1480px] px-4 pb-6 sm:px-6 lg:px-8">
-        <SiteFooter messages={messages} />
+        <SiteFooter locale={locale} messages={messages} />
       </div>
 
       {hasContextualDetail ? (

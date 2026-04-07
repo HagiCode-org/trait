@@ -3,12 +3,13 @@ import type { LocaleMessages } from "@/i18n/locales/en"
 import { getFilingLinks, getFooterLinkSections, getSiteLinkRel, getSiteLinkTarget } from "./site-links"
 
 type SiteFooterProps = {
+  locale: "zh-CN" | "en"
   messages: LocaleMessages
 }
 
-export function SiteFooter({ messages }: SiteFooterProps) {
+export function SiteFooter({ locale, messages }: SiteFooterProps) {
   const currentYear = new Date().getFullYear()
-  const sections = getFooterLinkSections(messages)
+  const sections = getFooterLinkSections(messages, locale)
   const filingLinks = getFilingLinks(messages)
 
   return (
@@ -36,7 +37,8 @@ export function SiteFooter({ messages }: SiteFooterProps) {
                   target={getSiteLinkTarget(link)}
                   rel={getSiteLinkRel(link)}
                 >
-                  {link.label}
+                  <span className="site-footer-link-text">{link.label}</span>
+                  {link.description ? <span className="site-footer-link-description">{link.description}</span> : null}
                 </a>
               ))}
             </div>
