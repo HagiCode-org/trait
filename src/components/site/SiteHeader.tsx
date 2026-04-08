@@ -1,5 +1,6 @@
 import type { UiLocale } from "@/data/trait-catalog"
 import type { LocaleMessages } from "@/i18n/locales/en"
+import { useTheme } from "@/lib/use-theme"
 
 import { getHeaderNavigationLinks, getSiteLinkRel, getSiteLinkTarget } from "./site-links"
 
@@ -11,6 +12,7 @@ type SiteHeaderProps = {
 
 export function SiteHeader({ locale, messages, onLocaleChange }: SiteHeaderProps) {
   const links = getHeaderNavigationLinks(messages)
+  const { theme, setTheme } = useTheme()
 
   return (
     <header className="site-header" role="banner">
@@ -18,23 +20,26 @@ export function SiteHeader({ locale, messages, onLocaleChange }: SiteHeaderProps
         <div className="flex min-w-0 items-center gap-3">
           <a
             href="/"
-            className="flex size-11 shrink-0 items-center justify-center rounded-full border border-[color:var(--accent-strong)]/25 bg-[color:var(--accent-strong)]/12 text-base font-semibold text-[color:var(--accent-strong)] shadow-[0_8px_28px_-14px_rgba(156,79,43,0.6)]"
+            className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[color:var(--line-soft)] bg-[color:var(--surface-card)]"
+            aria-label="HagiCode home"
           >
-            T
+            <img src="/logo.png" alt="HagiCode" width="32" height="32" className="size-8 object-contain" />
           </a>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <a href="/" className="font-display text-xl tracking-[0.03em] text-[color:var(--ink-strong)]">
+              <a href="/" className="font-display text-[1.35rem] tracking-[-0.03em] text-[color:var(--ink-strong)]">
                 HagiTrait
               </a>
-              <span className="text-[0.62rem] font-semibold uppercase tracking-[0.28em] text-[color:var(--muted-ink)]">{messages.headerBrandBadge}</span>
+              <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--surface-muted)] px-2.5 py-1 font-display text-[0.62rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ink-soft)]">
+                {messages.headerBrandBadge}
+              </span>
             </div>
-            <p className="mt-0.5 text-xs leading-5 text-[color:var(--ink-soft)]">{messages.headerDescription}</p>
+            <p className="mt-1 max-w-[32rem] text-sm leading-6 text-[color:var(--ink-soft)]">{messages.headerDescription}</p>
           </div>
         </div>
 
         <div className="flex flex-col items-start gap-2.5 lg:items-end">
-          <nav className="flex flex-wrap items-center gap-1.5" aria-label={messages.headerNavAria}>
+          <nav className="flex flex-wrap items-center gap-2" aria-label={messages.headerNavAria}>
             <a className="site-link-chip" href="/agents/">
               {messages.catalogTitle}
             </a>
@@ -52,23 +57,46 @@ export function SiteHeader({ locale, messages, onLocaleChange }: SiteHeaderProps
             ))}
           </nav>
 
-          <div className="inline-flex items-center gap-1 rounded-full border border-[color:var(--line-soft)] bg-white/60 p-1">
-            <button
-              type="button"
-              data-locale-switch="en"
-              className={["filter-pill !border-0 !px-3 !py-1 !text-xs", locale === "en" ? "is-active" : ""].join(" ")}
-              onClick={() => onLocaleChange("en")}
-            >
-              {messages.localeEnglish}
-            </button>
-            <button
-              type="button"
-              data-locale-switch="zh-CN"
-              className={["filter-pill !border-0 !px-3 !py-1 !text-xs", locale === "zh-CN" ? "is-active" : ""].join(" ")}
-              onClick={() => onLocaleChange("zh-CN")}
-            >
-              {messages.localeChinese}
-            </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="inline-flex items-center gap-1 rounded-full border border-[color:var(--line-soft)] bg-[color:var(--surface-muted)] p-1" aria-label={messages.themeToggleAria}>
+              <button
+                type="button"
+                data-theme-switch="dark"
+                aria-pressed={theme === "dark"}
+                className={["filter-pill !min-h-0 !border-0 !px-3 !py-2 !text-xs", theme === "dark" ? "is-active" : ""].join(" ")}
+                onClick={() => setTheme("dark")}
+              >
+                {messages.themeDark}
+              </button>
+              <button
+                type="button"
+                data-theme-switch="light"
+                aria-pressed={theme === "light"}
+                className={["filter-pill !min-h-0 !border-0 !px-3 !py-2 !text-xs", theme === "light" ? "is-active" : ""].join(" ")}
+                onClick={() => setTheme("light")}
+              >
+                {messages.themeLight}
+              </button>
+            </div>
+
+            <div className="inline-flex items-center gap-1 rounded-full border border-[color:var(--line-soft)] bg-[color:var(--surface-muted)] p-1">
+              <button
+                type="button"
+                data-locale-switch="en"
+                className={["filter-pill !min-h-0 !border-0 !px-3 !py-2 !text-xs", locale === "en" ? "is-active" : ""].join(" ")}
+                onClick={() => onLocaleChange("en")}
+              >
+                {messages.localeEnglish}
+              </button>
+              <button
+                type="button"
+                data-locale-switch="zh-CN"
+                className={["filter-pill !min-h-0 !border-0 !px-3 !py-2 !text-xs", locale === "zh-CN" ? "is-active" : ""].join(" ")}
+                onClick={() => onLocaleChange("zh-CN")}
+              >
+                {messages.localeChinese}
+              </button>
+            </div>
           </div>
         </div>
       </div>

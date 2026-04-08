@@ -16,10 +16,10 @@ export function SiteFooter({ locale, messages }: SiteFooterProps) {
     <footer className="site-footer" role="contentinfo">
       <div className="site-footer-grid">
         <section className="site-footer-brand" aria-label={messages.footerBrandSectionAria}>
-          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.28em] text-[color:var(--muted-ink)]">HagiTrait</p>
-          <h2 className="font-display text-2xl tracking-[0.03em] text-[color:var(--ink-strong)]">HagiTrait</h2>
-          <p className="mt-2 max-w-[28rem] text-sm leading-7 text-[color:var(--ink-soft)]">{messages.footerDescription}</p>
-          <p className="mt-3 text-xs text-[color:var(--muted-ink)]">
+          <p className="font-display text-[0.68rem] font-medium uppercase tracking-[0.14em] text-[color:var(--footer-muted)]">HagiTrait</p>
+          <h2 className="font-display text-[2rem] leading-none tracking-[-0.04em] text-[color:var(--footer-text)]">HagiTrait</h2>
+          <p className="mt-2 max-w-[28rem] text-sm leading-7 text-[color:var(--footer-muted)]">{messages.footerDescription}</p>
+          <p className="mt-3 text-xs text-[color:var(--footer-muted)]">
             {messages.footerCopyright.replace("{{year}}", String(currentYear))}
           </p>
         </section>

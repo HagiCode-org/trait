@@ -87,18 +87,20 @@ export function AgentAggregatorShell({
         <SiteHeader locale={locale} messages={messages} onLocaleChange={onLocaleChange} />
       </div>
 
-      <main className="relative mx-auto flex min-h-screen w-full max-w-[1480px] flex-col gap-4 px-4 pb-10 pt-4 sm:px-6 lg:px-8 lg:pb-12 lg:pt-6">
-        <header className="workbench-shell rounded-[1.8rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-5 shadow-[var(--shadow-soft)] sm:p-6 lg:p-7">
+      <main className="relative mx-auto flex min-h-screen w-full max-w-[1480px] flex-col gap-5 px-4 pb-10 pt-4 sm:px-6 lg:px-8 lg:gap-6 lg:pb-12 lg:pt-6">
+        <header className="workbench-shell rounded-[2.5rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] px-5 py-6 sm:px-6 lg:px-8 lg:py-8">
           <div data-testid="catalog-workbench">
             <div>
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-[color:var(--muted-ink)]">{messages.filtersTitle}</p>
-              <h1 className="mt-3 font-display text-[2.7rem] leading-[0.92] text-[color:var(--ink-strong)]">{messages.catalogTitle}</h1>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-[color:var(--ink-soft)]">{messages.catalogIntro}</p>
+              <p className="font-display text-[0.72rem] font-medium uppercase tracking-[0.14em] text-[color:var(--muted-ink)]">{messages.filtersTitle}</p>
+              <h1 className="mt-4 font-display text-[clamp(3rem,6vw,5.5rem)] leading-[0.92] tracking-[-0.06em] text-[color:var(--ink-strong)]">
+                {messages.catalogTitle}
+              </h1>
+              <p className="mt-4 max-w-3xl text-sm leading-7 text-[color:var(--ink-soft)] sm:text-[1rem]">{messages.catalogIntro}</p>
             </div>
 
-            <div className="mt-5 grid gap-3 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center">
-              <label className="search-field flex items-center gap-3 rounded-[1.35rem] border border-[color:var(--line-soft)] bg-white/72 px-4 py-3 focus-within:border-[color:var(--accent-strong)] focus-within:shadow-[var(--shadow-soft)]">
-                <span className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-[color:var(--muted-ink)]">{messages.searchLabel}</span>
+            <div className="mt-6 grid gap-3 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center">
+              <label className="search-field flex items-center gap-3 rounded-[1.75rem] px-4 py-3">
+                <span className="font-display text-[0.72rem] font-medium uppercase tracking-[0.14em] text-[color:var(--muted-ink)]">{messages.searchLabel}</span>
                 <input
                   aria-label={messages.searchLabel}
                   value={filterState.query}
@@ -116,7 +118,7 @@ export function AgentAggregatorShell({
               </div>
             </div>
 
-            <div className="mt-4 grid gap-3 lg:grid-cols-3" data-testid="filter-toolbar">
+            <div className="mt-5 grid gap-3 lg:grid-cols-3" data-testid="filter-toolbar">
               <FilterGroup
                 groupKey="source"
                 label={messages.sourceFilter}
@@ -152,12 +154,12 @@ export function AgentAggregatorShell({
               />
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-[color:var(--muted-ink)]">
-              <span className="rounded-full border border-[color:var(--line-soft)] bg-white/66 px-3 py-2 font-semibold text-[color:var(--ink-strong)]">
+            <div className="mt-5 flex flex-wrap items-center gap-2 text-sm text-[color:var(--muted-ink)]">
+              <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--surface-muted)] px-3 py-2 font-display text-[0.76rem] font-medium uppercase tracking-[0.12em] text-[color:var(--ink-strong)]">
                 {messages.catalogSummary}
               </span>
               {detailLink ? (
-                <span className="truncate rounded-full border border-[color:var(--line-soft)] bg-white/50 px-3 py-2 text-[0.78rem] text-[color:var(--ink-soft)]">
+                <span className="truncate rounded-full border border-[color:var(--line-soft)] bg-transparent px-3 py-2 text-[0.78rem] text-[color:var(--ink-soft)]">
                   {detailLink}
                 </span>
               ) : null}
@@ -165,9 +167,11 @@ export function AgentAggregatorShell({
           </div>
         </header>
 
-        <section className="rounded-[1.8rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-4 shadow-[var(--shadow-soft)] sm:p-5 lg:p-6">
+        <section className="rounded-[2.25rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-4 sm:p-5 lg:p-6">
           <div className="flex flex-col gap-2 border-b border-[color:var(--line-soft)] pb-4 sm:flex-row sm:items-end sm:justify-between">
-            <span className="text-sm text-[color:var(--muted-ink)]">{detailLink ?? resultLabel}</span>
+            <span className="font-display text-[0.78rem] font-medium uppercase tracking-[0.12em] text-[color:var(--muted-ink)]">
+              {detailLink ?? resultLabel}
+            </span>
           </div>
 
           <div className="mt-4">
@@ -278,8 +282,8 @@ function FilterGroup<T extends string>({
   })
 
   return (
-    <div data-testid={`filter-group-${groupKey}`} className="rounded-[1.2rem] border border-[color:var(--line-soft)] bg-white/66 p-3">
-      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-[color:var(--muted-ink)]">{label}</p>
+    <div data-testid={`filter-group-${groupKey}`} className="rounded-[1.5rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-muted)] p-4">
+      <p className="font-display text-[0.72rem] font-medium uppercase tracking-[0.14em] text-[color:var(--muted-ink)]">{label}</p>
       <div data-testid={`filter-options-${groupKey}`} className={["mt-3 flex flex-wrap gap-2", bodyClassName ?? ""].join(" ").trim()}>
         {visibleOptions.map((option) => {
           const isAll = option.value === "all"

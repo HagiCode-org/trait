@@ -134,37 +134,39 @@ export function AgentDetailPageShell({ item, initialLanguage, initialLocale = "e
         <SiteHeader locale={locale} messages={messages} onLocaleChange={handleLocaleChange} />
       </div>
 
-      <main className="relative mx-auto flex w-full max-w-[1120px] flex-col gap-4 px-4 pb-10 pt-4 sm:px-6 lg:px-8 lg:pb-12 lg:pt-6">
-        <section className="workbench-shell rounded-[1.8rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-6 shadow-[var(--shadow-soft)] sm:p-7">
+      <main className="relative mx-auto flex w-full max-w-[1180px] flex-col gap-5 px-4 pb-10 pt-4 sm:px-6 lg:px-8 lg:gap-6 lg:pb-12 lg:pt-6">
+        <section className="workbench-shell rounded-[2.5rem] border border-[color:var(--section-border)] bg-[color:var(--section-surface)] px-6 py-7 text-[color:var(--section-text)] sm:px-7 lg:px-10 lg:py-9">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 flex-1">
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.32em] text-[color:var(--muted-ink)]">{detail.item.sourceLabel}</p>
-              <h1 className="mt-3 font-display text-[2.8rem] leading-[0.92] text-[color:var(--ink-strong)]">{detail.item.name}</h1>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-[color:var(--ink-soft)]">{detail.activeVariant.summary}</p>
+              <p className="font-display text-[0.72rem] font-medium uppercase tracking-[0.14em] text-[color:var(--section-muted)]">{detail.item.sourceLabel}</p>
+              <h1 className="mt-4 font-display text-[clamp(3rem,6vw,5rem)] leading-[0.92] tracking-[-0.06em] text-[color:var(--section-text)]">
+                {detail.item.name}
+              </h1>
+              <p className="mt-4 max-w-3xl text-sm leading-7 text-[color:var(--section-muted)] sm:text-[1rem]">{detail.activeVariant.summary}</p>
             </div>
 
             <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-              <a className="secondary-link" href="/agents/">
+              <a className="ghost-button" href="/agents/">
                 {messages.backToCatalog}
               </a>
-              <button type="button" data-copy-action="link" className="secondary-button" onClick={copyCurrentLink}>
+              <button type="button" data-copy-action="link" className="ghost-button" onClick={copyCurrentLink}>
                 {copyLinkState === "done" ? messages.copied : copyLinkState === "failed" ? messages.copyFailed : messages.copyLink}
               </button>
-              <button type="button" data-copy-action="raw" className="secondary-button" onClick={copyCurrentOriginal}>
+              <button type="button" data-copy-action="raw" className="ghost-button" onClick={copyCurrentOriginal}>
                 {copyOriginalState === "done"
                   ? messages.copied
                   : copyOriginalState === "failed"
                     ? messages.copyFailed
                     : messages.copyOriginal}
               </button>
-              <a className="primary-button" href={detail.activeVariant.sourceUrl} target="_blank" rel="noreferrer">
+              <a className="secondary-button" href={detail.activeVariant.sourceUrl} target="_blank" rel="noreferrer">
                 {messages.openSource}
               </a>
             </div>
           </div>
 
           {detail.fallbackLanguage ? (
-            <div className="mt-4 rounded-[1rem] border border-[color:var(--warning-border)] bg-[color:var(--warning-surface)] px-4 py-3 text-sm text-[color:var(--warning-ink)]">
+            <div className="mt-5 rounded-[1.2rem] border border-[color:var(--warning-border)] bg-[color:var(--warning-surface)] px-4 py-3 text-sm text-[color:var(--warning-ink)]">
               {formatMessage(messages.fallbackNotice, { language: detail.activeLanguage })}
             </div>
           ) : null}
@@ -179,14 +181,22 @@ export function AgentDetailPageShell({ item, initialLanguage, initialLocale = "e
                   event.preventDefault()
                   handleSelectLanguage(language)
                 }}
-                className={["filter-pill", activeLanguage === language ? "is-active" : ""].join(" ")}
+                className={["ghost-button !min-h-0 !px-3 !py-2 !text-xs", activeLanguage === language ? "!text-[color:var(--contrast-pill-active-text)]" : ""].join(" ")}
+                style={
+                  activeLanguage === language
+                    ? {
+                        backgroundColor: "var(--contrast-pill-active-bg)",
+                        borderColor: "var(--contrast-pill-active-border)",
+                      }
+                    : undefined
+                }
               >
                 {language}
               </a>
             ))}
           </div>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <MetaCard label={messages.canonicalId} value={detail.item.agentId} />
             <MetaCard label={messages.typeFilter} value={typeLabel(detail.item, messages)} />
             <MetaCard label={messages.sourceRepo} value={detail.item.sourceRepo} />
@@ -194,7 +204,7 @@ export function AgentDetailPageShell({ item, initialLanguage, initialLocale = "e
           </div>
         </section>
 
-        <section className="rounded-[1.8rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-6 shadow-[var(--shadow-soft)] sm:p-7">
+        <section className="rounded-[2.25rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-6 sm:p-7">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <MetaCard label={messages.sourceType} value={detail.item.sourceType} />
             <MetaCard label={messages.model} value={detail.item.model ?? "n/a"} />
@@ -212,7 +222,7 @@ export function AgentDetailPageShell({ item, initialLanguage, initialLocale = "e
             </div>
           ) : null}
 
-          <article className="mt-6 rounded-[1.35rem] border border-[color:var(--line-soft)] bg-white/76 p-5 sm:p-6">
+          <article className="mt-6 rounded-[1.75rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-5 sm:p-6">
             <MarkdownArticle body={detail.activeVariant.body} />
           </article>
         </section>
@@ -227,9 +237,9 @@ export function AgentDetailPageShell({ item, initialLanguage, initialLocale = "e
 
 function MetaCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1rem] border border-[color:var(--line-soft)] bg-white/72 px-4 py-3">
-      <p className="text-[0.66rem] font-semibold uppercase tracking-[0.28em] text-[color:var(--muted-ink)]">{label}</p>
-      <p className="mt-2 break-all text-sm leading-6 text-[color:var(--ink-strong)]">{value}</p>
+    <div className="rounded-[1.35rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-muted)] px-4 py-3">
+      <p className="font-display text-[0.68rem] font-medium uppercase tracking-[0.14em] text-[color:var(--muted-ink)]">{label}</p>
+      <p className="mt-2 break-all text-sm leading-7 text-[color:var(--ink-strong)]">{value}</p>
     </div>
   )
 }

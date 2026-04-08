@@ -25,6 +25,10 @@ import { AgentAggregatorShell } from "@/features/agents/components/AgentAggregat
 const COPY_RESET_MS = 1600
 
 function readInitialRouteState(): RouteState {
+  if (typeof window !== "undefined") {
+    return readRouteStateFromSearch(window.location.search)
+  }
+
   return {
     filters: defaultFilterState,
     detail: emptyDetailRouteState,
@@ -78,8 +82,6 @@ export function CatalogPageShell({ snapshot, initialLocale = "en" }: CatalogPage
     if (typeof window === "undefined") {
       return
     }
-
-    setRouteState(readRouteStateFromSearch(window.location.search))
 
     function handlePopState() {
       setRouteState(readRouteStateFromSearch(window.location.search))
