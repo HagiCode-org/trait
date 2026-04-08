@@ -1,6 +1,7 @@
 ---
 import "@/index.css"
 import type { PageMetadata } from "@/lib/metadata-builder"
+import { THEME_STORAGE_KEY } from "@/lib/use-theme"
 
 type Props = {
   metadata: PageMetadata
@@ -30,6 +31,22 @@ const { metadata, lang = "en" } = Astro.props as Props
     <meta name="twitter:title" content={metadata.twitter.title} />
     <meta name="twitter:description" content={metadata.twitter.description} />
     <meta name="twitter:image" content={metadata.twitter.image} />
+    <script is:inline define:vars={{ themeStorageKey: THEME_STORAGE_KEY }}>
+      (() => {
+        const root = document.documentElement
+        let theme = "dark"
+
+        try {
+          const storedTheme = window.localStorage.getItem(themeStorageKey)
+          if (storedTheme === "light" || storedTheme === "dark") {
+            theme = storedTheme
+          }
+        } catch {}
+
+        root.dataset.theme = theme
+        root.style.colorScheme = theme
+      })()
+    </script>
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     {metadata.jsonLd.map((payload) => <script is:inline type="application/ld+json" set:html={JSON.stringify(payload)} />)}

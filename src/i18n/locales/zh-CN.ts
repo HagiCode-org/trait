@@ -3,6 +3,9 @@ import type { LocaleMessages } from "./en"
 export const zhCnMessages: LocaleMessages = {
   localeEnglish: "EN",
   localeChinese: "中文",
+  themeDark: "暗色",
+  themeLight: "亮色",
+  themeToggleAria: "切换站点主题",
   homeEyebrow: "HagiCode",
   homeTitle: "HagiTrait",
   homeSummary: "可搜索 Agent 目录 · 多语言详情页 · 可分享规范链接。",

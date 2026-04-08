@@ -1,6 +1,9 @@
 export type LocaleMessages = {
   localeEnglish: string
   localeChinese: string
+  themeDark: string
+  themeLight: string
+  themeToggleAria: string
   homeEyebrow: string
   homeTitle: string
   homeSummary: string
@@ -91,6 +94,9 @@ export type LocaleMessages = {
 export const enMessages: LocaleMessages = {
   localeEnglish: "EN",
   localeChinese: "中文",
+  themeDark: "Dark",
+  themeLight: "Light",
+  themeToggleAria: "Switch color theme",
   homeEyebrow: "HagiCode",
   homeTitle: "HagiTrait",
   homeSummary: "Searchable agent catalog · Multilingual detail pages · Shareable canonical links.",
