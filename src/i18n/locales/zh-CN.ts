@@ -82,6 +82,8 @@ export const zhCnMessages: LocaleMessages = {
   siteLinksQQGroupAria: "加入 HagiCode QQ 群",
   siteLinksEmail: "邮箱",
   siteLinksEmailAria: "发送邮件至 HagiCode 支持",
+  siteLinksSteam: "Steam",
+  siteLinksSteamAria: "打开 HagiCode 官方 Steam 商店页",
   footerDescription: "HagiTrait 是一个可搜索的 HagiCode 工作台，用于浏览可追溯的 Agent 目录、来源摘要和可抓取的规范详情页。",
   footerCopyright: "© {{year}} HagiCode。保留所有权利。",
   footerBrandSectionAria: "品牌信息",

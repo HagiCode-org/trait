@@ -25,4 +25,17 @@ describe("trait footer site links", () => {
     expect(hrefs.filter((href) => href === "https://docs.hagicode.com/")).toHaveLength(1)
     expect(hrefs.filter((href) => href === "https://hagicode.com")).toHaveLength(1)
   })
+
+  it("keeps Steam as a repo-owned community link with safe external metadata", () => {
+    const sections = getFooterLinkSections(enMessages, "en")
+    const community = sections.find((section) => section.id === "community")
+    const steamLink = community?.links.find((link) => link.id === "steam")
+
+    expect(steamLink).toMatchObject({
+      label: "Steam",
+      href: "https://store.steampowered.com/app/4625540/Hagicode/",
+      external: true,
+      openInNewTab: true,
+    })
+  })
 })

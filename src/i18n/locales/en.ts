@@ -78,6 +78,8 @@ export type LocaleMessages = {
   siteLinksQQGroupAria: string
   siteLinksEmail: string
   siteLinksEmailAria: string
+  siteLinksSteam: string
+  siteLinksSteamAria: string
   footerDescription: string
   footerCopyright: string
   footerBrandSectionAria: string
@@ -173,6 +175,8 @@ export const enMessages: LocaleMessages = {
   siteLinksQQGroupAria: "Join HagiCode QQ group",
   siteLinksEmail: "Email",
   siteLinksEmailAria: "Send email to HagiCode support",
+  siteLinksSteam: "Steam",
+  siteLinksSteamAria: "Open the official HagiCode Steam store page",
   footerDescription:
     "HagiTrait is a searchable workspace for browsing audited agent catalogs, source summaries, and crawlable canonical detail pages within the HagiCode ecosystem.",
   footerCopyright: "© {{year}} HagiCode. All rights reserved.",

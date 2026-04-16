@@ -80,6 +80,14 @@ const traitSiteLinkDefinitions = {
     external: true,
     openInNewTab: false,
   },
+  steam: {
+    id: "steam" as const,
+    labelKey: "siteLinksSteam",
+    ariaLabelKey: "siteLinksSteamAria",
+    href: "https://store.steampowered.com/app/4625540/Hagicode/",
+    external: true,
+    openInNewTab: true,
+  },
 } as const
 
 const filingLinkDefinitions = {
@@ -215,6 +223,7 @@ export function getFooterLinkSections(
         buildLink(messages, traitSiteLinkDefinitions.discord),
         buildLink(messages, traitSiteLinkDefinitions.qqGroup),
         buildLink(messages, traitSiteLinkDefinitions.email),
+        buildLink(messages, traitSiteLinkDefinitions.steam),
       ],
     },
   ]
