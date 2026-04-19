@@ -2,6 +2,11 @@ import type { AgentCatalogItem, ContentLanguage } from "@/data/trait-catalog"
 import { TRAIT_SITE_NAME, TRAIT_SITE_TAGLINE, TRAIT_SITE_URL, TRAIT_SOCIAL_IMAGE_PATH } from "@/lib/site-config"
 import { buildAgentAlternatePaths, buildAgentLanguagePath } from "@/lib/route-projection"
 
+const HAGICODE_MAIN_URL = "https://hagicode.com/"
+const HAGICODE_DOCS_URL = "https://docs.hagicode.com/"
+const HAGICODE_COST_URL = "https://cost.hagicode.com/"
+const HAGICODE_SOUL_URL = "https://soul.hagicode.com/"
+
 export type MetadataLink = {
   hreflang: string
   href: string
@@ -45,12 +50,15 @@ export function buildHomeMetadata(totalAgents: number): PageMetadata {
         name: TRAIT_SITE_NAME,
         url: canonical,
         description,
+        isPartOf: buildEcosystemSiteReference(),
+        publisher: buildHagicodeOrganizationReference(),
         potentialAction: {
           "@type": "SearchAction",
           target: `${absoluteUrl("/agents/")}?q={search_term_string}`,
           "query-input": "required name=search_term_string",
         },
       },
+      buildHagicodeOrganizationNode(),
     ],
   })
 }
@@ -77,7 +85,10 @@ export function buildCatalogMetadata(totalAgents: number): PageMetadata {
           name: TRAIT_SITE_NAME,
           url: absoluteUrl("/"),
         },
+        about: buildHagicodeOrganizationReference(),
+        publisher: buildHagicodeOrganizationReference(),
       },
+      buildHagicodeOrganizationNode(),
     ],
   })
 }
@@ -109,6 +120,8 @@ export function buildAgentDetailMetadata(item: AgentCatalogItem, language: Conte
           name: `${TRAIT_SITE_NAME} Catalog`,
           url: absoluteUrl("/agents/"),
         },
+        about: buildHagicodeOrganizationReference(),
+        publisher: buildHagicodeOrganizationReference(),
         provider: {
           "@type": "Organization",
           name: item.sourceLabel,
@@ -116,6 +129,7 @@ export function buildAgentDetailMetadata(item: AgentCatalogItem, language: Conte
         },
         keywords: item.tags.join(", "),
       },
+      buildHagicodeOrganizationNode(),
     ],
   })
 }
@@ -185,4 +199,36 @@ function trimDescription(value: string) {
 
 function absoluteUrl(pathname: string) {
   return new URL(pathname, TRAIT_SITE_URL).toString()
+}
+
+function buildEcosystemSiteReference() {
+  return {
+    "@type": "WebSite",
+    "@id": `${HAGICODE_MAIN_URL}#website`,
+    name: "HagiCode",
+    url: HAGICODE_MAIN_URL,
+  }
+}
+
+function buildHagicodeOrganizationReference() {
+  return {
+    "@id": `${HAGICODE_MAIN_URL}#organization`,
+  }
+}
+
+function buildHagicodeOrganizationNode() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${HAGICODE_MAIN_URL}#organization`,
+    name: "HagiCode",
+    url: HAGICODE_MAIN_URL,
+    sameAs: [
+      HAGICODE_MAIN_URL,
+      HAGICODE_DOCS_URL,
+      HAGICODE_COST_URL,
+      HAGICODE_SOUL_URL,
+      TRAIT_SITE_URL,
+    ],
+  }
 }

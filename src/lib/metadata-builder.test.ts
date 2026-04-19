@@ -11,6 +11,8 @@ describe("metadata-builder", () => {
     expect(metadata.openGraph.url).toBe(metadata.canonical)
     expect(metadata.twitter.card).toBe("summary_large_image")
     expect(metadata.jsonLd[0]["@type"]).toBe("WebSite")
+    expect(metadata.jsonLd[0].isPartOf.url).toBe("https://hagicode.com/")
+    expect(metadata.jsonLd[1]["@type"]).toBe("Organization")
   })
 
   it("builds catalog metadata for the canonical directory route", () => {
@@ -19,6 +21,7 @@ describe("metadata-builder", () => {
     expect(metadata.canonical).toBe("https://trait.hagicode.com/agents/")
     expect(metadata.title).toContain("Catalog")
     expect(metadata.jsonLd[0]["@type"]).toBe("CollectionPage")
+    expect(metadata.jsonLd[0].publisher["@id"]).toBe("https://hagicode.com/#organization")
   })
 
   it("builds detail metadata with language alternates and structured data", () => {
@@ -35,5 +38,6 @@ describe("metadata-builder", () => {
     expect(metadata.alternates.some((alternate) => alternate.hreflang === "en")).toBe(true)
     expect(metadata.alternates.some((alternate) => alternate.hreflang === "zh-CN")).toBe(true)
     expect(metadata.jsonLd[0]["@type"]).toBe("CreativeWork")
+    expect(metadata.jsonLd[0].publisher["@id"]).toBe("https://hagicode.com/#organization")
   })
 })
