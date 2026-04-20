@@ -1,3 +1,7 @@
+type CopyCommandDocument = Document & {
+  execCommand?: (commandId: string, showUI?: boolean, value?: string) => boolean
+}
+
 export async function copyText(value: string): Promise<boolean> {
   if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
     try {
@@ -12,8 +16,10 @@ export async function copyText(value: string): Promise<boolean> {
 }
 
 export function copyTextWithDomFallback(value: string, doc?: Document): boolean {
-  const activeDocument = doc ?? (typeof document === "undefined" ? undefined : document)
-  if (!activeDocument || !activeDocument.body || typeof activeDocument.execCommand !== "function") {
+  const activeDocument = (doc ?? (typeof document === "undefined" ? undefined : document)) as CopyCommandDocument | undefined
+  const execCommand = activeDocument?.execCommand
+
+  if (!activeDocument || !activeDocument.body || typeof execCommand !== "function") {
     return false
   }
 
@@ -32,7 +38,7 @@ export function copyTextWithDomFallback(value: string, doc?: Document): boolean 
     textarea.focus()
     textarea.select()
     textarea.setSelectionRange(0, textarea.value.length)
-    return activeDocument.execCommand("copy")
+    return execCommand.call(activeDocument, "copy")
   } catch {
     return false
   } finally {

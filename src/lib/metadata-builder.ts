@@ -12,7 +12,87 @@ export type MetadataLink = {
   href: string
 }
 
-export type PageMetadata = {
+type HagicodeOrganizationReference = {
+  "@id": string
+}
+
+type EcosystemSiteReference = {
+  "@type": "WebSite"
+  "@id": string
+  name: string
+  url: string
+}
+
+type TraitSiteReference = {
+  "@type": "WebSite"
+  name: string
+  url: string
+}
+
+type TraitCatalogReference = {
+  "@type": "CollectionPage"
+  name: string
+  url: string
+}
+
+type SearchActionNode = {
+  "@type": "SearchAction"
+  target: string
+  "query-input": string
+}
+
+type OrganizationNode = {
+  "@context": "https://schema.org"
+  "@type": "Organization"
+  "@id": string
+  name: string
+  url: string
+  sameAs: string[]
+}
+
+type WebsiteNode = {
+  "@context": "https://schema.org"
+  "@type": "WebSite"
+  name: string
+  url: string
+  description: string
+  isPartOf: EcosystemSiteReference
+  publisher: HagicodeOrganizationReference
+  potentialAction: SearchActionNode
+}
+
+type CollectionPageNode = {
+  "@context": "https://schema.org"
+  "@type": "CollectionPage"
+  name: string
+  url: string
+  description: string
+  isPartOf: TraitSiteReference
+  about: HagicodeOrganizationReference
+  publisher: HagicodeOrganizationReference
+}
+
+type CreativeWorkNode = {
+  "@context": "https://schema.org"
+  "@type": "CreativeWork"
+  name: string
+  description: string
+  inLanguage: ContentLanguage
+  url: string
+  isPartOf: TraitCatalogReference
+  about: HagicodeOrganizationReference
+  publisher: HagicodeOrganizationReference
+  provider: {
+    "@type": "Organization"
+    name: string
+    url: string
+  }
+  keywords: string
+}
+
+type JsonLdNode = WebsiteNode | CollectionPageNode | CreativeWorkNode | OrganizationNode
+
+export type PageMetadata<TJsonLd extends readonly JsonLdNode[] = readonly JsonLdNode[]> = {
   title: string
   description: string
   canonical: string
@@ -30,10 +110,10 @@ export type PageMetadata = {
     image: string
   }
   alternates: MetadataLink[]
-  jsonLd: Record<string, unknown>[]
+  jsonLd: TJsonLd
 }
 
-export function buildHomeMetadata(totalAgents: number): PageMetadata {
+export function buildHomeMetadata(totalAgents: number): PageMetadata<readonly [WebsiteNode, OrganizationNode]> {
   const title = `${TRAIT_SITE_NAME} | Search ${totalAgents} HagiCode Agents`
   const description = `${TRAIT_SITE_TAGLINE} Browse ${totalAgents} canonical entries with server-rendered summaries.`
   const canonical = absoluteUrl("/")
@@ -63,7 +143,7 @@ export function buildHomeMetadata(totalAgents: number): PageMetadata {
   })
 }
 
-export function buildCatalogMetadata(totalAgents: number): PageMetadata {
+export function buildCatalogMetadata(totalAgents: number): PageMetadata<readonly [CollectionPageNode, OrganizationNode]> {
   const title = `${TRAIT_SITE_NAME} Catalog | Browse ${totalAgents} Canonical Agents`
   const description = `Browse ${totalAgents} canonical agents with server-rendered summaries, source metadata, language availability, and direct detail routes.`
   const canonical = absoluteUrl("/agents/")
@@ -93,7 +173,7 @@ export function buildCatalogMetadata(totalAgents: number): PageMetadata {
   })
 }
 
-export function buildAgentDetailMetadata(item: AgentCatalogItem, language: ContentLanguage): PageMetadata {
+export function buildAgentDetailMetadata(item: AgentCatalogItem, language: ContentLanguage): PageMetadata<readonly [CreativeWorkNode, OrganizationNode]> {
   const variant = item.variants[language] ?? item.variants[item.defaultLanguage]
   const pagePath = buildAgentLanguagePath(item, language)
   const canonical = absoluteUrl(pagePath)
@@ -134,7 +214,7 @@ export function buildAgentDetailMetadata(item: AgentCatalogItem, language: Conte
   })
 }
 
-function buildBaseMetadata({
+function buildBaseMetadata<TJsonLd extends readonly JsonLdNode[]>({
   title,
   description,
   canonical,
@@ -147,8 +227,8 @@ function buildBaseMetadata({
   canonical: string
   type: "website" | "article"
   alternates?: MetadataLink[]
-  jsonLd: Record<string, unknown>[]
-}): PageMetadata {
+  jsonLd: TJsonLd
+}): PageMetadata<TJsonLd> {
   const image = absoluteUrl(TRAIT_SOCIAL_IMAGE_PATH)
 
   return {
@@ -207,13 +287,13 @@ function buildEcosystemSiteReference() {
     "@id": `${HAGICODE_MAIN_URL}#website`,
     name: "HagiCode",
     url: HAGICODE_MAIN_URL,
-  }
+  } satisfies EcosystemSiteReference
 }
 
 function buildHagicodeOrganizationReference() {
   return {
     "@id": `${HAGICODE_MAIN_URL}#organization`,
-  }
+  } satisfies HagicodeOrganizationReference
 }
 
 function buildHagicodeOrganizationNode() {
@@ -230,5 +310,5 @@ function buildHagicodeOrganizationNode() {
       HAGICODE_SOUL_URL,
       TRAIT_SITE_URL,
     ],
-  }
+  } satisfies OrganizationNode
 }
