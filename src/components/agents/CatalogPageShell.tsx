@@ -109,6 +109,14 @@ export function CatalogPageShell({ snapshot, initialLocale = "en" }: CatalogPage
     return () => window.clearTimeout(timer)
   }, [copyOriginalState])
 
+  useEffect(() => {
+    if (typeof document === "undefined") {
+      return
+    }
+
+    document.documentElement.lang = locale
+  }, [locale])
+
   function updateFilters(partial: Partial<RouteState["filters"]>) {
     applyRouteState(
       {

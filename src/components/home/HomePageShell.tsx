@@ -41,6 +41,14 @@ export function HomePageShell({ featuredItemsByLocale, sources, metrics, initial
     return () => window.clearInterval(timer)
   }, [featuredSlides.length])
 
+  useEffect(() => {
+    if (typeof document === "undefined") {
+      return
+    }
+
+    document.documentElement.lang = locale
+  }, [locale])
+
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[color:var(--surface-base)] text-[color:var(--ink-strong)]">
       <div className="background-wash pointer-events-none fixed inset-0" />

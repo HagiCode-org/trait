@@ -100,6 +100,7 @@ describe("HomePageShell", () => {
   afterEach(() => {
     act(() => root.unmount())
     container.remove()
+    document.documentElement.lang = ""
   })
 
   it("highlights the gallery section and renders locale-specific featured cards", async () => {
@@ -123,6 +124,7 @@ describe("HomePageShell", () => {
     expect(featuredCardLink.textContent).toContain("中文架构专家。")
     expect(container.textContent).toContain("Star 数")
     expect(container.textContent).not.toContain("Planner")
+    expect(document.documentElement.lang).toBe("zh-CN")
   })
 })
 
