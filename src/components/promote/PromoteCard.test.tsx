@@ -14,6 +14,7 @@ const activePromotion = {
   description: '中文文案',
   link: 'https://example.invalid/one',
   platform: 'steam',
+  ctaLabel: '加入愿望单',
 };
 
 describe('PromoteCard', () => {
@@ -35,7 +36,7 @@ describe('PromoteCard', () => {
     expect(markup).toContain('promote-card__surface');
     expect(markup).toContain('promote-card__close');
     expect(markup).toContain('aria-label="关闭推广信息"');
-    expect(markup).toContain('aria-label="立刻前往: 立即添加到愿望单"');
+    expect(markup).toContain('aria-label="加入愿望单: 立即添加到愿望单"');
   });
 
   it('renders nothing when no active promotion exists', () => {
@@ -61,6 +62,7 @@ describe('PromoteCard', () => {
           id: 'p1',
           title: { en: 'Wishlist Now', zh: '立即添加到愿望单' },
           description: { en: 'English copy', zh: '中文文案' },
+          cta: { en: 'Wishlist on Steam', zh: '加入愿望单' },
           link: 'https://example.invalid/one',
         }] });
       }
@@ -77,14 +79,14 @@ describe('PromoteCard', () => {
     });
 
     await vi.waitFor(() => expect(host.textContent).toContain('Wishlist Now'));
-    expect(host.textContent).toContain('GO');
+    expect(host.textContent).toContain('Wishlist on Steam');
 
     await act(async () => {
       document.documentElement.lang = 'zh-CN';
     });
 
     await vi.waitFor(() => expect(host.textContent).toContain('立即添加到愿望单'));
-    expect(host.textContent).toContain('立刻前往');
+    expect(host.textContent).toContain('加入愿望单');
 
     await act(async () => {
       root.unmount();

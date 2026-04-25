@@ -14,10 +14,6 @@ const DEFAULT_FOOTER_SELECTOR = 'footer, [data-footer-root], .footer';
 const DISMISSED_PROMOTIONS_STORAGE_KEY = 'hagicode:promote-card:dismissed-signature';
 const TRAIT_UI_LOCALE_STORAGE_KEY = 'trait-ui-locale';
 
-function ctaLabel(locale: string | undefined) {
-  return locale?.toLowerCase().startsWith('zh') ? '立刻前往' : 'GO';
-}
-
 function platformLabel(platform: string | null, locale: string | undefined) {
   if (platform) return platform;
   return locale?.toLowerCase().startsWith('zh') ? '推荐' : 'Promoted';
@@ -140,13 +136,13 @@ export function PromoteCard({
         <button type="button" className="promote-card__close" onClick={dismissPromotion} aria-label={closeLabel(effectiveLocale)}>
           <span aria-hidden="true">×</span>
         </button>
-        <button type="button" className="promote-card__surface" onClick={openPromotion} aria-label={`${ctaLabel(effectiveLocale)}: ${promotion.title}`}>
+        <button type="button" className="promote-card__surface" onClick={openPromotion} aria-label={`${promotion.ctaLabel}: ${promotion.title}`}>
           <span className="promote-card__body">
             <span className="promote-card__badge">{platformLabel(promotion.platform, effectiveLocale)}</span>
             <span className="promote-card__title">{promotion.title}</span>
             <span className="promote-card__description">{promotion.description}</span>
           </span>
-          <span className="promote-card__cta" aria-hidden="true">{ctaLabel(effectiveLocale)}</span>
+          <span className="promote-card__cta" aria-hidden="true">{promotion.ctaLabel}</span>
         </button>
       </div>
     </section>
