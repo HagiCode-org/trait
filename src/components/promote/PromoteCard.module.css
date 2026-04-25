@@ -17,6 +17,12 @@
   inset-inline: 0;
   bottom: max(1rem, env(safe-area-inset-bottom));
   z-index: 70;
+  pointer-events: none;
+}
+
+.promoteCard :global(.promote-card__inner) {
+  position: relative;
+  pointer-events: auto;
   width: min(72rem, calc(100vw - 1rem));
   margin-inline: auto;
   overflow: hidden;
@@ -58,5 +64,5 @@
 .promoteCard :global(.promote-card__surface:hover .promote-card__cta),
 .promoteCard :global(.promote-card__surface:focus-visible .promote-card__cta) { transform: translateX(2px); }
 
-@media (max-width: 960px) { .promoteCard { width: min(100vw - 1rem, 44rem); } .promoteCard :global(.promote-card__surface) { grid-template-columns: 1fr; padding-inline-end: 3.6rem; } .promoteCard :global(.promote-card__body) { grid-template-columns: 1fr; align-items: start; row-gap: 0.3rem; } }
-@media (max-width: 640px) { .promoteCard { bottom: 0.5rem; width: calc(100vw - 0.75rem); border-radius: 1rem; } .promoteCard :global(.promote-card__surface) { padding: 1rem 3.45rem 0.85rem 0.85rem; } .promoteCard :global(.promote-card__title), .promoteCard :global(.promote-card__description) { font-size: 0.92rem; } .promoteCard :global(.promote-card__cta) { min-height: 2.5rem; } }
+@media (max-width: 960px) { .promoteCard :global(.promote-card__inner) { width: min(100vw - 1rem, 44rem); } .promoteCard :global(.promote-card__surface) { grid-template-columns: 1fr; padding-inline-end: 3.6rem; } .promoteCard :global(.promote-card__body) { grid-template-columns: 1fr; align-items: start; row-gap: 0.3rem; } }
+@media (max-width: 640px) { .promoteCard :global(.promote-card__inner) { width: calc(100vw - 0.75rem); border-radius: 1rem; } .promoteCard :global(.promote-card__surface) { padding: 1rem 3.45rem 0.85rem 0.85rem; } .promoteCard :global(.promote-card__title), .promoteCard :global(.promote-card__description) { font-size: 0.92rem; } .promoteCard :global(.promote-card__cta) { min-height: 2.5rem; } }

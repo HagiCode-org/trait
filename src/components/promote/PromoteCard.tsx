@@ -136,17 +136,19 @@ export function PromoteCard({
 
   return (
     <section className={className} data-promote-card aria-label={effectiveLocale.toLowerCase().startsWith('zh') ? '推广信息' : 'Promotion'}>
-      <button type="button" className="promote-card__close" onClick={dismissPromotion} aria-label={closeLabel(effectiveLocale)}>
-        <span aria-hidden="true">×</span>
-      </button>
-      <button type="button" className="promote-card__surface" onClick={openPromotion} aria-label={`${ctaLabel(effectiveLocale)}: ${promotion.title}`}>
-        <span className="promote-card__body">
-          <span className="promote-card__badge">{platformLabel(promotion.platform, effectiveLocale)}</span>
-          <span className="promote-card__title">{promotion.title}</span>
-          <span className="promote-card__description">{promotion.description}</span>
-        </span>
-        <span className="promote-card__cta" aria-hidden="true">{ctaLabel(effectiveLocale)}</span>
-      </button>
+      <div className="promote-card__inner">
+        <button type="button" className="promote-card__close" onClick={dismissPromotion} aria-label={closeLabel(effectiveLocale)}>
+          <span aria-hidden="true">×</span>
+        </button>
+        <button type="button" className="promote-card__surface" onClick={openPromotion} aria-label={`${ctaLabel(effectiveLocale)}: ${promotion.title}`}>
+          <span className="promote-card__body">
+            <span className="promote-card__badge">{platformLabel(promotion.platform, effectiveLocale)}</span>
+            <span className="promote-card__title">{promotion.title}</span>
+            <span className="promote-card__description">{promotion.description}</span>
+          </span>
+          <span className="promote-card__cta" aria-hidden="true">{ctaLabel(effectiveLocale)}</span>
+        </button>
+      </div>
     </section>
   );
 }

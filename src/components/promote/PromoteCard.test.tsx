@@ -31,6 +31,7 @@ describe('PromoteCard', () => {
     expect(markup).toContain('data-promote-card="true"');
     expect(markup).toContain('立即添加到愿望单');
     expect(markup).toContain('中文文案');
+    expect(markup).toContain('promote-card__inner');
     expect(markup).toContain('promote-card__surface');
     expect(markup).toContain('promote-card__close');
     expect(markup).toContain('aria-label="关闭推广信息"');
