@@ -51,6 +51,7 @@
 }
 
 .promoteCard :global(.promote-card__surface) { appearance: none; display: grid; width: 100%; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 1rem; border: 0; border-radius: inherit; background: transparent; color: inherit; cursor: pointer; padding: 1.1rem 3.8rem 0.95rem 1rem; text-align: left; }
+.promoteCard :global(.promote-card__surface[data-has-image='true']) { grid-template-columns: minmax(0, 1fr) clamp(8.5rem, 16vw, 11rem) auto; }
 .promoteCard :global(.promote-card__surface:hover),
 .promoteCard :global(.promote-card__surface:focus-visible) { transform: translateY(-1px); }
 .promoteCard :global(.promote-card__surface:focus-visible),
@@ -60,9 +61,11 @@
 .promoteCard :global(.promote-card__body) { min-width: 0; width: 100%; display: grid; grid-template-columns: auto minmax(13rem, 0.75fr) minmax(18rem, 1.15fr); align-items: center; column-gap: 1rem; row-gap: 0.22rem; }
 .promoteCard :global(.promote-card__title) { margin: 0; color: var(--promote-text); font-size: 0.98rem; font-weight: 600; line-height: 1.34; letter-spacing: 0.01em; }
 .promoteCard :global(.promote-card__description) { margin: 0; color: var(--promote-muted); font-size: 0.98rem; font-weight: 600; line-height: 1.34; letter-spacing: 0.01em; }
+.promoteCard :global(.promote-card__media) { align-self: stretch; width: clamp(8.5rem, 16vw, 11rem); min-width: 0; overflow: hidden; border: 1px solid var(--promote-chip-border); border-radius: 1rem; background: var(--promote-chip-bg); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04); }
+.promoteCard :global(.promote-card__image) { display: block; width: 100%; height: 100%; min-height: 5.5rem; object-fit: cover; }
 .promoteCard :global(.promote-card__cta) { display: inline-flex; align-items: center; justify-content: center; min-height: 2.6rem; min-width: 7.5rem; border: 1px solid var(--promote-chip-border); border-radius: 999px; background: var(--promote-cta-bg); color: var(--promote-cta-text); font-size: 0.875rem; font-weight: 700; padding: 0 1rem; text-decoration: none; white-space: nowrap; box-shadow: 0 10px 18px rgba(15, 23, 42, 0.16); transition: transform 0.18s ease; }
 .promoteCard :global(.promote-card__surface:hover .promote-card__cta),
 .promoteCard :global(.promote-card__surface:focus-visible .promote-card__cta) { transform: translateX(2px); }
 
-@media (max-width: 960px) { .promoteCard :global(.promote-card__inner) { width: min(100vw - 1rem, 44rem); } .promoteCard :global(.promote-card__surface) { grid-template-columns: 1fr; padding-inline-end: 3.6rem; } .promoteCard :global(.promote-card__body) { grid-template-columns: 1fr; align-items: start; row-gap: 0.3rem; } }
+@media (max-width: 960px) { .promoteCard :global(.promote-card__inner) { width: min(100vw - 1rem, 44rem); } .promoteCard :global(.promote-card__surface) { grid-template-columns: 1fr; padding-inline-end: 3.6rem; } .promoteCard :global(.promote-card__body) { grid-template-columns: 1fr; align-items: start; row-gap: 0.3rem; } .promoteCard :global(.promote-card__media) { width: min(100%, 15rem); } }
 @media (max-width: 640px) { .promoteCard :global(.promote-card__inner) { width: calc(100vw - 0.75rem); border-radius: 1rem; } .promoteCard :global(.promote-card__surface) { padding: 1rem 3.45rem 0.85rem 0.85rem; } .promoteCard :global(.promote-card__title), .promoteCard :global(.promote-card__description) { font-size: 0.92rem; } .promoteCard :global(.promote-card__cta) { min-height: 2.5rem; } }
