@@ -95,9 +95,10 @@ describe("CatalogPageShell", () => {
     window.history.replaceState(null, "", "/agents/?agent=typescript-reviewer&variant=en")
     await renderShell()
 
-    const localeButton = getRequiredElement('[data-locale-switch="en"]') as HTMLButtonElement
+    const localeSelect = getRequiredElement('[data-locale-select="true"]') as HTMLSelectElement
     act(() => {
-      localeButton.click()
+      localeSelect.value = "en"
+      localeSelect.dispatchEvent(new Event("change", { bubbles: true }))
     })
 
     expect(getPanel("desktop").textContent).toContain("Close detail")

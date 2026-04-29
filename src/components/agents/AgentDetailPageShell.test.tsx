@@ -58,7 +58,7 @@ describe("AgentDetailPageShell", () => {
     })
 
     expect(document.documentElement.lang).toBe("zh-CN")
-    expect(getRequiredElement('[data-locale-switch="zh-CN"]').className).toContain("is-active")
+    expect((getRequiredElement('[data-locale-select="true"]') as HTMLSelectElement).value).toBe("zh-CN")
     expect(container.textContent).toContain("返回目录")
     expect(container.textContent).toContain("软件架构专家")
   })
@@ -69,9 +69,10 @@ describe("AgentDetailPageShell", () => {
       initialLocale: "en",
     })
 
-    const localeButton = getRequiredElement('[data-locale-switch="zh-CN"]') as HTMLButtonElement
+    const localeSelect = getRequiredElement('[data-locale-select="true"]') as HTMLSelectElement
     act(() => {
-      localeButton.click()
+      localeSelect.value = "zh-CN"
+      localeSelect.dispatchEvent(new Event("change", { bubbles: true }))
     })
 
     expect(window.location.pathname).toBe("/agents/architect/zh-CN/")
@@ -94,7 +95,7 @@ describe("AgentDetailPageShell", () => {
 
     expect(window.location.pathname).toBe("/agents/architect/")
     expect(document.documentElement.lang).toBe("en")
-    expect(getRequiredElement('[data-locale-switch="en"]').className).toContain("is-active")
+    expect((getRequiredElement('[data-locale-select="true"]') as HTMLSelectElement).value).toBe("en")
     expect(document.querySelector('link[rel="canonical"]')?.getAttribute("href")).toBe("http://localhost:3000/agents/architect/")
     expect(container.textContent).toContain("Back to catalog")
   })

@@ -1,4 +1,4 @@
-import type { UiLocale } from "@/data/trait-catalog"
+import { UI_LOCALE_LABELS, uiLocales, type UiLocale } from "@/data/trait-catalog"
 import type { LocaleMessages } from "@/i18n/locales/en"
 import { useTheme } from "@/lib/use-theme"
 
@@ -79,23 +79,20 @@ export function SiteHeader({ locale, messages, onLocaleChange }: SiteHeaderProps
               </button>
             </div>
 
-            <div className="inline-flex items-center gap-1 rounded-full border border-[color:var(--line-soft)] bg-[color:var(--surface-muted)] p-1">
-              <button
-                type="button"
-                data-locale-switch="en"
-                className={["filter-pill !min-h-0 !border-0 !px-3 !py-2 !text-xs", locale === "en" ? "is-active" : ""].join(" ")}
-                onClick={() => onLocaleChange("en")}
+            <div className="inline-flex items-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--surface-muted)] px-3 py-1.5">
+              <select
+                aria-label={messages.contentLanguageFilter}
+                data-locale-select="true"
+                value={locale}
+                className="site-locale-select min-w-[11rem] text-sm text-[color:var(--ink-strong)] outline-none"
+                onChange={(event) => onLocaleChange(event.target.value as UiLocale)}
               >
-                {messages.localeEnglish}
-              </button>
-              <button
-                type="button"
-                data-locale-switch="zh-CN"
-                className={["filter-pill !min-h-0 !border-0 !px-3 !py-2 !text-xs", locale === "zh-CN" ? "is-active" : ""].join(" ")}
-                onClick={() => onLocaleChange("zh-CN")}
-              >
-                {messages.localeChinese}
-              </button>
+                {uiLocales.map((option) => (
+                  <option key={option} value={option}>
+                    {UI_LOCALE_LABELS[option]}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>

@@ -1,3 +1,4 @@
+import type { UiLocale } from "@/data/trait-catalog"
 import footerSitesSnapshot from "@/data/generated/footer-sites.snapshot.json"
 
 export type SiteLinkId = string
@@ -18,7 +19,7 @@ export type SiteLinkSection = {
   links: readonly SiteLink[]
 }
 
-type SiteLocale = "zh-CN" | "en"
+type SiteLocale = UiLocale
 
 const NEW_TAB_TARGET = "_blank" as const
 const EXTERNAL_REL = "noopener noreferrer" as const
@@ -146,7 +147,28 @@ function resolveCatalogMetadata(url: string) {
 }
 
 function buildSnapshotAriaLabel(locale: SiteLocale, title: string) {
-  return locale === "zh-CN" ? `打开 ${title}` : `Open ${title}`
+  switch (locale) {
+    case "zh-CN":
+      return `打开 ${title}`
+    case "zh-Hant":
+      return `打開 ${title}`
+    case "ja-JP":
+      return `${title} を開く`
+    case "ko-KR":
+      return `${title} 열기`
+    case "de-DE":
+      return `${title} öffnen`
+    case "fr-FR":
+      return `Ouvrir ${title}`
+    case "es-ES":
+      return `Abrir ${title}`
+    case "pt-BR":
+      return `Abrir ${title}`
+    case "ru-RU":
+      return `Открыть ${title}`
+    default:
+      return `Open ${title}`
+  }
 }
 
 function resolveSnapshotRelatedLinks(locale: SiteLocale, localLinks: readonly SiteLink[]): SiteLink[] {

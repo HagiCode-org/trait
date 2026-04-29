@@ -61,9 +61,9 @@ describe("route-projection", () => {
   it("projects supported detail languages into UI locales with a predictable fallback", () => {
     expect(projectDetailLanguageToUiLocale("zh-CN")).toBe("zh-CN")
     expect(projectDetailLanguageToUiLocale("en")).toBe("en")
-    expect(projectDetailLanguageToUiLocale("ja-JP")).toBeNull()
-    expect(deriveDetailUiLocale("ja-JP")).toBe("en")
-    expect(deriveDetailUiLocale("ko-KR", "zh-CN")).toBe("zh-CN")
+    expect(projectDetailLanguageToUiLocale("ja-JP")).toBe("ja-JP")
+    expect(deriveDetailUiLocale("ja-JP")).toBe("ja-JP")
+    expect(deriveDetailUiLocale("ko-KR", "zh-CN")).toBe("ko-KR")
   })
 
   it("restores deep-link state and writes it back to query params", () => {

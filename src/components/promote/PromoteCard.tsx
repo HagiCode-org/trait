@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { resolveUiLocale } from '@/data/trait-catalog';
 import { loadFirstActivePromotion, type ActivePromotion } from '@/lib/promote-loader';
 
 type PromoteCardProps = {
@@ -20,6 +21,10 @@ function platformLabel(platform: string | null, locale: string | undefined) {
 }
 
 function closeLabel(locale: string | undefined) {
+  if (locale?.toLowerCase().startsWith('zh-hant') || locale === 'zh-HK' || locale === 'zh-TW') {
+    return '關閉推廣資訊';
+  }
+
   return locale?.toLowerCase().startsWith('zh') ? '关闭推广信息' : 'Dismiss promotion';
 }
 
@@ -27,7 +32,7 @@ function readStoredLocale(): string | null {
   if (typeof window === 'undefined') return null;
   try {
     const stored = window.localStorage.getItem(TRAIT_UI_LOCALE_STORAGE_KEY);
-    return stored === 'zh-CN' || stored === 'en' ? stored : null;
+    return resolveUiLocale(stored);
   } catch {
     return null;
   }

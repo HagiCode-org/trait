@@ -249,8 +249,20 @@ function formatMetricValue(value: number | null, locale: UiLocale) {
 }
 
 function pickFeaturedVariant(item: AgentCatalogItem, locale: UiLocale) {
-  const requestedLanguage = locale === "zh-CN" ? "zh-CN" : "en"
-  return item.variants[requestedLanguage] ?? item.variants[item.defaultLanguage] ?? item.variants[item.availableLanguages[0]]
+  const candidates = locale === "zh-Hant"
+    ? ["zh-Hant", "zh-CN", "en"]
+    : locale.startsWith("zh")
+      ? [locale, "zh-CN", "en"]
+      : [locale, "en"]
+
+  for (const language of candidates) {
+    const variant = item.variants[language]
+    if (variant) {
+      return variant
+    }
+  }
+
+  return item.variants[item.defaultLanguage] ?? item.variants[item.availableLanguages[0]]
 }
 
 function MetricCard({

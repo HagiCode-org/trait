@@ -1,9 +1,10 @@
+import type { UiLocale } from "@/data/trait-catalog"
 import type { LocaleMessages } from "@/i18n/locales/en"
 
 import { getFilingLinks, getFooterLinkSections, getSiteLinkRel, getSiteLinkTarget } from "./site-links"
 
 type SiteFooterProps = {
-  locale: "zh-CN" | "en"
+  locale: UiLocale
   messages: LocaleMessages
 }
 

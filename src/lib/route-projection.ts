@@ -1,4 +1,5 @@
 import {
+  DEFAULT_UI_LOCALE,
   agentCatalogSnapshot,
   agentTypes,
   contentLanguages,
@@ -6,7 +7,7 @@ import {
   emptyDetailRouteState,
   isAgentType,
   isContentLanguage,
-  isUiLocale,
+  resolveUiLocale,
   sourceCatalog,
   type AgentCatalogItem,
   type AgentCatalogSnapshot,
@@ -152,12 +153,12 @@ export function pickDetailLanguage(item: AgentCatalogItem, requestedLanguage: Co
 }
 
 export function projectDetailLanguageToUiLocale(language: ContentLanguage | null | undefined): UiLocale | null {
-  return isUiLocale(language) ? language : null
+  return resolveUiLocale(language)
 }
 
 export function deriveDetailUiLocale(
   language: ContentLanguage | null | undefined,
-  fallbackLocale: UiLocale = "en"
+  fallbackLocale: UiLocale = DEFAULT_UI_LOCALE
 ): UiLocale {
   return projectDetailLanguageToUiLocale(language) ?? fallbackLocale
 }
