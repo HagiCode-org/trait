@@ -1,0 +1,92 @@
+localeEnglish: EN
+localeChinese: 中文
+themeDark: 深色
+themeLight: 淺色
+themeToggleAria: 切換網站主題
+homeEyebrow: HagiCode
+homeTitle: HagiTrait
+homeSummary: 可搜尋的 Agent 目錄 · 多語言詳情頁 · 可分享的規範連結。
+homePrimaryCta: 進入 Gallery
+homeSecondaryCta: 了解 HagiCode
+homeGalleryEyebrow: Gallery
+homeFeaturedTitle: 高效 Agent 的關鍵特質
+homeFeaturedSummary: 瀏覽從網際網路蒐集並經過大量驗證的可靠 Agent 描述。
+homeSourcesTitle: 已追蹤來源
+homeMetricAgents: Canonical Agent
+homeMetricLanguages: 語言
+homeMetricSources: 來源
+homeMetricTypes: Agent 類型
+filtersTitle: 更快找到答案
+searchLabel: 搜尋目標 Agent
+searchPlaceholder: 搜尋 reviewer、build、kotlin、security、gradle 等高訊號能力...
+resetFilters: 重設篩選
+sourceFilter: 來源
+contentLanguageFilter: 內容語言
+typeFilter: 類型
+allSources: 全部來源
+allLanguages: 全部語言
+allTypes: 全部類型
+resultCount_one: 1 筆結果
+resultCount_other: "{{count}} 筆結果"
+catalogTitle: 可靠 Agent Gallery
+catalogSummary: 集中瀏覽經過驗證的 Agent 描述，快速鎖定適合當前任務的特質。
+catalogIntro: 依來源、語言與類型篩選可靠 Agent，直接進入可分享的規範詳情。
+openDetail: 查看詳情
+quickView: 快速查看
+activeCard: 目前選取
+viewCanonicalPage: 開啟頁面
+emptyTitle: 目前的篩選條件沒有符合的 Agent。
+emptySummary: 試試其他關鍵字，或放寬一個條件，繼續尋找可重用的 Agent。
+clearFilters: 清除篩選
+detailTitle: Agent 詳情
+detailSummary: 直接閱讀並分享規範內容，讓可靠 Agent 能力更容易重用。
+detailNotFoundTitle: 這個深層連結已無法對應到目前追蹤的 Agent。
+detailNotFoundSummary: 返回目錄，繼續搜尋仍在追蹤中的可靠 Agent。
+fallbackNotice: 找不到請求的語言變體，改為顯示 {{language}}。
+canonicalId: Canonical ID
+sourceRepo: 來源倉庫
+sourceType: 來源類型
+availableLanguages: 可用語言
+tools: 工具
+model: 模型
+tags: 標籤
+openSource: 開啟來源
+copyLink: 複製連結
+copyOriginal: 複製原文
+copied: 已複製
+copyFailed: 複製失敗
+closeDetail: 關閉詳情
+mobileDetail: 行動版詳情檢視
+languageSwitch: 詳情語言
+backToCatalog: 返回目錄
+shareableLink: 分享連結
+typeReviewer: 審查型
+typeBuildResolver: 建置修復型
+headerBrandBadge: ASTRO 目錄站
+headerDescription: 搜尋並瀏覽 HagiCode 平台已審核的 Agent 目錄。
+headerNavAria: 主導航
+siteLinksDocs: 文件
+siteLinksDocsAria: 開啟 HagiCode 文件
+siteLinksWebsite: 官網
+siteLinksWebsiteAria: 開啟 HagiCode 官網
+siteLinksSoul: Soul
+siteLinksSoulAria: 開啟 HagiSoul 建構器
+siteLinksGithub: GitHub
+siteLinksGithubAria: 開啟 HagiCode GitHub 組織
+siteLinksDiscord: Discord
+siteLinksDiscordAria: 加入 HagiCode Discord 社群
+siteLinksQQGroup: QQ 群
+siteLinksQQGroupAria: 加入 HagiCode QQ 群
+siteLinksEmail: 電子郵件
+siteLinksEmailAria: 寄信給 HagiCode 支援團隊
+siteLinksSteam: Steam
+siteLinksSteamAria: 開啟 HagiCode 官方 Steam 商店頁
+footerDescription: HagiTrait 是 HagiCode 生態內可搜尋的工作台，用於瀏覽可追溯的 Agent 目錄、來源摘要與可抓取的規範詳情頁。
+footerCopyright: © {{year}} HagiCode。保留所有權利。
+footerBrandSectionAria: 品牌資訊
+footerSectionRelated: 相關連結
+footerSectionCommunity: 社群
+siteLinksIcpAria: ICP 備案資訊
+siteLinksPublicSecurityAria: 公安備案資訊
+sourceLastSync: 最近同步
+sourceStars: Star 數

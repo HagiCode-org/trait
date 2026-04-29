@@ -1,0 +1,92 @@
+localeEnglish: EN
+localeChinese: 中文
+themeDark: Тёмная
+themeLight: Светлая
+themeToggleAria: Переключить тему сайта
+homeEyebrow: HagiCode
+homeTitle: HagiTrait
+homeSummary: Каталог Agents с поиском · Многоязычные страницы деталей · Канонические ссылки для шаринга.
+homePrimaryCta: Открыть Gallery
+homeSecondaryCta: Узнать о HagiCode
+homeGalleryEyebrow: Gallery
+homeFeaturedTitle: Ключевые черты высокоэффективных Agents
+homeFeaturedSummary: Просматривайте надёжные описания Agents, собранные из интернета и тщательно проверенные.
+homeSourcesTitle: Отслеживаемые источники
+homeMetricAgents: Канонические Agents
+homeMetricLanguages: Языки
+homeMetricSources: Источники
+homeMetricTypes: Типы Agents
+filtersTitle: Находите быстрее
+searchLabel: Искать нужных Agents
+searchPlaceholder: Ищите reviewer, build, kotlin, security, gradle и другие высокосигнальные навыки...
+resetFilters: Сбросить фильтры
+sourceFilter: Источник
+contentLanguageFilter: Язык контента
+typeFilter: Тип
+allSources: Все источники
+allLanguages: Все языки
+allTypes: Все типы
+resultCount_one: 1 результат
+resultCount_other: "{{count}} результатов"
+catalogTitle: Надёжная Gallery Agents
+catalogSummary: Просматривайте проверенные описания Agents в одном месте и быстро находите нужные качества для текущей задачи.
+catalogIntro: Фильтруйте надёжных Agents по источнику, языку и типу и сразу переходите к спецификациям, которыми можно делиться.
+openDetail: Открыть детали
+quickView: Быстрый просмотр
+activeCard: Выбрано
+viewCanonicalPage: Открыть страницу
+emptyTitle: Ни один Agent не соответствует текущим фильтрам.
+emptySummary: Попробуйте другой запрос или ослабьте один из фильтров, чтобы продолжить поиск пригодных для повторного использования Agents.
+clearFilters: Очистить фильтры
+detailTitle: Детали Agent
+detailSummary: Читайте и делитесь каноническими спецификациями напрямую, чтобы надёжные возможности Agents было проще переиспользовать.
+detailNotFoundTitle: Эта глубокая ссылка больше не указывает на отслеживаемого Agent.
+detailNotFoundSummary: Вернитесь в каталог и продолжайте искать надёжных Agents, которые всё ещё отслеживаются.
+fallbackNotice: Запрошенный языковой вариант недоступен. Вместо него показан {{language}}.
+canonicalId: Canonical ID
+sourceRepo: Исходный репозиторий
+sourceType: Тип источника
+availableLanguages: Доступные языки
+tools: Инструменты
+model: Модель
+tags: Теги
+openSource: Открыть источник
+copyLink: Скопировать ссылку
+copyOriginal: Скопировать оригинал
+copied: Скопировано
+copyFailed: Не удалось скопировать
+closeDetail: Закрыть детали
+mobileDetail: Мобильный просмотр деталей
+languageSwitch: Язык варианта
+backToCatalog: Назад к каталогу
+shareableLink: Ссылка для шаринга
+typeReviewer: Reviewer
+typeBuildResolver: Решатель сборки
+headerBrandBadge: ASTRO CATALOG
+headerDescription: Ищите и просматривайте проверенные каталоги Agents для платформы HagiCode.
+headerNavAria: Основная навигация
+siteLinksDocs: Docs
+siteLinksDocsAria: Открыть документацию HagiCode
+siteLinksWebsite: Сайт
+siteLinksWebsiteAria: Открыть сайт HagiCode
+siteLinksSoul: Soul
+siteLinksSoulAria: Открыть HagiSoul builder
+siteLinksGithub: GitHub
+siteLinksGithubAria: Открыть GitHub-организацию HagiCode
+siteLinksDiscord: Discord
+siteLinksDiscordAria: Присоединиться к Discord-сообществу HagiCode
+siteLinksQQGroup: Группа QQ
+siteLinksQQGroupAria: Присоединиться к группе QQ HagiCode
+siteLinksEmail: Почта
+siteLinksEmailAria: Написать в поддержку HagiCode
+siteLinksSteam: Steam
+siteLinksSteamAria: Открыть официальную страницу HagiCode в Steam
+footerDescription: HagiTrait — это рабочее пространство с поиском для просмотра проверенных каталогов Agents, сводок по источникам и индексируемых канонических страниц деталей в экосистеме HagiCode.
+footerCopyright: © {{year}} HagiCode. Все права защищены.
+footerBrandSectionAria: Информация о бренде
+footerSectionRelated: Связанное
+footerSectionCommunity: Сообщество
+siteLinksIcpAria: Информация о регистрации ICP
+siteLinksPublicSecurityAria: Информация о регистрации общественной безопасности
+sourceLastSync: Последняя синхронизация
+sourceStars: Stars

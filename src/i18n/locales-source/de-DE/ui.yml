@@ -1,0 +1,92 @@
+localeEnglish: EN
+localeChinese: 中文
+themeDark: Dunkel
+themeLight: Hell
+themeToggleAria: Website-Theme wechseln
+homeEyebrow: HagiCode
+homeTitle: HagiTrait
+homeSummary: Durchsuchbarer Agent-Katalog · Mehrsprachige Detailseiten · Teilbare kanonische Links.
+homePrimaryCta: Zur Gallery
+homeSecondaryCta: HagiCode entdecken
+homeGalleryEyebrow: Gallery
+homeFeaturedTitle: Wesentliche Merkmale leistungsstarker Agents
+homeFeaturedSummary: Durchsuche verlässliche Agent-Beschreibungen, die aus dem Internet gesammelt und umfassend validiert wurden.
+homeSourcesTitle: Verfolgte Quellen
+homeMetricAgents: Kanonische Agents
+homeMetricLanguages: Sprachen
+homeMetricSources: Quellen
+homeMetricTypes: Agent-Typen
+filtersTitle: Schneller finden
+searchLabel: Ziel-Agents suchen
+searchPlaceholder: Suche nach reviewer, build, kotlin, security, gradle und anderen hochrelevanten Fähigkeiten...
+resetFilters: Filter zurücksetzen
+sourceFilter: Quelle
+contentLanguageFilter: Inhaltssprache
+typeFilter: Typ
+allSources: Alle Quellen
+allLanguages: Alle Sprachen
+allTypes: Alle Typen
+resultCount_one: 1 Ergebnis
+resultCount_other: "{{count}} Ergebnisse"
+catalogTitle: Verlässliche Agent Gallery
+catalogSummary: Durchsuche validierte Agent-Beschreibungen an einem Ort und finde schnell die Eigenschaften für die aktuelle Aufgabe.
+catalogIntro: Filtere verlässliche Agents nach Quelle, Sprache und Typ und springe direkt zu teilbaren Spezifikationen.
+openDetail: Details öffnen
+quickView: Schnellansicht
+activeCard: Ausgewählt
+viewCanonicalPage: Seite öffnen
+emptyTitle: Kein Agent passt zu den aktuellen Filtern.
+emptySummary: Probiere eine andere Suche oder lockere einen Filter, um weiter nutzbare Agents zu finden.
+clearFilters: Filter löschen
+detailTitle: Agent-Details
+detailSummary: Lies und teile kanonische Spezifikationen direkt, damit verlässliche Agent-Fähigkeiten leicht wiederverwendbar bleiben.
+detailNotFoundTitle: Dieser Deep Link verweist nicht mehr auf einen verfolgten Agent.
+detailNotFoundSummary: Kehre zum Verzeichnis zurück und suche weiter nach verlässlichen verfolgten Agents.
+fallbackNotice: Die angeforderte Sprachvariante ist nicht verfügbar. Stattdessen wird {{language}} angezeigt.
+canonicalId: Canonical ID
+sourceRepo: Quell-Repository
+sourceType: Quelltyp
+availableLanguages: Verfügbare Sprachen
+tools: Tools
+model: Modell
+tags: Tags
+openSource: Quelle öffnen
+copyLink: Link kopieren
+copyOriginal: Original kopieren
+copied: Kopiert
+copyFailed: Kopieren fehlgeschlagen
+closeDetail: Details schließen
+mobileDetail: Mobile Detailansicht
+languageSwitch: Variantensprache
+backToCatalog: Zurück zum Katalog
+shareableLink: Teilbarer Link
+typeReviewer: Reviewer
+typeBuildResolver: Build-Resolver
+headerBrandBadge: ASTRO CATALOG
+headerDescription: Durchsuche und erkunde geprüfte Agent-Kataloge für die HagiCode-Plattform.
+headerNavAria: Hauptnavigation
+siteLinksDocs: Dokumentation
+siteLinksDocsAria: HagiCode-Dokumentation öffnen
+siteLinksWebsite: Website
+siteLinksWebsiteAria: HagiCode-Website öffnen
+siteLinksSoul: Soul
+siteLinksSoulAria: HagiSoul-Builder öffnen
+siteLinksGithub: GitHub
+siteLinksGithubAria: HagiCode-GitHub-Organisation öffnen
+siteLinksDiscord: Discord
+siteLinksDiscordAria: HagiCode-Discord-Community beitreten
+siteLinksQQGroup: QQ-Gruppe
+siteLinksQQGroupAria: HagiCode-QQ-Gruppe beitreten
+siteLinksEmail: E-Mail
+siteLinksEmailAria: E-Mail an den HagiCode-Support senden
+siteLinksSteam: Steam
+siteLinksSteamAria: Die offizielle HagiCode-Steam-Seite öffnen
+footerDescription: HagiTrait ist ein durchsuchbarer Arbeitsbereich zum Erkunden geprüfter Agent-Kataloge, Quellenzusammenfassungen und crawlbarer kanonischer Detailseiten im HagiCode-Ökosystem.
+footerCopyright: © {{year}} HagiCode. Alle Rechte vorbehalten.
+footerBrandSectionAria: Markeninformationen
+footerSectionRelated: Verwandt
+footerSectionCommunity: Community
+siteLinksIcpAria: ICP-Registrierungsinformationen
+siteLinksPublicSecurityAria: Informationen zur Sicherheitsregistrierung
+sourceLastSync: Zuletzt synchronisiert
+sourceStars: Stars

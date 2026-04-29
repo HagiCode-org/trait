@@ -1,0 +1,92 @@
+localeEnglish: EN
+localeChinese: 中文
+themeDark: Escuro
+themeLight: Claro
+themeToggleAria: Alternar o tema do site
+homeEyebrow: HagiCode
+homeTitle: HagiTrait
+homeSummary: Catálogo de Agents pesquisável · Páginas de detalhe multilíngues · Links canônicos compartilháveis.
+homePrimaryCta: Entrar na Gallery
+homeSecondaryCta: Conhecer a HagiCode
+homeGalleryEyebrow: Gallery
+homeFeaturedTitle: Traços essenciais de Agents de alta performance
+homeFeaturedSummary: Navegue por descrições confiáveis de Agents coletadas da internet e amplamente validadas.
+homeSourcesTitle: Fontes rastreadas
+homeMetricAgents: Agents canônicos
+homeMetricLanguages: Idiomas
+homeMetricSources: Fontes
+homeMetricTypes: Tipos de Agent
+filtersTitle: Encontre mais rápido
+searchLabel: Pesquisar Agents-alvo
+searchPlaceholder: Pesquise reviewer, build, kotlin, security, gradle e outras capacidades de alto sinal...
+resetFilters: Redefinir filtros
+sourceFilter: Fonte
+contentLanguageFilter: Idioma do conteúdo
+typeFilter: Tipo
+allSources: Todas as fontes
+allLanguages: Todos os idiomas
+allTypes: Todos os tipos
+resultCount_one: 1 resultado
+resultCount_other: "{{count}} resultados"
+catalogTitle: Gallery de Agents confiáveis
+catalogSummary: Navegue por descrições validadas de Agents em um só lugar e encontre rápido os traços certos para a tarefa atual.
+catalogIntro: Filtre Agents confiáveis por fonte, idioma e tipo e vá direto para especificações compartilháveis.
+openDetail: Abrir detalhe
+quickView: Visualização rápida
+activeCard: Selecionado
+viewCanonicalPage: Abrir página
+emptyTitle: Nenhum Agent corresponde aos filtros atuais.
+emptySummary: Tente outra busca ou afrouxe um filtro para continuar encontrando Agents reutilizáveis.
+clearFilters: Limpar filtros
+detailTitle: Detalhe do Agent
+detailSummary: Leia e compartilhe especificações canônicas diretamente para manter capacidades confiáveis de Agent fáceis de reutilizar.
+detailNotFoundTitle: Este link profundo não aponta mais para um Agent rastreado.
+detailNotFoundSummary: Volte ao diretório e continue procurando Agents confiáveis ainda rastreados.
+fallbackNotice: A variante solicitada não está disponível. Exibindo {{language}} no lugar.
+canonicalId: Canonical ID
+sourceRepo: Repositório de origem
+sourceType: Tipo de origem
+availableLanguages: Idiomas disponíveis
+tools: Ferramentas
+model: Modelo
+tags: Tags
+openSource: Abrir origem
+copyLink: Copiar link
+copyOriginal: Copiar original
+copied: Copiado
+copyFailed: Falha ao copiar
+closeDetail: Fechar detalhe
+mobileDetail: Visualização móvel do detalhe
+languageSwitch: Idioma da variante
+backToCatalog: Voltar ao catálogo
+shareableLink: Link compartilhável
+typeReviewer: Reviewer
+typeBuildResolver: Resolutor de build
+headerBrandBadge: ASTRO CATALOG
+headerDescription: Pesquise e explore catálogos auditados de Agents para a plataforma HagiCode.
+headerNavAria: Navegação principal
+siteLinksDocs: Docs
+siteLinksDocsAria: Abrir a documentação da HagiCode
+siteLinksWebsite: Site
+siteLinksWebsiteAria: Abrir o site da HagiCode
+siteLinksSoul: Soul
+siteLinksSoulAria: Abrir o builder do HagiSoul
+siteLinksGithub: GitHub
+siteLinksGithubAria: Abrir a organização GitHub da HagiCode
+siteLinksDiscord: Discord
+siteLinksDiscordAria: Entrar na comunidade Discord da HagiCode
+siteLinksQQGroup: Grupo QQ
+siteLinksQQGroupAria: Entrar no grupo QQ da HagiCode
+siteLinksEmail: E-mail
+siteLinksEmailAria: Enviar e-mail ao suporte da HagiCode
+siteLinksSteam: Steam
+siteLinksSteamAria: Abrir a página oficial da HagiCode na Steam
+footerDescription: HagiTrait é um espaço pesquisável para navegar por catálogos auditados de Agents, resumos de fontes e páginas de detalhe canônicas rastreáveis dentro do ecossistema HagiCode.
+footerCopyright: © {{year}} HagiCode. Todos os direitos reservados.
+footerBrandSectionAria: Informações da marca
+footerSectionRelated: Relacionado
+footerSectionCommunity: Comunidade
+siteLinksIcpAria: Informações de registro ICP
+siteLinksPublicSecurityAria: Informações de registro de segurança pública
+sourceLastSync: Última sincronização
+sourceStars: Stars
