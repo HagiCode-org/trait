@@ -97,6 +97,15 @@ npm run dev:static
 
 `npm run dev:static` is an alias for the same Astro static-site dev flow and accepts the same extra CLI flags, for example `npm run dev:static -- --host 0.0.0.0 --port 36292`.
 
+## Localization Notes
+
+- YAML files in `src/i18n/locales-source/` are the source of truth for system-owned UI copy.
+- Generated TypeScript modules in `src/i18n/locales/` are runtime artifacts and must not be hand-edited.
+- `npm run dev`, `npm run build`, and `npm run test` prepare generated i18n resources before Astro, TypeScript, or Vitest consumes them.
+- Use `npm run i18n:generate` after editing YAML and `npm run i18n:check` before committing translation changes.
+- The runtime locale switcher now exposes `en`, `zh-CN`, `zh-Hant`, `ja-JP`, `ko-KR`, `de-DE`, `fr-FR`, `es-ES`, `pt-BR`, and `ru-RU`.
+- Detailed maintainer workflow is documented in `docs/i18n-hagi18n.md`.
+
 ## Build and verification
 
 ```bash
