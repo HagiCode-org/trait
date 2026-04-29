@@ -4,10 +4,10 @@ Trait UI translations are maintained as YAML source files under `src/i18n/locale
 
 ## Install and verify hagi18n
 
-Install the global CLI package:
+Install repository dependencies so the local `hagi18n` binary is available:
 
 ```bash
-npm install -g @hagicode/hagi18n@latest
+npm install
 ```
 
 Verify the CLI before using the Trait workflow:
@@ -16,7 +16,7 @@ Verify the CLI before using the Trait workflow:
 hagi18n info
 ```
 
-Trait scripts call the globally installed `hagi18n` binary directly. Do not use `npm exec hagi18n`; the npm package is scoped as `@hagicode/hagi18n`, and `npm exec hagi18n` resolves the wrong package name.
+Trait scripts resolve the repository-local `hagi18n` binary from `devDependencies`. Use the `npm run i18n:*` commands from this repository instead of relying on a global installation.
 
 ## Source and runtime contract
 

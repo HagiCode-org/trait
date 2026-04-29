@@ -43,6 +43,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.8",
     "@eslint/js": "^9.39.1",
+    "@hagicode/hagi18n": "^0.1.1",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
