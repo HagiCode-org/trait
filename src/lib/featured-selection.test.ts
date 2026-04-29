@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import type { AgentCatalogItem, AgentCatalogSnapshot } from "@/data/trait-catalog"
+import { uiLocales } from "@/data/trait-catalog"
 import { FEATURED_SELECTION_SIZE, chunkFeaturedItems, selectFeaturedItemsByLocale } from "@/lib/featured-selection"
 
 describe("featured-selection", () => {
@@ -19,7 +20,10 @@ describe("featured-selection", () => {
 
     expect(selections.en).toHaveLength(24)
     expect(selections["zh-CN"]).toHaveLength(24)
+    expect(Object.keys(selections).sort()).toEqual([...uiLocales].sort())
+    expect(selections["de-DE"]).toHaveLength(24)
     expect(selections["zh-CN"].every((item) => item.availableLanguages.includes("zh-CN"))).toBe(true)
+    expect(selections["de-DE"].every((item) => item.availableLanguages.includes("en"))).toBe(true)
   })
 
   it("chunks selected items into stable carousel slides", () => {

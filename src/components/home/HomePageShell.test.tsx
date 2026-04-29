@@ -9,8 +9,9 @@ vi.mock("@/lib/use-analytics", () => ({
 }))
 
 import { HomePageShell } from "@/components/home/HomePageShell"
-import type { AgentCatalogItem, SourceMeta } from "@/data/trait-catalog"
+import { uiLocales, type AgentCatalogItem, type SourceMeta } from "@/data/trait-catalog"
 import { buildAgentLanguagePath } from "@/lib/route-projection"
+import type { FeaturedItemsByLocale } from "@/lib/featured-selection"
 
 let container: HTMLDivElement
 let root: ReturnType<typeof createRoot>
@@ -50,10 +51,9 @@ const featuredEnItem = createAgentItem({
   },
 })
 
-const featuredItemsByLocale = {
-  en: [featuredEnItem],
-  "zh-CN": [featuredZhItem],
-}
+const featuredItemsByLocale = Object.fromEntries(
+  uiLocales.map((locale) => [locale, locale === "zh-CN" ? [featuredZhItem] : [featuredEnItem]])
+) as FeaturedItemsByLocale
 
 const sources: SourceMeta[] = [
   {
