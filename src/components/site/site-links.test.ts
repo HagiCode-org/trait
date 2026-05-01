@@ -9,9 +9,9 @@ describe("trait footer site links", () => {
     const sections = getFooterLinkSections(enMessages, "en")
     const related = sections.find((section) => section.id === "related")
 
-    expect(related?.links.map((link) => link.label).slice(0, 3)).toEqual(["HagiCode Docs", "HagiCode 主站", "Soul Builder"])
+    expect(related?.links.map((link) => link.label).slice(0, 3)).toEqual(["HagiCode Docs", "HagiCode Main Site", "Soul Builder"])
     expect(related?.links[0]).toMatchObject({
-      description: "使用指南",
+      description: "Official guides and references.",
     })
     expect(related?.links.some((link) => link.href === "https://trait.hagicode.com/")).toBe(false)
     expect(related?.links.some((link) => link.href === "https://builder.hagicode.com/")).toBe(true)

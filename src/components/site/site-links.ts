@@ -1,5 +1,5 @@
 import type { UiLocale } from "@/data/trait-catalog"
-import footerSitesSnapshot from "@/data/generated/footer-sites.snapshot.json"
+import { resolveFooterSiteEntryById, resolveFooterSiteEntryByUrl } from "./footer-sites"
 
 export type SiteLinkId = string
 
@@ -141,9 +141,8 @@ function normalizeUrl(url: string) {
   return normalized.toString()
 }
 
-function resolveCatalogMetadata(url: string) {
-  const normalizedUrl = normalizeUrl(url)
-  return footerSitesSnapshot.entries.find((entry) => normalizeUrl(entry.url) === normalizedUrl)
+function resolveCatalogMetadata(url: string, locale: SiteLocale) {
+  return resolveFooterSiteEntryByUrl(url, locale)
 }
 
 function buildSnapshotAriaLabel(locale: SiteLocale, title: string) {
@@ -174,10 +173,9 @@ function buildSnapshotAriaLabel(locale: SiteLocale, title: string) {
 function resolveSnapshotRelatedLinks(locale: SiteLocale, localLinks: readonly SiteLink[]): SiteLink[] {
   const localIds = new Set(localLinks.map((link) => link.id))
   const localUrls = new Set(localLinks.map((link) => normalizeUrl(link.href)))
-  const snapshotById = new Map(footerSitesSnapshot.entries.map((entry) => [entry.id, entry]))
 
   return DEFAULT_RELATED_SITE_ORDER.flatMap((siteId) => {
-    const entry = snapshotById.get(siteId)
+    const entry = resolveFooterSiteEntryById(siteId, locale)
     if (!entry || entry.id === CURRENT_SITE_ID) {
       return []
     }
@@ -218,7 +216,7 @@ export function getFooterLinkSections(
     buildLink(messages, traitSiteLinkDefinitions.website),
     buildLink(messages, traitSiteLinkDefinitions.soul),
   ].map((link) => {
-    const metadata = resolveCatalogMetadata(link.href)
+    const metadata = resolveCatalogMetadata(link.href, locale)
     if (!metadata) {
       return link
     }
