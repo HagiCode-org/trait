@@ -38,9 +38,14 @@ describe('PromoteCard', () => {
     expect(markup).toContain('data-promote-card="true"');
     expect(markup).toContain('立即添加到愿望单');
     expect(markup).toContain('中文文案');
+    expect(markup).toContain('data-promote-card-layout="compact"');
+    expect(markup).toContain('data-promote-card-shell="compact"');
     expect(markup).toContain('promote-card__inner');
     expect(markup).toContain('promote-card__surface');
     expect(markup).toContain('promote-card__close');
+    expect(markup).toContain('promote-card__close-icon');
+    expect(markup).toContain('promote-card__close-label');
+    expect(markup).toContain('>关闭<');
     expect(markup).toContain('data-has-image="true"');
     expect(markup).toContain('promote-card__image');
     expect(markup).toContain('src="https://index.hagicode.com/images/promotions/main-game.webp"');
