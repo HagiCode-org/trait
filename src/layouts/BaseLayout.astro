@@ -1,5 +1,6 @@
 ---
 import "@/index.css"
+import Analytics51LA from "@/components/51LAAnalytics.astro"
 import { PromoteCard } from "@/components/promote/PromoteCard"
 import promoteCardStyles from "@/components/promote/PromoteCard.module.css"
 import type { PageMetadata } from "@/lib/metadata-builder"
@@ -56,5 +57,6 @@ const { metadata, lang = "en" } = Astro.props as Props
   <body>
     <slot />
     <PromoteCard locale={lang} className={promoteCardStyles.promoteCard} client:load />
+    <Analytics51LA />
   </body>
 </html>
