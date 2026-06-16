@@ -15,11 +15,6 @@ const DEFAULT_FOOTER_SELECTOR = 'footer, [data-footer-root], .footer';
 const DISMISSED_PROMOTIONS_STORAGE_KEY = 'hagicode:promote-card:dismissed-signature';
 const TRAIT_UI_LOCALE_STORAGE_KEY = 'trait-ui-locale';
 
-function platformLabel(platform: string | null, locale: string | undefined) {
-  if (platform) return platform;
-  return locale?.toLowerCase().startsWith('zh') ? '推荐' : 'Promoted';
-}
-
 function closeLabel(locale: string | undefined) {
   if (locale?.toLowerCase().startsWith('zh-hant') || locale === 'zh-HK' || locale === 'zh-TW') {
     return '關閉推廣資訊';
@@ -163,7 +158,6 @@ export function PromoteCard({
           aria-label={`${promotion.ctaLabel}: ${promotion.title}`}
         >
           <span className="promote-card__body">
-            <span className="promote-card__badge">{platformLabel(promotion.platform, effectiveLocale)}</span>
             <span className="promote-card__title">{promotion.title}</span>
             <span className="promote-card__description">{promotion.description}</span>
           </span>
