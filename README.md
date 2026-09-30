@@ -7,7 +7,7 @@ Trait is the Astro-powered frontend workspace for `trait.hagicode.com`, focused 
 - The production entry now uses Astro static routes instead of a single Vite SPA shell.
 - Home, catalog, and canonical detail pages render their primary content directly into HTML.
 - Search, filters, UI locale switching, and contextual quick-view overlays still run as React islands.
-- SEO metadata, JSON-LD, `robots.txt`, and `sitemap.xml` are generated from the catalog snapshot during build.
+- SEO metadata and JSON-LD are generated from the catalog snapshot; Hagilight generates the shared `robots.txt` and sitemap.
 
 HagiLight `Footer` and `PromotoBanner` render from the Astro `BaseLayout`, outside the React page islands. The site-specific header remains in the React shells because its locale and theme controls drive Trait state; footer links, copyright, and floating promotion copy are not maintained locally.
 

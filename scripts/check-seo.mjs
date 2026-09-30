@@ -46,14 +46,14 @@ if (firstItem) {
   check(detailHtml.includes(firstItem.name), detailRoute, "agent detail content is missing from static HTML")
 }
 
-const sitemap = await fs.readFile(path.join(distDir, "sitemap.xml"), "utf8")
+const sitemap = await fs.readFile(path.join(distDir, "sitemap-0.xml"), "utf8")
 for (const route of expectedRoutes) {
   const url = new URL(route, "https://trait.hagicode.com").toString()
   check(sitemap.includes(`<loc>${url}</loc>`), route, "missing sitemap entry")
 }
 
 const robots = await fs.readFile(path.join(distDir, "robots.txt"), "utf8")
-check(robots.includes("Sitemap: https://trait.hagicode.com/sitemap.xml"), "/robots.txt", "missing sitemap reference")
+check(robots.includes("Sitemap: https://trait.hagicode.com/sitemap-index.xml"), "/robots.txt", "missing sitemap reference")
 
 if (failures.length > 0) {
   console.error(`SEO validation failed:\n${failures.map((entry) => `- ${entry}`).join("\n")}`)
