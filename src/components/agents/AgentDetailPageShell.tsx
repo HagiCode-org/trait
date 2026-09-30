@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from "react"
 import type { AgentCatalogItem, ContentLanguage, UiLocale } from "@/data/trait-catalog"
 import type { LocaleMessages } from "@/i18n/locales/en"
 import { formatMessage, useLocale } from "@/i18n/use-locale"
-import { SiteFooter } from "@/components/site/SiteFooter"
 import { SiteHeader } from "@/components/site/SiteHeader"
 import { MarkdownArticle } from "@/features/agents/components/MarkdownArticle"
 import { buildAgentVariantMarkdown } from "@/lib/agent-markdown"
@@ -228,9 +227,6 @@ export function AgentDetailPageShell({ item, initialLanguage, initialLocale = "e
         </section>
       </main>
 
-      <div className="relative mx-auto w-full max-w-[1480px] px-4 pb-6 sm:px-6 lg:px-8">
-        <SiteFooter locale={locale} messages={messages} />
-      </div>
     </div>
   )
 }

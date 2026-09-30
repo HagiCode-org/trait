@@ -48,14 +48,12 @@ async function createFixture(overrides = {}) {
     localeChinese: "中文",
     resultCount_one: "1 result",
     resultCount_other: "{{count}} results",
-    footerCopyright: "© {{year}} HagiCode. All rights reserved.",
   }
   const zhMessages = {
     localeEnglish: "EN",
     localeChinese: "中文",
     resultCount_one: "1 条结果",
     resultCount_other: "{{count}} 条结果",
-    footerCopyright: "© {{year}} HagiCode。保留所有权利。",
   }
 
   for (const locale of expectedLocales) {

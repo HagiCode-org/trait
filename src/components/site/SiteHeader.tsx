@@ -2,7 +2,7 @@ import { UI_LOCALE_LABELS, uiLocales, type UiLocale } from "@/data/trait-catalog
 import type { LocaleMessages } from "@/i18n/locales/en"
 import { useTheme } from "@/lib/use-theme"
 
-import { getHeaderNavigationLinks, getSiteLinkRel, getSiteLinkTarget } from "./site-links"
+import { getHeaderNavigationLinks, getSiteLinkRel, getSiteLinkTarget } from "./SiteHeaderLinks"
 
 type SiteHeaderProps = {
   locale: UiLocale

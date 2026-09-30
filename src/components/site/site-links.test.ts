@@ -1,41 +1,27 @@
 import { describe, expect, it } from "vitest"
 
 import { enMessages } from "@/i18n/locales/en"
-import { zhCnMessages } from "@/i18n/locales/zh-CN"
-import { getFooterLinkSections } from "./site-links"
+import { getHeaderNavigationLinks, getSiteLinkRel, getSiteLinkTarget } from "./SiteHeaderLinks"
 
-describe("trait footer site links", () => {
-  it("merges snapshot links after local related links and excludes the current site", () => {
-    const sections = getFooterLinkSections(enMessages, "en")
-    const related = sections.find((section) => section.id === "related")
+describe("trait header links", () => {
+  it("keeps only the site-specific destinations in the header", () => {
+    const links = getHeaderNavigationLinks(enMessages)
 
-    expect(related?.links.map((link) => link.label).slice(0, 3)).toEqual(["HagiCode Docs", "HagiCode Main Site", "Soul Builder"])
-    expect(related?.links[0]).toMatchObject({
-      description: "Official guides and references.",
-    })
-    expect(related?.links.some((link) => link.href === "https://trait.hagicode.com/")).toBe(false)
-    expect(related?.links.some((link) => link.href === "https://builder.hagicode.com/")).toBe(true)
+    expect(links.map((link) => link.href)).toEqual([
+      "https://docs.hagicode.com/",
+      "https://hagicode.com",
+      "https://soul.hagicode.com",
+      "https://discord.gg/qY662sJK",
+    ])
+    expect(links.map((link) => link.id)).toEqual(["docs", "website", "soul", "discord"])
   })
 
-  it("suppresses duplicate docs and website destinations from the bundled snapshot", () => {
-    const sections = getFooterLinkSections(zhCnMessages, "zh-CN")
-    const related = sections.find((section) => section.id === "related")
-    const hrefs = related?.links.map((link) => link.href) ?? []
+  it("marks external header destinations with safe new-tab metadata", () => {
+    const [link] = getHeaderNavigationLinks(enMessages)
 
-    expect(hrefs.filter((href) => href === "https://docs.hagicode.com/")).toHaveLength(1)
-    expect(hrefs.filter((href) => href === "https://hagicode.com")).toHaveLength(1)
-  })
+    if (!link) throw new Error("Expected a site header link.")
 
-  it("keeps Steam as a repo-owned community link with safe external metadata", () => {
-    const sections = getFooterLinkSections(enMessages, "en")
-    const community = sections.find((section) => section.id === "community")
-    const steamLink = community?.links.find((link) => link.id === "steam")
-
-    expect(steamLink).toMatchObject({
-      label: "Steam",
-      href: "https://store.steampowered.com/app/4625540/Hagicode/",
-      external: true,
-      openInNewTab: true,
-    })
+    expect(getSiteLinkTarget(link)).toBe("_blank")
+    expect(getSiteLinkRel(link)).toBe("noopener noreferrer")
   })
 })

@@ -81,11 +81,6 @@ siteLinksEmail: 이메일
 siteLinksEmailAria: HagiCode 지원팀에 이메일 보내기
 siteLinksSteam: Steam
 siteLinksSteamAria: HagiCode 공식 Steam 상점 페이지 열기
-footerDescription: HagiTrait는 HagiCode 생태계 안에서 감사된 Agent 카탈로그, 소스 요약, 크롤링 가능한 정규 상세 페이지를 탐색하는 검색형 작업 공간입니다.
-footerCopyright: © {{year}} HagiCode. All rights reserved.
-footerBrandSectionAria: 브랜드 정보
-footerSectionRelated: 관련 링크
-footerSectionCommunity: 커뮤니티
 siteLinksIcpAria: ICP 등록 정보
 siteLinksPublicSecurityAria: 공안 등록 정보
 sourceLastSync: 마지막 동기화

@@ -9,6 +9,8 @@ Trait is the Astro-powered frontend workspace for `trait.hagicode.com`, focused 
 - Search, filters, UI locale switching, and contextual quick-view overlays still run as React islands.
 - SEO metadata, JSON-LD, `robots.txt`, and `sitemap.xml` are generated from the catalog snapshot during build.
 
+HagiLight `Footer` and `PromotoBanner` render from the Astro `BaseLayout`, outside the React page islands. The site-specific header remains in the React shells because its locale and theme controls drive Trait state; footer links, copyright, and floating promotion copy are not maintained locally.
+
 ## Catalog sync workflow
 
 The catalog snapshot lives at `src/data/generated/agent-catalog.json`.
@@ -111,10 +113,11 @@ npm run dev:static
 ```bash
 npm run test
 npm run build
+npm run build:esa
 npm run seo:check
 ```
 
-`npm run build` runs the full local quality gate in one pass:
+`npm run build` runs the local quality gate in one pass:
 
 1. regenerate `agent-catalog.json`;
 2. run `astro check`;

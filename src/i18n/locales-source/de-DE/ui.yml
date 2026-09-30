@@ -81,11 +81,6 @@ siteLinksEmail: E-Mail
 siteLinksEmailAria: E-Mail an den HagiCode-Support senden
 siteLinksSteam: Steam
 siteLinksSteamAria: Die offizielle HagiCode-Steam-Seite öffnen
-footerDescription: HagiTrait ist ein durchsuchbarer Arbeitsbereich zum Erkunden geprüfter Agent-Kataloge, Quellenzusammenfassungen und crawlbarer kanonischer Detailseiten im HagiCode-Ökosystem.
-footerCopyright: © {{year}} HagiCode. Alle Rechte vorbehalten.
-footerBrandSectionAria: Markeninformationen
-footerSectionRelated: Verwandt
-footerSectionCommunity: Community
 siteLinksIcpAria: ICP-Registrierungsinformationen
 siteLinksPublicSecurityAria: Informationen zur Sicherheitsregistrierung
 sourceLastSync: Zuletzt synchronisiert

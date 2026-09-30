@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 
 import type { AgentCatalogItem, SourceMeta, UiLocale } from "@/data/trait-catalog"
-import { SiteFooter } from "@/components/site/SiteFooter"
 import { SiteHeader } from "@/components/site/SiteHeader"
 import { useLocale } from "@/i18n/use-locale"
 import { chunkFeaturedItems, type FeaturedItemsByLocale } from "@/lib/featured-selection"
@@ -233,9 +232,6 @@ export function HomePageShell({ featuredItemsByLocale, sources, metrics, initial
         </section>
       </main>
 
-      <div className="relative mx-auto w-full max-w-[1480px] px-4 pb-6 sm:px-6 lg:px-8">
-        <SiteFooter locale={locale} messages={messages} />
-      </div>
     </div>
   )
 }

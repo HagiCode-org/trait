@@ -25,6 +25,25 @@ for (const route of expectedRoutes) {
   check(/<link\s+rel="canonical"\s+href="[^"]+"/i.test(html), route, "missing canonical link")
   check((html.match(/<h1\b/gi) ?? []).length === 1, route, "expected exactly one <h1>")
   check(/<script\s+type="application\/ld\+json">/i.test(html), route, "missing JSON-LD")
+  check((html.match(/<footer\b[^>]*\bhagilight-footer\b[^>]*>/gu) ?? []).length === 1, route, "expected one HagiLight footer")
+  check((html.match(/<hagilight-promoto-banner\b/gu) ?? []).length === 1, route, "expected one shared promotion banner")
+  check(!html.includes('class="site-footer"'), route, "contains a site-local footer")
+  check(!html.includes("data-promote-card"), route, "contains a site-local promotion card")
+  check(!/application\/rss\+xml|\/rss(?:\.xml|\/)/u.test(html), route, "contains an unrelated RSS destination")
+}
+
+const catalogHtml = await fs.readFile(path.join(distDir, "agents", "index.html"), "utf8")
+check(catalogHtml.includes('data-testid="filter-toolbar"'), "/agents/", "catalog controls are missing from static HTML")
+check(catalogHtml.includes('data-testid="catalog-grid"'), "/agents/", "catalog cards are missing from static HTML")
+
+const firstItem = snapshotData.items[0]
+if (firstItem) {
+  const detailRoute = firstItem.defaultLanguage === "en"
+    ? `/agents/${firstItem.agentId}/`
+    : `/agents/${firstItem.agentId}/${firstItem.defaultLanguage}/`
+  const detailHtml = await fs.readFile(resolveHtmlPath(detailRoute), "utf8")
+  check(detailHtml.includes(`data-copy-action="link"`), detailRoute, "detail controls are missing from static HTML")
+  check(detailHtml.includes(firstItem.name), detailRoute, "agent detail content is missing from static HTML")
 }
 
 const sitemap = await fs.readFile(path.join(distDir, "sitemap.xml"), "utf8")

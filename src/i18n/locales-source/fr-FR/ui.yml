@@ -81,11 +81,6 @@ siteLinksEmail: E-mail
 siteLinksEmailAria: Envoyer un e-mail au support HagiCode
 siteLinksSteam: Steam
 siteLinksSteamAria: Ouvrir la page Steam officielle de HagiCode
-footerDescription: HagiTrait est un espace de recherche pour parcourir des catalogues d’Agents audités, des résumés de sources et des pages de détail canoniques indexables dans l’écosystème HagiCode.
-footerCopyright: © {{year}} HagiCode. Tous droits réservés.
-footerBrandSectionAria: Informations de marque
-footerSectionRelated: Liens liés
-footerSectionCommunity: Communauté
 siteLinksIcpAria: Informations d’enregistrement ICP
 siteLinksPublicSecurityAria: Informations d’enregistrement de sécurité publique
 sourceLastSync: Dernière synchronisation

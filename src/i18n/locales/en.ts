@@ -84,11 +84,6 @@ export type LocaleMessages = {
   "siteLinksEmailAria": string
   "siteLinksSteam": string
   "siteLinksSteamAria": string
-  "footerDescription": string
-  "footerCopyright": string
-  "footerBrandSectionAria": string
-  "footerSectionRelated": string
-  "footerSectionCommunity": string
   "siteLinksIcpAria": string
   "siteLinksPublicSecurityAria": string
   "sourceLastSync": string
@@ -179,11 +174,6 @@ export const enMessages: LocaleMessages = {
   "siteLinksEmailAria": "Send email to HagiCode support",
   "siteLinksSteam": "Steam",
   "siteLinksSteamAria": "Open the official HagiCode Steam store page",
-  "footerDescription": "HagiTrait is a searchable workspace for browsing audited agent catalogs, source summaries, and crawlable canonical detail pages within the HagiCode ecosystem.",
-  "footerCopyright": "© {{year}} HagiCode. All rights reserved.",
-  "footerBrandSectionAria": "Brand information",
-  "footerSectionRelated": "Related",
-  "footerSectionCommunity": "Community",
   "siteLinksIcpAria": "ICP filing information",
   "siteLinksPublicSecurityAria": "Public security filing information",
   "sourceLastSync": "Last synced",

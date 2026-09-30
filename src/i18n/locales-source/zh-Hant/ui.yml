@@ -81,11 +81,6 @@ siteLinksEmail: 電子郵件
 siteLinksEmailAria: 寄信給 HagiCode 支援團隊
 siteLinksSteam: Steam
 siteLinksSteamAria: 開啟 HagiCode 官方 Steam 商店頁
-footerDescription: HagiTrait 是 HagiCode 生態內可搜尋的工作台，用於瀏覽可追溯的 Agent 目錄、來源摘要與可抓取的規範詳情頁。
-footerCopyright: © {{year}} HagiCode。保留所有權利。
-footerBrandSectionAria: 品牌資訊
-footerSectionRelated: 相關連結
-footerSectionCommunity: 社群
 siteLinksIcpAria: ICP 備案資訊
 siteLinksPublicSecurityAria: 公安備案資訊
 sourceLastSync: 最近同步
