@@ -29,11 +29,12 @@
     "i18n:check": "npm run i18n:audit && npm run i18n:doctor && npm run prepare:i18n && node scripts/generate-i18n-resources.mjs --check && vitest run scripts/__tests__/generate-i18n-resources.test.mjs src/components/site/site-links.test.ts"
   },
   "dependencies": {
-    "@astrojs/react": "^4.4.0",
+    "@astrojs/react": "^5.0.1",
     "@fontsource-variable/inter": "^5.2.8",
-    "@hagicode/hagilight": "^0.3.1",
+    "@hagicode/hagilight": "^0.4.0",
+    "@hagicode/hagilight-core": "^0.4.0",
     "@tailwindcss/vite": "^4.2.2",
-    "astro": "^6.4.8",
+    "astro": "^7.3.5",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-markdown": "^10.1.0",
