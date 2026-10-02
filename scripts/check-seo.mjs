@@ -29,7 +29,13 @@ for (const route of expectedRoutes) {
   check((html.match(/<hagilight-promoto-banner\b/gu) ?? []).length === 1, route, "expected one shared promotion banner")
   check(!html.includes('class="site-footer"'), route, "contains a site-local footer")
   check(!html.includes("data-promote-card"), route, "contains a site-local promotion card")
-  check(!/application\/rss\+xml|\/rss(?:\.xml|\/)/u.test(html), route, "contains an unrelated RSS destination")
+  const rssLinks = [...html.matchAll(/href="([^"]*rss[^"]*)"/giu)].map(([, href]) => href)
+  check(rssLinks.includes("https://trait.hagicode.com/rss.xml"), route, "missing shared RSS subscription")
+  check(
+    rssLinks.every((href) => /^https:\/\/trait\.hagicode\.com\/rss(?:\.[A-Za-z0-9-]+)?\.xml$/u.test(href)),
+    route,
+    "contains an unrelated RSS destination"
+  )
 }
 
 const catalogHtml = await fs.readFile(path.join(distDir, "agents", "index.html"), "utf8")
