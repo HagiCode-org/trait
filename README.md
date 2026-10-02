@@ -11,6 +11,8 @@ Trait is the Astro-powered frontend workspace for `trait.hagicode.com`, focused 
 
 HagiLight `Footer` and `PromotoBanner` render from the Astro `BaseLayout`, outside the React page islands. The site-specific header remains in the React shells because its locale and theme controls drive Trait state; footer links, copyright, and floating promotion copy are not maintained locally.
 
+Hagilight 0.5.0 publishes a valid empty default RSS feed and English alias; the site does not supply feed items from its agent catalog.
+
 ## Catalog sync workflow
 
 The catalog snapshot lives at `src/data/generated/agent-catalog.json`.
