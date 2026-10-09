@@ -31,8 +31,8 @@
   "dependencies": {
     "@astrojs/react": "^5.0.1",
     "@fontsource-variable/inter": "^5.2.8",
-    "@hagicode/hagilight": "0.5.1",
-    "@hagicode/hagilight-core": "0.5.1",
+    "@hagicode/hagilight": "0.6.0",
+    "@hagicode/hagilight-core": "0.6.0",
     "@tailwindcss/vite": "^4.2.2",
     "astro": "^7.3.5",
     "react": "^19.2.4",
