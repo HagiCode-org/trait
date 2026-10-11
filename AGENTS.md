@@ -29,7 +29,7 @@ npm run i18n:check
 - `src/pages/`: Astro routes (home, catalog, detail pages)
 - `src/components/`: React islands for search, filters, overlays
 - `src/data/generated/agent-catalog.json`: catalog snapshot
-- `scripts/`: agent sync, SEO validation, site snapshot sync
+- `scripts/`: agent sync, SEO validation
 
 ## Agent Guidelines
 
