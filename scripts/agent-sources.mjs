@@ -14,6 +14,7 @@ function createMarkdownSource({
   directCompatible = true,
   needsCustomParser = false,
   enabled = true,
+  sourceType = "git-submodule",
 }) {
   return {
     id,
@@ -21,7 +22,7 @@ function createMarkdownSource({
     repo,
     branch,
     homepageUrl: `https://github.com/${repo}`,
-    sourceType: "git-submodule",
+    sourceType,
     submodulePath,
     cliFamily,
     sourceKind,
@@ -109,6 +110,22 @@ export const sourceManifest = {
       variantDirectories: {
         en: "agents",
       },
+    }),
+    // The source root is the repository itself (".") rather than a vendor submodule, so
+    // snapshot paths and GitHub links point at the real in-repo location first-party/agents/.
+    createMarkdownSource({
+      id: "hagicode-first-party",
+      label: "HagiCode first-party traits",
+      repo: "HagiCode-org/trait",
+      submodulePath: ".",
+      sourceKind: "agent_markdown_flat",
+      layoutType: "flat",
+      pathPatterns: ["first-party/agents/*.md"],
+      canonicalBaseDir: "first-party/agents",
+      variantDirectories: {
+        en: "first-party/agents",
+      },
+      sourceType: "local-directory",
     }),
   ],
 }

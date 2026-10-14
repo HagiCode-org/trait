@@ -1,9 +1,11 @@
 import fs from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
+import { fileURLToPath } from "node:url"
 
 import { afterEach, describe, expect, it } from "vitest"
 
+import { sourceManifest } from "./agent-sources.mjs"
 import { buildAgentCatalogSnapshot, discoverCanonicalAgentEntries } from "./sync-agents.mjs"
 
 const tempRoots = []
@@ -348,6 +350,218 @@ describe("sync-agents discovery pipeline", () => {
     })
     expect(snapshot.languageIndex["ja-JP"]).toEqual(["planner"])
   })
+
+  it("ingests a local-directory source rooted at the repository without a vendor directory", async () => {
+    const { manifest, repoRoot } = await createFixtureRepo({
+      sources: [
+        createMockSource({
+          id: "first-party",
+          label: "First-party traits",
+          repo: "example/trait",
+          sourceType: "local-directory",
+          submodulePath: ".",
+          pathPatterns: ["first-party/agents/*.md"],
+          canonicalBaseDir: "first-party/agents",
+          files: {
+            "first-party/agents/taciturn.md": { name: "taciturn", description: "Silent execution." },
+          },
+        }),
+      ],
+    })
+
+    await expect(fs.access(path.join(repoRoot, "vendor"))).rejects.toThrow()
+
+    const snapshot = await buildAgentCatalogSnapshot({
+      manifest,
+      repoRootPath: repoRoot,
+      startedAt: "2026-03-25T00:00:00.000Z",
+      sourceMetricsFetcher: createMockSourceMetricsFetcher({
+        "first-party": 4,
+      }),
+    })
+
+    expect(snapshot.items).toHaveLength(1)
+    expect(snapshot.items[0]).toMatchObject({
+      agentId: "taciturn",
+      sourceType: "local-directory",
+    })
+    expect(snapshot.items[0].variants.en.sourceUrl).toContain("first-party/agents/taciturn.md")
+    expect(snapshot.items[0].variants.en.rawUrl).toContain("first-party/agents/taciturn.md")
+    expect(snapshot.sources[0]).toMatchObject({
+      id: "first-party",
+      sourceType: "local-directory",
+      available: true,
+      syncedAgents: 1,
+    })
+  })
+
+  it("rejects the sync when every vendor source is unavailable even if the local source is healthy", async () => {
+    const { manifest, repoRoot } = await createFixtureRepo({
+      sources: [
+        createMockSource({
+          id: "missing-vendor",
+          repo: "example/missing-vendor",
+          submodulePath: "vendor/missing-vendor",
+        }),
+        createMockSource({
+          id: "first-party",
+          repo: "example/trait",
+          sourceType: "local-directory",
+          submodulePath: ".",
+          pathPatterns: ["first-party/agents/*.md"],
+          canonicalBaseDir: "first-party/agents",
+          files: {
+            "first-party/agents/taciturn.md": { name: "taciturn", description: "Silent execution." },
+          },
+        }),
+      ],
+    })
+
+    await expect(
+      buildAgentCatalogSnapshot({
+        manifest,
+        repoRootPath: repoRoot,
+        startedAt: "2026-03-25T00:00:00.000Z",
+        sourceMetricsFetcher: createMockSourceMetricsFetcher({}),
+      })
+    ).rejects.toThrow("missing-vendor")
+  })
+
+  it("succeeds with one healthy vendor source and a healthy local source, recording the missing vendor as a warning", async () => {
+    const { manifest, repoRoot } = await createFixtureRepo({
+      sources: [
+        createMockSource({
+          id: "healthy-vendor",
+          submodulePath: "vendor/healthy-vendor",
+          pathPatterns: ["agents/*.md"],
+          canonicalBaseDir: "agents",
+          files: {
+            "agents/planner.md": { name: "planner", description: "Planning specialist." },
+          },
+        }),
+        createMockSource({
+          id: "missing-vendor",
+          repo: "example/missing-vendor",
+          submodulePath: "vendor/missing-vendor",
+        }),
+        createMockSource({
+          id: "first-party",
+          repo: "example/trait",
+          sourceType: "local-directory",
+          submodulePath: ".",
+          pathPatterns: ["first-party/agents/*.md"],
+          canonicalBaseDir: "first-party/agents",
+          files: {
+            "first-party/agents/taciturn.md": { name: "taciturn", description: "Silent execution." },
+          },
+        }),
+      ],
+    })
+
+    const snapshot = await buildAgentCatalogSnapshot({
+      manifest,
+      repoRootPath: repoRoot,
+      startedAt: "2026-03-25T00:00:00.000Z",
+      sourceMetricsFetcher: createMockSourceMetricsFetcher({
+        "healthy-vendor": 21,
+      }),
+    })
+
+    expect(snapshot.items.map((item) => item.sourceId).sort()).toEqual(["first-party", "healthy-vendor"])
+    expect(snapshot.sources).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "healthy-vendor",
+          available: true,
+          syncedAgents: 1,
+          warningCount: 0,
+        }),
+        expect.objectContaining({
+          id: "missing-vendor",
+          available: false,
+          syncedAgents: 0,
+          warningCount: 1,
+        }),
+        expect.objectContaining({
+          id: "first-party",
+          sourceType: "local-directory",
+          available: true,
+          syncedAgents: 1,
+        }),
+      ])
+    )
+  })
+
+  it("succeeds with a registry that contains only a healthy local source", async () => {
+    const { manifest, repoRoot } = await createFixtureRepo({
+      sources: [
+        createMockSource({
+          id: "first-party",
+          repo: "example/trait",
+          sourceType: "local-directory",
+          submodulePath: ".",
+          pathPatterns: ["first-party/agents/*.md"],
+          canonicalBaseDir: "first-party/agents",
+          files: {
+            "first-party/agents/taciturn.md": { name: "taciturn", description: "Silent execution." },
+          },
+        }),
+      ],
+    })
+
+    const snapshot = await buildAgentCatalogSnapshot({
+      manifest,
+      repoRootPath: repoRoot,
+      startedAt: "2026-03-25T00:00:00.000Z",
+      sourceMetricsFetcher: createMockSourceMetricsFetcher({}),
+    })
+
+    expect(snapshot.items.map((item) => item.agentId)).toEqual(["taciturn"])
+    expect(snapshot.sources[0]).toMatchObject({
+      id: "first-party",
+      available: true,
+      warningCount: 0,
+    })
+  })
+
+  it("builds the taciturn item from the real first-party directory with the real registry entry", async () => {
+    const realRepoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
+    const firstPartySources = sourceManifest.sources.filter((source) => source.id === "hagicode-first-party")
+
+    const snapshot = await buildAgentCatalogSnapshot({
+      manifest: { sources: firstPartySources },
+      repoRootPath: realRepoRoot,
+      startedAt: "2026-03-25T00:00:00.000Z",
+      sourceMetricsFetcher: createMockSourceMetricsFetcher({}),
+    })
+
+    const taciturnItems = snapshot.items.filter((item) => item.agentId === "taciturn")
+    expect(taciturnItems).toHaveLength(1)
+
+    const [item] = taciturnItems
+    expect(item).toMatchObject({
+      agentId: "taciturn",
+      traitCatalogId: "taciturn",
+      name: "Taciturn",
+      defaultLanguage: "en",
+      type: "taciturn",
+      sourceType: "local-directory",
+      tags: expect.arrayContaining(["taciturn"]),
+    })
+    expect(item.summary.length).toBeGreaterThan(0)
+    expect(item.summary).not.toMatch(/\n/)
+
+    const { body, bodyPlainText } = item.variants.en
+    for (const toolName of ["AskUserQuestion", "ask_user_question", "request_user_input"]) {
+      expect(body).toContain(toolName)
+    }
+    expect(body).toMatch(/\bask\b/)
+
+    expect(bodyPlainText).toContain("do not retry it")
+    expect(bodyPlainText).toContain("skip only that step")
+    expect(bodyPlainText).toContain("always win")
+    expect(bodyPlainText).toContain("send one short final message")
+  })
 })
 
 async function createFixtureRepo({ sources }) {
@@ -387,6 +601,7 @@ function createMockSource({
   canonicalBaseDir = "",
   exclude = [],
   variantDirectories,
+  sourceType = "git-submodule",
   files,
 }) {
   return {
@@ -395,7 +610,7 @@ function createMockSource({
     repo,
     branch,
     homepageUrl: `https://example.com/${id}`,
-    sourceType: "git-submodule",
+    sourceType,
     submodulePath,
     cliFamily: "claude",
     sourceKind,

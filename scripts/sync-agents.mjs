@@ -51,8 +51,11 @@ export async function buildAgentCatalogSnapshot({
   }
   const sourceMetrics = await sourceMetricsPromise
 
-  const successfulSources = sourceResults.filter((result) => result.available)
-  if (successfulSources.length === 0) {
+  // A local source is always readable, so its success does not prove vendor sync worked.
+  // Gate on external sources; a registry made only of local sources gates on all of them.
+  const externalResults = sourceResults.filter((result) => !isLocalSource(result.source))
+  const gatingResults = externalResults.length > 0 ? externalResults : sourceResults
+  if (!gatingResults.some((result) => result.available)) {
     const failureSummary = sourceResults
       .flatMap((result) => result.warnings)
       .filter(Boolean)
@@ -61,6 +64,7 @@ export async function buildAgentCatalogSnapshot({
     throw new Error(failureSummary || "All enabled sources failed to sync.")
   }
 
+  const successfulSources = sourceResults.filter((result) => result.available)
   const items = successfulSources.flatMap((result) => result.items)
   const normalizedItems = assignStableAgentIds(items).sort((left, right) => left.name.localeCompare(right.name))
   const languageIndex = buildLanguageIndex(normalizedItems)
@@ -736,6 +740,10 @@ function mapCanonicalPathToVariantPath(canonicalPath, canonicalBaseDir, variantB
 
 function resolveSourceRoot(source, repoRootPath = repoRoot) {
   return path.resolve(repoRootPath, source.submodulePath)
+}
+
+function isLocalSource(source) {
+  return source.sourceType === "local-directory"
 }
 
 async function isDirectory(targetPath) {
