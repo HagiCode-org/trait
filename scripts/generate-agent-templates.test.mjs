@@ -126,4 +126,24 @@ describe('generate-agent-templates', () => {
     expect(index.templates).toHaveLength(1);
     expect(detail.prompt).toBe('Review edge cases before merge.');
   });
+
+  it('keeps the committed taciturn trait template addressable and free of inferred groups', async () => {
+    const snapshot = await buildTraitTemplateSnapshot();
+    const detail = snapshot.details.find((item) => item.id === 'taciturn');
+
+    expect(detail).toBeDefined();
+    expect(detail).toMatchObject({
+      id: 'taciturn',
+      templateType: 'trait',
+      path: '/agent-templates/trait/templates/taciturn.json',
+      tags: expect.arrayContaining(['taciturn', 'trait']),
+      tagGroups: {
+        languages: [],
+        domains: [],
+        roles: [],
+      },
+    });
+    expect(detail.prompt.length).toBeGreaterThan(0);
+    expect(detail.prompt).toBe(detail.previewText);
+  });
 });
