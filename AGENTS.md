@@ -30,6 +30,7 @@ npm run i18n:check
 - `src/components/`: React islands for search, filters, overlays
 - `src/data/generated/agent-catalog.json`: catalog snapshot
 - `scripts/`: agent sync, SEO validation
+- `first-party/agents/`: first-party trait markdown, read by the local `hagicode-first-party` source
 
 ## Agent Guidelines
 

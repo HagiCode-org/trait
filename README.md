@@ -44,6 +44,8 @@ Vendor sources live under `vendor/` as git submodules. The current registry trac
 
 `gsd-build/get-shit-done` is currently synced as a single-language English source. Trait only scans `agents/*.md` from that vendor checkout and does not ingest its `commands/`, `hooks/`, or `skills/` directories.
 
+The registry also has one local source, `hagicode-first-party`, which reads `first-party/agents/` from this repository. See [First-party traits](#first-party-traits).
+
 Refresh the submodule source first:
 
 ```bash
@@ -73,7 +75,7 @@ The sync script:
 - parses frontmatter and body content;
 - merges multilingual variants into one canonical agent record;
 - scopes colliding cross-source slugs into stable source-qualified route ids;
-- records source-scoped warnings and only hard fails when every enabled source fails;
+- records source-scoped warnings and only hard fails when every enabled non-local source fails, so a local source cannot hide a broken vendor sync;
 - enriches each source summary with GitHub stargazer counts;
 - writes source metadata, coverage metrics, language coverage, and sync timestamps into the generated snapshot.
 
@@ -84,6 +86,44 @@ The sync script:
 3. Set `sourceKind`, `layoutType`, `pathPatterns`, canonical base path, and any variant directories.
 4. Add exclude patterns when the upstream repository mixes in README or tooling markdown files.
 5. Run `npm run test`, `npm run sync:agents`, and `npm run build`.
+
+A local source (`sourceType: "local-directory"`) needs no submodule. Point its `submodulePath` at a directory inside this repository, as the `hagicode-first-party` entry does. A local source is always readable, so it never counts as proof that vendor sync worked: the sync still fails when every non-local source is unavailable.
+
+## First-party traits
+
+Traits authored in this repository live in `first-party/agents/`. The `hagicode-first-party` source in `scripts/agent-sources.mjs` reads them, so they need no submodule.
+
+Every file needs frontmatter with `name` and `description`. The frontmatter parser is line-based, so each value must fit on one line:
+
+```markdown
+---
+name: taciturn
+description: One short sentence on when to use this trait.
+---
+```
+
+The registry entry uses `submodulePath: "."`. The source root is the repository itself, so `sourceUrl` and `rawUrl` point at the real `first-party/agents/<file>.md` path on `main`. A root such as `first-party/` would drop that directory from the links.
+
+Hero trait templates use the flattened body (`bodyPlainText`) as their prompt. Flattening drops fenced code blocks and replaces `-`, `_`, `*`, `#`, and `>` with spaces. So avoid code fences, put every rule in plain sentences, and keep the numbered lists readable as plain text.
+
+Classification and tags are inferred from substrings, not whole words. Avoid these in a first-party summary or body unless the trait really covers them:
+
+- `review` (also matches "preview") sets the catalog `type` to `reviewer`.
+- `build` together with `resolver` or `resolution` sets the `type` to `build-resolver`.
+- `plan` (also matches "explanation") adds the `planning` tag.
+- `java`, `architecture`, and `security` add catalog tags with the same names.
+- In Hero template groups, `ui` (also matches "quiet" and "equivalent"), `api`, `auth` (also matches "authority"), and `test` add domain groups.
+
+After editing a first-party file, regenerate both outputs and commit them with the source:
+
+```bash
+npm run sync:agents
+npm run sync:agent-templates
+```
+
+`npm run sync:agents:update-source` is not needed for first-party files; it only advances the vendor submodules.
+
+The `taciturn` trait (`first-party/agents/taciturn.md`) is a prompt-level constraint. Hero sessions receive its text in the system prompt, which asks the agent not to call interactive question tools or ask in plain text. Nothing in this repository blocks those tools at runtime. A runtime denial would need changes in Core or Libs.
 
 ## Development
 
