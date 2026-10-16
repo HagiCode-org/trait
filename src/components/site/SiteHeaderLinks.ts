@@ -56,6 +56,28 @@ export function getSiteLinkTarget(link: Pick<SiteHeaderLink, "openInNewTab">) {
   return link.openInNewTab ? "_blank" : undefined
 }
 
-export function getSiteLinkRel(link: Pick<SiteHeaderLink, "openInNewTab">) {
-  return link.openInNewTab ? "noopener noreferrer" : undefined
+const SAME_ORIGIN_BASE = "https://same-origin.invalid"
+
+/**
+ * First-party link policy, mirrored from @hagicode/hagilight-core links. Relative and same-origin
+ * destinations count as first-party; hosts are compared after parsing, never by substring.
+ */
+export function isFirstPartyHref(href: string): boolean {
+  let url: URL
+  try {
+    url = new URL(href, SAME_ORIGIN_BASE)
+  } catch {
+    return false
+  }
+  if (url.origin === SAME_ORIGIN_BASE) return true
+  if (url.protocol !== "https:" && url.protocol !== "http:") return false
+
+  const host = url.hostname.toLowerCase()
+  if (host === "hagicode.com" || host.endsWith(".hagicode.com")) return true
+  return host === "github.com" && url.pathname.split("/")[1]?.toLowerCase() === "hagicode-org"
+}
+
+export function getSiteLinkRel(link: Pick<SiteHeaderLink, "href" | "openInNewTab">) {
+  if (!link.openInNewTab) return undefined
+  return isFirstPartyHref(link.href) ? "noopener" : "noopener noreferrer"
 }
