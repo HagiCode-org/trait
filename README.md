@@ -1,5 +1,8 @@
 # Trait
 
+[![last commit](https://img.shields.io/github/last-commit/HagiCode-org/trait)](https://github.com/HagiCode-org/trait/commits/main)
+[![website](https://img.shields.io/website?url=https%3A%2F%2Ftrait.hagicode.com&label=website)](https://trait.hagicode.com)
+
 Trait is the Astro-powered frontend workspace for `trait.hagicode.com`, focused on a searchable agent catalog with crawlable canonical detail pages and client-side browsing enhancements.
 
 ## What changed
