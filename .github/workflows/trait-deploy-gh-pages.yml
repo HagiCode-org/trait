@@ -52,6 +52,7 @@ jobs:
         with:
           name: trait-gh-pages-payload
           path: ${{ env.TRAIT_GH_PAGES_PAYLOAD_DIR }}
+          include-hidden-files: true
           if-no-files-found: error
 
   deploy:
