@@ -23,7 +23,10 @@ npm run sync:agents
 npm run sync:agent-templates
 npm run seo:check
 npm run i18n:check
+npm run lint
 ```
+
+`npm run build` runs `prepare:i18n`, `sync:agents`, `astro check`, `astro build` and `seo:check`; the ESA host uses `npm run build:esa` (`esa.jsonc`), which syncs with `--allow-stale-output`. `npm test` runs vitest over `src/**/*.test.ts(x)` and `scripts/**/*.test.mjs`.
 
 ## Key Paths
 
