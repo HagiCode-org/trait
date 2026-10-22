@@ -52,3 +52,4 @@ npm run lint
 - `README.md`
 - `scripts/agent-sources.mjs`
 - `docs/i18n-hagi18n.md`
+- `DESIGN.md` (design-system reference for UI changes)
