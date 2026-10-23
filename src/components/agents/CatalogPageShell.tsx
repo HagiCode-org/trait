@@ -19,7 +19,6 @@ import {
   resolveAgentDetail,
   writeRouteStateToSearch,
 } from "@/lib/route-projection"
-import { useAnalyticsBootstrap } from "@/lib/use-analytics"
 import { AgentAggregatorShell } from "@/features/agents/components/AgentAggregatorShell"
 
 const COPY_RESET_MS = 1600
@@ -49,8 +48,6 @@ export function CatalogPageShell({ snapshot, initialLocale = "en" }: CatalogPage
   const [routeState, setRouteState] = useState<RouteState>(() => readInitialRouteState())
   const [copyLinkState, setCopyLinkState] = useState<"idle" | "done" | "failed">("idle")
   const [copyOriginalState, setCopyOriginalState] = useState<"idle" | "done" | "failed">("idle")
-
-  useAnalyticsBootstrap()
 
   const filterOptions = useMemo(() => buildFilterOptions(snapshot), [snapshot])
   const results = useMemo(() => queryCatalog(routeState.filters, snapshot.items), [routeState.filters, snapshot.items])

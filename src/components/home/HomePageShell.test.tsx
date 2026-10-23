@@ -2,11 +2,7 @@
 
 import { act } from "react"
 import { createRoot } from "react-dom/client"
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-
-vi.mock("@/lib/use-analytics", () => ({
-  useAnalyticsBootstrap: () => {},
-}))
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
 
 import { HomePageShell } from "@/components/home/HomePageShell"
 import { uiLocales, type AgentCatalogItem, type SourceMeta } from "@/data/trait-catalog"

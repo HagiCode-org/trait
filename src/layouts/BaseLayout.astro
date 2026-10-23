@@ -1,7 +1,7 @@
 ---
 import "@/index.css"
-import Analytics51LA from "@/components/51LAAnalytics.astro"
-import GoogleAnalytics from "@/components/GoogleAnalytics.astro"
+import Analytics51LA from "@hagicode/hagilight-core/Analytics51LA"
+import GoogleAnalytics from "@hagicode/hagilight-core/GoogleAnalytics"
 import Footer from "@hagicode/hagilight-core/Footer"
 import PromotoBanner from "@hagicode/hagilight-core/PromotoBanner"
 import type { PageMetadata } from "@/lib/metadata-builder"
@@ -62,7 +62,7 @@ const sharedLocale = lang === "en" ? "en-US" : lang
     <div class="relative mx-auto w-full max-w-[1480px] px-4 pb-6 sm:px-6 lg:px-8">
       <Footer locale={sharedLocale} />
     </div>
-    <Analytics51LA />
-    <GoogleAnalytics />
+    <Analytics51LA siteId="L6b88a5yK4h2Xnci" />
+    <GoogleAnalytics measurementId="G-EN03FMT2Q4" />
   </body>
 </html>

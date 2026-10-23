@@ -5,7 +5,6 @@ import { SiteHeader } from "@/components/site/SiteHeader"
 import { useLocale } from "@/i18n/use-locale"
 import { chunkFeaturedItems, type FeaturedItemsByLocale } from "@/lib/featured-selection"
 import { buildAgentLanguagePath, humanizeCatalogValue } from "@/lib/route-projection"
-import { useAnalyticsBootstrap } from "@/lib/use-analytics"
 
 type HomePageShellProps = {
   featuredItemsByLocale: FeaturedItemsByLocale
@@ -25,8 +24,6 @@ export function HomePageShell({ featuredItemsByLocale, sources, metrics, initial
   const featuredSlides = chunkFeaturedItems(activeFeaturedItems)
   const [activeSlide, setActiveSlide] = useState(0)
   const normalizedActiveSlide = activeSlide >= featuredSlides.length ? 0 : activeSlide
-
-  useAnalyticsBootstrap()
 
   useEffect(() => {
     if (featuredSlides.length <= 1) {

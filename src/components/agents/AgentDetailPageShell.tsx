@@ -14,7 +14,6 @@ import {
   projectDetailLanguageToUiLocale,
   resolveAgentDetail,
 } from "@/lib/route-projection"
-import { useAnalyticsBootstrap } from "@/lib/use-analytics"
 
 type AgentDetailPageShellProps = {
   item: AgentCatalogItem
@@ -31,8 +30,6 @@ export function AgentDetailPageShell({ item, initialLanguage, initialLocale = "e
   const [activeLanguage, setActiveLanguage] = useState<ContentLanguage>(initialLanguage)
   const [copyLinkState, setCopyLinkState] = useState<"idle" | "done" | "failed">("idle")
   const [copyOriginalState, setCopyOriginalState] = useState<"idle" | "done" | "failed">("idle")
-
-  useAnalyticsBootstrap()
 
   const detail = useMemo(() => resolveAgentDetail(item.agentId, activeLanguage), [item.agentId, activeLanguage])
 
