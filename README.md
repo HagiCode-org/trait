@@ -3,41 +3,21 @@
 [![last commit](https://img.shields.io/github/last-commit/HagiCode-org/trait)](https://github.com/HagiCode-org/trait/commits/main)
 [![website](https://img.shields.io/website?url=https%3A%2F%2Ftrait.hagicode.com&label=website)](https://trait.hagicode.com)
 
-Trait is the Astro-powered frontend workspace for `trait.hagicode.com`, focused on a searchable agent catalog with crawlable canonical detail pages and client-side browsing enhancements.
+Trait is a searchable catalog of agent definitions gathered from tracked open-source collections and from first-party HagiCode traits. Find a suitable agent quickly, then read its definition in full.
 
-## What changed
+**Visit Trait: https://trait.hagicode.com**
 
-- The production entry now uses Astro static routes instead of a single Vite SPA shell.
-- Home, catalog, and canonical detail pages render their primary content directly into HTML.
-- Search, filters, UI locale switching, and contextual quick-view overlays still run as React islands.
-- SEO metadata and JSON-LD are generated from the catalog snapshot; Hagilight generates the shared `robots.txt` and sitemap.
+## What you can do
 
-HagiLight `Footer` and `PromotoBanner` render from the Astro `BaseLayout`, outside the React page islands. The site-specific header remains in the React shells because its locale and theme controls drive Trait state; footer links, copyright, and floating promotion copy are not maintained locally.
+- Search the catalog and narrow it down with filters on the catalog page.
+- Open a quick-view overlay to peek at an agent without leaving the catalog.
+- Read a detail page for each agent, and a separate detail page for each language variant.
+- Use the interface in ten languages: `en`, `zh-CN`, `zh-Hant`, `ja-JP`, `ko-KR`, `de-DE`, `fr-FR`, `es-ES`, `pt-BR`, and `ru-RU`.
+- Reuse trait templates that HagiCode Hero can use.
 
-Hagilight 0.5.0 publishes a valid empty default RSS feed and English alias; the site does not supply feed items from its agent catalog.
+## Where the catalog comes from
 
-## Catalog sync workflow
-
-The catalog snapshot lives at `src/data/generated/agent-catalog.json`.
-
-Tracked sources are declared in `scripts/agent-sources.mjs` as a multi-source registry. Each entry declares stable metadata such as:
-
-- `cliFamily`
-- `sourceKind`
-- `layoutType`
-- `fileFormat`
-- `pathPatterns`
-- `directCompatible`
-- `needsRecursiveScan`
-- `needsCustomParser`
-- `enabled`
-
-The current registry supports two markdown source kinds:
-
-- `agent_markdown_flat` for fixed layouts such as `agents/*.md` or repository-root `*.md`
-- `agent_markdown_recursive` for categorized layouts such as `categories/**/*.md` or `marketing/**/*.md`
-
-Vendor sources live under `vendor/` as git submodules. The current registry tracks:
+The catalog tracks these open-source collections:
 
 - `affaan-m/everything-claude-code`
 - `0xfurai/claude-code-subagents`
@@ -45,146 +25,7 @@ Vendor sources live under `vendor/` as git submodules. The current registry trac
 - `iannuttall/claude-agents`
 - `gsd-build/get-shit-done`
 
-`gsd-build/get-shit-done` is currently synced as a single-language English source. Trait only scans `agents/*.md` from that vendor checkout and does not ingest its `commands/`, `hooks/`, or `skills/` directories.
-
-The registry also has one local source, `hagicode-first-party`, which reads `first-party/agents/` from this repository. See [First-party traits](#first-party-traits).
-
-Refresh the submodule source first:
-
-```bash
-npm run sync:agents:update-source
-```
-
-Then regenerate the catalog snapshot:
-
-```bash
-npm run sync:agents
-```
-
-Recommended maintenance flow:
-
-```bash
-npm run sync:agents:update-source
-npm run sync:agents
-npm run test
-npm run build
-```
-
-The sync script:
-
-- dispatches canonical discovery by `layoutType` and `pathPatterns`;
-- supports both flat markdown and recursive markdown sources;
-- pairs multilingual variants by canonical file path and configured variant roots;
-- parses frontmatter and body content;
-- merges multilingual variants into one canonical agent record;
-- scopes colliding cross-source slugs into stable source-qualified route ids;
-- records source-scoped warnings and only hard fails when every enabled non-local source fails, so a local source cannot hide a broken vendor sync;
-- enriches each source summary with GitHub stargazer counts;
-- writes source metadata, coverage metrics, language coverage, and sync timestamps into the generated snapshot.
-
-## Adding a new source
-
-1. Add the upstream repository as a `vendor/` submodule.
-2. Declare a new registry entry in `scripts/agent-sources.mjs`.
-3. Set `sourceKind`, `layoutType`, `pathPatterns`, canonical base path, and any variant directories.
-4. Add exclude patterns when the upstream repository mixes in README or tooling markdown files.
-5. Run `npm run test`, `npm run sync:agents`, and `npm run build`.
-
-A local source (`sourceType: "local-directory"`) needs no submodule. Point its `submodulePath` at a directory inside this repository, as the `hagicode-first-party` entry does. A local source is always readable, so it never counts as proof that vendor sync worked: the sync still fails when every non-local source is unavailable.
-
-## First-party traits
-
-Traits authored in this repository live in `first-party/agents/`. The `hagicode-first-party` source in `scripts/agent-sources.mjs` reads them, so they need no submodule.
-
-Every file needs frontmatter with `name` and `description`. The frontmatter parser is line-based, so each value must fit on one line:
-
-```markdown
----
-name: taciturn
-description: One short sentence on when to use this trait.
----
-```
-
-The registry entry uses `submodulePath: "."`. The source root is the repository itself, so `sourceUrl` and `rawUrl` point at the real `first-party/agents/<file>.md` path on `main`. A root such as `first-party/` would drop that directory from the links.
-
-Hero trait templates use the flattened body (`bodyPlainText`) as their prompt. Flattening drops fenced code blocks and replaces `-`, `_`, `*`, `#`, and `>` with spaces. So avoid code fences, put every rule in plain sentences, and keep the numbered lists readable as plain text.
-
-Classification and tags are inferred from substrings, not whole words. Avoid these in a first-party summary or body unless the trait really covers them:
-
-- `review` (also matches "preview") sets the catalog `type` to `reviewer`.
-- `build` together with `resolver` or `resolution` sets the `type` to `build-resolver`.
-- `plan` (also matches "explanation") adds the `planning` tag.
-- `java`, `architecture`, and `security` add catalog tags with the same names.
-- In Hero template groups, `ui` (also matches "quiet" and "equivalent"), `api`, `auth` (also matches "authority"), and `test` add domain groups.
-
-After editing a first-party file, regenerate both outputs and commit them with the source:
-
-```bash
-npm run sync:agents
-npm run sync:agent-templates
-```
-
-`npm run sync:agents:update-source` is not needed for first-party files; it only advances the vendor submodules.
-
-The `taciturn` trait (`first-party/agents/taciturn.md`) is a prompt-level constraint. Hero sessions receive its text in the system prompt, which asks the agent not to call interactive question tools or ask in plain text. Nothing in this repository blocks those tools at runtime. A runtime denial would need changes in Core or Libs.
-
-## Development
-
-```bash
-npm install
-npm run sync:agents:update-source
-npm run dev
-```
-
-`npm run dev` tries to regenerate the catalog snapshot first, then starts the Astro dev server. If the vendor submodules are not ready but `src/data/generated/agent-catalog.json` already exists, the dev flow reuses that stale snapshot so local UI work is not blocked.
-
-```bash
-npm run dev:static
-```
-
-`npm run dev:static` is an alias for the same Astro static-site dev flow and accepts the same extra CLI flags, for example `npm run dev:static -- --host 0.0.0.0 --port 36292`.
-
-## Localization Notes
-
-- YAML files in `src/i18n/locales-source/` are the source of truth for system-owned UI copy.
-- Generated TypeScript modules in `src/i18n/locales/` are runtime artifacts and must not be hand-edited.
-- `npm run dev`, `npm run build`, and `npm run test` prepare generated i18n resources before Astro, TypeScript, or Vitest consumes them.
-- Use `npm run i18n:generate` after editing YAML and `npm run i18n:check` before committing translation changes.
-- The runtime locale switcher now exposes `en`, `zh-CN`, `zh-Hant`, `ja-JP`, `ko-KR`, `de-DE`, `fr-FR`, `es-ES`, `pt-BR`, and `ru-RU`.
-- Detailed maintainer workflow is documented in `docs/i18n-hagi18n.md`.
-
-## Build and verification
-
-```bash
-npm run test
-npm run build
-npm run build:esa
-npm run seo:check
-```
-
-`npm run build` runs the local quality gate in one pass:
-
-1. regenerate `agent-catalog.json`;
-2. run `astro check`;
-3. build the static Astro site;
-4. verify the built HTML, metadata, JSON-LD, robots, and sitemap output.
-
-## Production Deployment
-
-- Authoritative workflow: `.github/workflows/trait-deploy-gh-pages.yml`
-- Production source of truth: the `gh-pages` branch, published only after CI validates the Astro snapshot
-- Published payload contract: branch root `esa.jsonc` plus `dist/`
-- Required GitHub permissions: the deploy job needs `contents: write`
-- Required hosting setting: the production host must read `gh-pages/esa.jsonc` and serve `gh-pages/dist/`
-- First deploy checks: confirm the workflow uploaded `esa.jsonc` and `dist/`, then verify `https://trait.hagicode.com`
-- Rollback path: revert the source change or rerun deployment from an older commit so CI republishes the earlier snapshot
-
-## Hero Agent Template Export
-
-- Hero Trait 模板的 canonical 输出位于 `src/data/generated/agent-templates/`。
-- 生成命令是 `npm run sync:agent-templates`，脚本入口是 `scripts/generate-agent-templates.mjs`。
-- 输出内容固定包含 `index.json` 与 `templates/*.json`，并带有 `tags`、`tagGroups.languages`、`tagGroups.domains`、`tagGroups.roles`。
-- `repos/index` 会镜像这些 JSON 到 `/agent-templates/trait/**`，因此不要把 `repos/index` 当作 Trait 模板主编辑位置。
+It also includes the first-party `taciturn` trait from HagiCode, a prompt-level constraint that asks the agent not to call interactive question tools or ask in plain text.
 
 ## Route model
 
