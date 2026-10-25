@@ -43,7 +43,7 @@ npm run lint
 - SEO metadata, JSON-LD, `robots.txt`, and `sitemap.xml` are generated during build from the catalog snapshot.
 - Run `npm run sync:agents` to refresh the catalog from tracked sources before building.
 - Run `npm run seo:check` after build to validate SEO metadata.
-- After editing `first-party/agents/*.md` (frontmatter `name` and single-line `description` required), run both `npm run sync:agents` and `npm run sync:agent-templates` and commit the generated outputs with the source; `sync:agents:update-source` only advances vendor submodules. Keywords in first-party text can alter inferred type/tags (see README "First-party traits").
+- After editing `first-party/agents/*.md` (frontmatter `name` and single-line `description` required), run both `npm run sync:agents` and `npm run sync:agent-templates` and commit the generated outputs with the source; `sync:agents:update-source` only advances vendor submodules. Keywords in first-party text can alter inferred type/tags (see `inferTags` in `scripts/sync-agents.mjs`).
 - Keep `@hagicode/hagilight` and `@hagicode/hagilight-core` pinned to the same exact version. Analytics come from Hagilight (`BaseLayout.astro` renders the core GA/51LA components, the `hagilight()` integration injects PostHog); do not add site-owned analytics wrappers.
 - Do not hand-edit generated files; edit i18n YAML sources and run `npm run i18n:generate`. Deploys via `.github/workflows/trait-deploy-gh-pages.yml` (Node 24, recursive submodules).
 
