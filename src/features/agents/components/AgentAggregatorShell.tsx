@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react"
+
 import type {
   AgentCatalogItem,
   AgentCatalogSnapshot,
@@ -8,6 +10,7 @@ import type {
 } from "@/data/trait-catalog"
 import type { LocaleMessages } from "@/i18n/locales/en"
 import { formatMessage } from "@/i18n/use-locale"
+import { captureSiteEvent } from "@/lib/posthog-events"
 import {
   buildDetailLink,
   humanizeCatalogValue,
@@ -20,6 +23,9 @@ import { SiteHeader } from "@/components/site/SiteHeader"
 import { AgentCard } from "./AgentCard"
 import { AgentDetailPanel } from "./AgentDetailPanel"
 import { CatalogEmptyState } from "./CatalogEmptyState"
+
+// Analytics only: a search or filter counts once its settled state holds for this long.
+const CATALOG_SEARCH_SETTLE_MS = 400
 
 type AgentAggregatorShellProps = {
   snapshot: AgentCatalogSnapshot
@@ -77,6 +83,28 @@ export function AgentAggregatorShell({
     ? buildDetailLink(routeState, routeState.detail.agentId, routeState.detail.language)
     : null
   const hasContextualDetail = Boolean(detail) || detailNotFound
+
+  const settledFilterKey = JSON.stringify([
+    filterState.query,
+    filterState.sourceId,
+    filterState.contentLanguage,
+    filterState.agentType,
+  ])
+  const resultsCount = results.length
+  // The first render sets the baseline and never sends an event.
+  const lastSettledFilterKeyRef = useRef(settledFilterKey)
+
+  useEffect(() => {
+    if (settledFilterKey === lastSettledFilterKeyRef.current) {
+      return undefined
+    }
+
+    const timer = window.setTimeout(() => {
+      lastSettledFilterKeyRef.current = settledFilterKey
+      captureSiteEvent("catalog_searched", { results_count: resultsCount })
+    }, CATALOG_SEARCH_SETTLE_MS)
+    return () => window.clearTimeout(timer)
+  }, [settledFilterKey, resultsCount])
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[color:var(--surface-base)] text-[color:var(--ink-strong)]">
