@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/site/SiteHeader"
 import { MarkdownArticle } from "@/features/agents/components/MarkdownArticle"
 import { buildAgentVariantMarkdown } from "@/lib/agent-markdown"
 import { copyText } from "@/lib/clipboard"
+import { captureSiteEvent } from "@/lib/posthog-events"
 import {
   buildAgentLanguagePath,
   humanizeCatalogValue,
@@ -108,7 +109,11 @@ export function AgentDetailPageShell({ item, initialLanguage, initialLocale = "e
     }
 
     const href = new URL(buildAgentLanguagePath(item, detail?.activeLanguage ?? activeLanguage), window.location.origin).toString()
-    setCopyLinkState((await copyText(href)) ? "done" : "failed")
+    const copied = await copyText(href)
+    setCopyLinkState(copied ? "done" : "failed")
+    if (copied) {
+      captureSiteEvent("agent_link_copied", { agent_id: item.agentId })
+    }
   }
 
   async function copyCurrentOriginal() {
@@ -116,7 +121,11 @@ export function AgentDetailPageShell({ item, initialLanguage, initialLocale = "e
       return
     }
 
-    setCopyOriginalState((await copyText(buildAgentVariantMarkdown(detail.activeVariant))) ? "done" : "failed")
+    const copied = await copyText(buildAgentVariantMarkdown(detail.activeVariant))
+    setCopyOriginalState(copied ? "done" : "failed")
+    if (copied) {
+      captureSiteEvent("agent_markdown_copied", { agent_id: item.agentId })
+    }
   }
 
   if (!detail) {

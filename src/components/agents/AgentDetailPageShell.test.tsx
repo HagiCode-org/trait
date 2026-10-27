@@ -152,6 +152,97 @@ describe("AgentDetailPageShell", () => {
     expect(execCommand).toHaveBeenCalledWith("copy")
     expect(copyOriginalButton.textContent).toBe("Copy failed")
   })
+
+  describe("PostHog copy events", () => {
+    let capture: ReturnType<typeof vi.fn>
+
+    beforeEach(() => {
+      capture = vi.fn()
+      ;(window as unknown as { posthog?: unknown }).posthog = {
+        __loaded: true,
+        capture,
+        has_opted_out_capturing: () => false,
+      }
+    })
+
+    afterEach(() => {
+      delete (window as unknown as { posthog?: unknown }).posthog
+    })
+
+    it("sends agent_link_copied with agent_id after the link copy succeeds", async () => {
+      await renderDetail()
+
+      const copyLinkButton = getRequiredElement('[data-copy-action="link"]') as HTMLButtonElement
+      await act(async () => {
+        copyLinkButton.click()
+        await Promise.resolve()
+      })
+
+      expect(capture).toHaveBeenCalledTimes(1)
+      expect(capture).toHaveBeenCalledWith("agent_link_copied", { agent_id: "architect" })
+    })
+
+    it("sends agent_markdown_copied with agent_id after the original copy succeeds", async () => {
+      await renderDetail()
+
+      const copyOriginalButton = getRequiredElement('[data-copy-action="raw"]') as HTMLButtonElement
+      await act(async () => {
+        copyOriginalButton.click()
+        await Promise.resolve()
+      })
+
+      expect(capture).toHaveBeenCalledTimes(1)
+      expect(capture).toHaveBeenCalledWith("agent_markdown_copied", { agent_id: "architect" })
+    })
+
+    it("sends no event and keeps the failure state when the clipboard is rejected", async () => {
+      Object.defineProperty(window.navigator, "clipboard", {
+        configurable: true,
+        value: { writeText: vi.fn().mockRejectedValue(new Error("denied")) },
+      })
+      Object.defineProperty(document, "execCommand", {
+        configurable: true,
+        value: vi.fn().mockReturnValue(false),
+      })
+
+      await renderDetail()
+
+      const copyLinkButton = getRequiredElement('[data-copy-action="link"]') as HTMLButtonElement
+      const copyOriginalButton = getRequiredElement('[data-copy-action="raw"]') as HTMLButtonElement
+      await act(async () => {
+        copyLinkButton.click()
+        await Promise.resolve()
+      })
+      await act(async () => {
+        copyOriginalButton.click()
+        await Promise.resolve()
+      })
+
+      expect(copyLinkButton.textContent).toBe("Copy failed")
+      expect(copyOriginalButton.textContent).toBe("Copy failed")
+      expect(capture).not.toHaveBeenCalled()
+    })
+
+    it("never puts copied text or a URL in any payload", async () => {
+      await renderDetail()
+
+      await act(async () => {
+        getRequiredElement('[data-copy-action="link"]').dispatchEvent(new MouseEvent("click", { bubbles: true }))
+        await Promise.resolve()
+      })
+      await act(async () => {
+        getRequiredElement('[data-copy-action="raw"]').dispatchEvent(new MouseEvent("click", { bubbles: true }))
+        await Promise.resolve()
+      })
+
+      expect(capture).toHaveBeenCalledTimes(2)
+      for (const [, properties] of capture.mock.calls) {
+        const serialized = JSON.stringify(properties)
+        expect(serialized).not.toMatch(/https?:|\/agents\/|# Architect/)
+        expect(Object.keys(properties)).toEqual(["agent_id"])
+      }
+    })
+  })
 })
 
 async function renderDetail(
