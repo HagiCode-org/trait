@@ -1,11 +1,11 @@
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { afterEach, describe, expect, it, vi, type Mock } from "vitest"
 
 import { SITE_POSTHOG_EVENTS, SITE_EVENT_STRING_MAX_LENGTH, captureSiteEvent } from "@/lib/posthog-events"
 
 type FakePostHog = {
   __loaded?: boolean
-  capture: ReturnType<typeof vi.fn>
-  has_opted_out_capturing: ReturnType<typeof vi.fn>
+  capture: Mock<(event: string, properties?: Record<string, unknown>) => unknown>
+  has_opted_out_capturing: Mock<() => boolean>
 }
 
 function loadedPostHog(optedOut = false): FakePostHog {
@@ -159,7 +159,7 @@ describe("site event table", () => {
 
       const [sentName, sent] = posthog.capture.mock.calls.at(-1)!
       expect(sentName).toBe(name)
-      expect(Object.keys(sent).sort()).toEqual(Object.keys(properties).sort())
+      expect(Object.keys(sent ?? {}).sort()).toEqual(Object.keys(properties).sort())
       expect(JSON.stringify(sent)).not.toMatch(/https?:|secret|free text|Copied markdown/)
     }
   })
