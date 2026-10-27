@@ -47,6 +47,23 @@ npm run lint
 - Keep `@hagicode/hagilight` and `@hagicode/hagilight-core` pinned to the same exact version. Analytics come from Hagilight (`BaseLayout.astro` renders the core GA/51LA components, the `hagilight()` integration injects PostHog); do not add site-owned analytics wrappers.
 - Do not hand-edit generated files; edit i18n YAML sources and run `npm run i18n:generate`. Deploys via `.github/workflows/trait-deploy-gh-pages.yml` (Node 24, recursive submodules).
 
+## PostHog Site Events
+
+The site sends three site-level PostHog events through `src/lib/posthog-events.ts` (`captureSiteEvent`). The table `SITE_POSTHOG_EVENTS` in that module is the only allowlist; `src/lib/posthog-events.test.ts` checks it.
+
+| Event | Sent when | Properties |
+|-------|-----------|------------|
+| `agent_link_copied` | The agent detail link copy succeeds (`AgentDetailPageShell`) | `agent_id` (string, public agent identifier) |
+| `agent_markdown_copied` | The agent original Markdown copy succeeds (`AgentDetailPageShell`) | `agent_id` (string, public agent identifier) |
+| `catalog_searched` | The aggregator catalog's settled query or filter state changes (`AgentAggregatorShell`, 400 ms settle, first render is a baseline and sends nothing) | `results_count` (non-negative integer) |
+
+Rules:
+
+- Properties never carry copied text, URLs, search terms, filter values or agent content. Super-properties (`site_id`, `site_framework`, `hagilight_version`, `locale`, `page_type`) are never sent.
+- A rejected clipboard write sends nothing. Events fire only after the copy or settled state is committed.
+- Deduplication with `cta_click`: a click on an anchor with `data-ga-*` may produce both the business event and `cta_click`. The business event above is canonical; dashboards must not add it to `cta_click` counts.
+- With PostHog missing, opted out, or throwing, copy and search behave as before and nothing is sent.
+
 ## References
 
 - `README.md`
