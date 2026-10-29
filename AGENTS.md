@@ -22,17 +22,21 @@ pnpm test
 pnpm run sync:agents
 pnpm run sync:agent-templates
 pnpm run seo:check
+pnpm run size:check
 pnpm run i18n:check
 pnpm run lint
 ```
 
-`pnpm run build` runs `prepare:i18n`, `sync:agents`, `astro check`, `astro build` and `seo:check`; the ESA host uses `pnpm run build:esa` (`esa.jsonc`), which syncs with `--allow-stale-output`. `pnpm test` runs vitest over `src/**/*.test.ts(x)` and `scripts/**/*.test.mjs`.
+`pnpm run build` runs `prepare:i18n`, `sync:agents`, `astro check`, `astro build`, `seo:check` and `size:check`; the ESA host uses `pnpm run build:esa` (`esa.jsonc`), which syncs with `--allow-stale-output` and runs the same checks. `size:check` enforces gzip ceilings for the homepage, listing and first detail page, and the route-projection chunk (`scripts/check-size-budgets.mjs`, figures in `docs/catalog-payload-sizes.md`). `pnpm test` runs vitest over `src/**/*.test.ts(x)` and `scripts/**/*.test.mjs`.
 
 ## Key Paths
 
 - `src/pages/`: Astro routes (home, catalog, detail pages)
 - `src/components/`: React islands for search, filters, overlays
 - `src/data/generated/agent-catalog.json`: catalog snapshot; `src/data/generated/agent-templates/`: generated Hero trait templates
+- `src/data/ui-constants.ts`: runtime-safe locales, shared types and route payload types; client islands import from here, never from `src/data/trait-catalog.ts` (server-only) or `src/lib/catalog-loader.ts`
+- `dist/data/agents/<agentId>.json`: per-entry JSON for the listing drawer and non-page languages; `dist/data/search/<language>.<hash>.json`: lazily fetched search shards
+- `docs/catalog-payload-sizes.md`: measured payload sizes and budget decisions; `docs/esa-delivery.md`: ESA console checklist for caching and compression
 - `vendor/`: upstream trait sources as git submodules (see `.gitmodules`)
 - `scripts/`: agent sync, SEO validation
 - `first-party/agents/`: first-party trait markdown, read by the local `hagicode-first-party` source
