@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "pnpm run prepare:i18n && node ./scripts/dev-server.mjs",
     "dev:static": "pnpm run prepare:i18n && node ./scripts/dev-server.mjs",
-    "build": "export NODE_OPTIONS=\"${NODE_OPTIONS:-} --max-old-space-size=8192\"; export NODE_ENV=\"${NODE_ENV:-production}\"; pnpm run prepare:i18n && pnpm run sync:agents && astro check && astro build && pnpm run seo:check",
-    "build:esa": "export NODE_OPTIONS=\"${NODE_OPTIONS:-} --max-old-space-size=8192\"; export NODE_ENV=\"${NODE_ENV:-production}\"; pnpm run prepare:i18n && pnpm run sync:agents:build && astro check && astro build && pnpm run seo:check",
+    "build": "export NODE_OPTIONS=\"${NODE_OPTIONS:-} --max-old-space-size=8192\"; export NODE_ENV=\"${NODE_ENV:-production}\"; pnpm run prepare:i18n && pnpm run sync:agents && astro check && astro build && pnpm run seo:check && pnpm run size:check",
+    "build:esa": "export NODE_OPTIONS=\"${NODE_OPTIONS:-} --max-old-space-size=8192\"; export NODE_ENV=\"${NODE_ENV:-production}\"; pnpm run prepare:i18n && pnpm run sync:agents:build && astro check && astro build && pnpm run seo:check && pnpm run size:check",
     "lint": "eslint .",
     "preview": "astro preview",
     "sync:agents": "node ./scripts/sync-agents.mjs",
@@ -15,6 +15,7 @@
     "sync:agents:dev": "node ./scripts/sync-agents.mjs --allow-stale-output",
     "sync:agents:update-source": "git submodule update --init --remote",
     "seo:check": "node ./scripts/check-seo.mjs",
+    "size:check": "node ./scripts/check-size-budgets.mjs",
     "test": "pnpm run prepare:i18n && vitest run",
     "sync:agent-templates": "node ./scripts/generate-agent-templates.mjs",
     "i18n:audit": "hagi18n audit --config hagi18n.yaml",
