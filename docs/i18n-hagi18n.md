@@ -7,7 +7,7 @@ Trait UI translations are maintained as YAML source files under `src/i18n/locale
 Install repository dependencies so the local `hagi18n` binary is available:
 
 ```bash
-npm install
+pnpm install
 ```
 
 Verify the CLI before using the Trait workflow:
@@ -16,7 +16,7 @@ Verify the CLI before using the Trait workflow:
 hagi18n info
 ```
 
-Trait scripts resolve the repository-local `hagi18n` binary from `devDependencies`. Use the `npm run i18n:*` commands from this repository instead of relying on a global installation.
+Trait scripts resolve the repository-local `hagi18n` binary from `devDependencies`. Use the `pnpm run i18n:*` commands from this repository instead of relying on a global installation.
 
 ## Source and runtime contract
 
@@ -34,39 +34,39 @@ Trait now exposes the full Desktop-aligned locale set in the user-facing switche
 Run these from `repos/trait`:
 
 ```bash
-npm run i18n:audit
-npm run i18n:report
-npm run i18n:doctor
-npm run i18n:sync
-npm run i18n:sync:write
-npm run i18n:prune
-npm run i18n:prune:write
-npm run i18n:generate
-npm run i18n:check
+pnpm run i18n:audit
+pnpm run i18n:report
+pnpm run i18n:doctor
+pnpm run i18n:sync
+pnpm run i18n:sync:write
+pnpm run i18n:prune
+pnpm run i18n:prune:write
+pnpm run i18n:generate
+pnpm run i18n:check
 ```
 
-`npm run i18n:check` runs hagi18n audit, hagi18n doctor, generation, stale-output verification, and targeted i18n tests.
+`pnpm run i18n:check` runs hagi18n audit, hagi18n doctor, generation, stale-output verification, and targeted i18n tests.
 
 ## Dry-run-first sync and prune workflow
 
 `sync` and `prune` are preview-only by default.
 
-1. Review drift with `npm run i18n:audit` and `npm run i18n:doctor`.
-2. Preview missing keys with `npm run i18n:sync`.
-3. Preview obsolete keys with `npm run i18n:prune`.
-4. Apply reviewed additions with `npm run i18n:sync:write`.
-5. Apply reviewed removals with `npm run i18n:prune:write`.
-6. Regenerate runtime modules with `npm run i18n:generate`.
-7. Finish with `npm run i18n:check`.
+1. Review drift with `pnpm run i18n:audit` and `pnpm run i18n:doctor`.
+2. Preview missing keys with `pnpm run i18n:sync`.
+3. Preview obsolete keys with `pnpm run i18n:prune`.
+4. Apply reviewed additions with `pnpm run i18n:sync:write`.
+5. Apply reviewed removals with `pnpm run i18n:prune:write`.
+6. Regenerate runtime modules with `pnpm run i18n:generate`.
+7. Finish with `pnpm run i18n:check`.
 
 ## Adding or updating a translation key
 
 1. Edit `src/i18n/locales-source/en-US/ui.yml` first.
 2. Add the same key path to every target locale file under `src/i18n/locales-source/<locale>/ui.yml`.
 3. Preserve interpolation placeholders exactly, including names such as `{{count}}`, `{{language}}`, and `{{year}}`.
-4. Run `npm run i18n:audit`.
-5. Run `npm run i18n:generate`.
-6. Run `npm run i18n:check` before committing.
+4. Run `pnpm run i18n:audit`.
+5. Run `pnpm run i18n:generate`.
+6. Run `pnpm run i18n:check` before committing.
 
 ## Doctor allowlist notes
 
