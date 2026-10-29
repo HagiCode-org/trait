@@ -89,5 +89,12 @@ export const ruRUMessages: LocaleMessages = {
   "siteLinksIcpAria": "Информация о регистрации ICP",
   "siteLinksPublicSecurityAria": "Информация о регистрации общественной безопасности",
   "sourceLastSync": "Последняя синхронизация",
-  "sourceStars": "Stars"
+  "sourceStars": "Stars",
+  "drawerLoading": "Загрузка текста статьи…",
+  "drawerFailed": "Не удалось загрузить эту статью.",
+  "drawerRetry": "Повторить",
+  "drawerOpenCanonical": "Открыть каноническую страницу",
+  "searchStatusLoading": "Полнотекстовый поиск: загружено индексов языков {{loaded}} из {{total}}",
+  "searchStatusIncomplete": "Результаты полнотекстового поиска неполные. Совпадения по метаданным по-прежнему показаны.",
+  "searchRetry": "Повторить поиск"
 }

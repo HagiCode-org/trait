@@ -1,9 +1,9 @@
-import type { AgentCatalogItem, ContentLanguage } from "@/data/trait-catalog"
+import type { CatalogListItem, ContentLanguage } from "@/data/ui-constants"
 import type { LocaleMessages } from "@/i18n/locales/en"
 import { buildAgentPath, humanizeCatalogValue } from "@/lib/route-projection"
 
 type AgentCardProps = {
-  item: AgentCatalogItem
+  item: CatalogListItem
   isActive: boolean
   messages: LocaleMessages
   onOpen: (agentId: string, language: ContentLanguage | null) => void

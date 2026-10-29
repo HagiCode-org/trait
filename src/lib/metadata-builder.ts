@@ -1,4 +1,4 @@
-import type { AgentCatalogItem, ContentLanguage } from "@/data/trait-catalog"
+import type { AgentDetailItem, ContentLanguage } from "@/data/ui-constants"
 import { TRAIT_SITE_NAME, TRAIT_SITE_TAGLINE, TRAIT_SITE_URL, TRAIT_SOCIAL_IMAGE_PATH } from "@/lib/site-config"
 import { buildAgentAlternatePaths, buildAgentLanguagePath } from "@/lib/route-projection"
 
@@ -173,12 +173,12 @@ export function buildCatalogMetadata(totalAgents: number): PageMetadata<readonly
   })
 }
 
-export function buildAgentDetailMetadata(item: AgentCatalogItem, language: ContentLanguage): PageMetadata<readonly [CreativeWorkNode, OrganizationNode]> {
+export function buildAgentDetailMetadata(item: AgentDetailItem, language: ContentLanguage): PageMetadata<readonly [CreativeWorkNode, OrganizationNode]> {
   const variant = item.variants[language] ?? item.variants[item.defaultLanguage]
   const pagePath = buildAgentLanguagePath(item, language)
   const canonical = absoluteUrl(pagePath)
-  const title = `${variant.title} | ${TRAIT_SITE_NAME}`
-  const description = trimDescription(variant.summary || item.summary)
+  const title = `${variant?.title ?? item.name} | ${TRAIT_SITE_NAME}`
+  const description = trimDescription(variant?.summary || item.summary)
   const alternates = buildAlternateLinks(item)
 
   return buildBaseMetadata({
@@ -191,7 +191,7 @@ export function buildAgentDetailMetadata(item: AgentCatalogItem, language: Conte
       {
         "@context": "https://schema.org",
         "@type": "CreativeWork",
-        name: variant.title,
+        name: variant?.title ?? item.name,
         description,
         inLanguage: language,
         url: canonical,
@@ -253,7 +253,7 @@ function buildBaseMetadata<TJsonLd extends readonly JsonLdNode[]>({
   }
 }
 
-function buildAlternateLinks(item: AgentCatalogItem): MetadataLink[] {
+function buildAlternateLinks(item: AgentDetailItem): MetadataLink[] {
   const paths = buildAgentAlternatePaths(item)
 
   return [

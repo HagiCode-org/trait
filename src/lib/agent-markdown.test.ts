@@ -4,7 +4,7 @@ import { buildAgentVariantMarkdown } from "@/lib/agent-markdown"
 
 describe("agent-markdown", () => {
   it("rebuilds markdown with frontmatter and body", () => {
-    const markdown = buildAgentVariantMarkdown({
+    const variant = {
       language: "en",
       title: "Architect",
       summary: "Architecture specialist.",
@@ -19,7 +19,8 @@ describe("agent-markdown", () => {
         tools: ["Read", "Edit"],
         model: "gpt-5",
       },
-    })
+    }
+    const markdown = buildAgentVariantMarkdown(variant)
 
     expect(markdown).toContain('name: "Architect"')
     expect(markdown).toContain('description: "Architecture specialist."')

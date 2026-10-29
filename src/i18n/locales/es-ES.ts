@@ -89,5 +89,12 @@ export const esESMessages: LocaleMessages = {
   "siteLinksIcpAria": "Información de registro ICP",
   "siteLinksPublicSecurityAria": "Información de registro de seguridad pública",
   "sourceLastSync": "Última sincronización",
-  "sourceStars": "Stars"
+  "sourceStars": "Stars",
+  "drawerLoading": "Cargando el cuerpo del artículo…",
+  "drawerFailed": "No se pudo cargar este artículo.",
+  "drawerRetry": "Reintentar",
+  "drawerOpenCanonical": "Abrir página canónica",
+  "searchStatusLoading": "Buscando en texto completo: {{loaded}} de {{total}} índices de idioma cargados",
+  "searchStatusIncomplete": "Los resultados de texto completo están incompletos. Las coincidencias de metadatos siguen visibles.",
+  "searchRetry": "Reintentar búsqueda"
 }

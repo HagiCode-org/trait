@@ -4,42 +4,39 @@ import { act } from "react"
 import { createRoot } from "react-dom/client"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import {
-  agentCatalogSnapshot,
-  defaultFilterState,
-  emptyDetailRouteState,
-  type FilterState,
-} from "@/data/trait-catalog"
+import { agentCatalogSnapshot } from "@/data/trait-catalog"
+import { defaultFilterState, emptyDetailRouteState, type FilterState } from "@/data/ui-constants"
 import { enMessages } from "@/i18n/locales/en"
+import { buildCatalogMeta, buildListItems } from "@/lib/catalog-loader"
 import { buildFilterOptions, queryCatalog } from "@/lib/route-projection"
 
 import { AgentAggregatorShell } from "./AgentAggregatorShell"
 
 const actEnvironment = globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }
 const SETTLE_MS = 400
-const filterOptions = buildFilterOptions(agentCatalogSnapshot)
+const listItems = buildListItems(agentCatalogSnapshot)
+const filterOptions = buildFilterOptions(buildCatalogMeta(agentCatalogSnapshot))
 
 let container: HTMLDivElement
 let root: ReturnType<typeof createRoot>
 let capture: ReturnType<typeof vi.fn>
 
 function countFor(filters: FilterState) {
-  return queryCatalog(filters, agentCatalogSnapshot.items).length
+  return queryCatalog(filters, listItems).length
 }
 
 function renderShell(filters: FilterState) {
   act(() => {
     root.render(
       <AgentAggregatorShell
-        snapshot={agentCatalogSnapshot}
         locale="en"
         messages={enMessages}
         routeState={{ filters, detail: emptyDetailRouteState }}
         filterState={filters}
         filterOptions={filterOptions}
-        results={queryCatalog(filters, agentCatalogSnapshot.items)}
-        detail={null}
-        detailNotFound={false}
+        results={queryCatalog(filters, listItems)}
+        drawer={null}
+        searchStatus={{ state: "idle" }}
         copyLinkState="idle"
         copyOriginalState="idle"
         onLocaleChange={() => {}}
@@ -53,6 +50,8 @@ function renderShell(filters: FilterState) {
         onSelectDetailLanguage={() => {}}
         onCopyLink={() => {}}
         onCopyOriginal={() => {}}
+        onRetryDetail={() => {}}
+        onRetrySearch={() => {}}
       />
     )
   })

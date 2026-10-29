@@ -85,3 +85,10 @@ siteLinksIcpAria: ICP filing information
 siteLinksPublicSecurityAria: Public security filing information
 sourceLastSync: Last synced
 sourceStars: Stars
+drawerLoading: "Loading the article body…"
+drawerFailed: "Could not load this article."
+drawerRetry: "Retry"
+drawerOpenCanonical: "Open canonical page"
+searchStatusLoading: "Searching full text: {{loaded}} of {{total}} language indexes loaded"
+searchStatusIncomplete: "Full-text results are incomplete. Metadata matches are still shown."
+searchRetry: "Retry search"

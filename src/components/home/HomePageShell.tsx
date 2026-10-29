@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react"
 
-import type { AgentCatalogItem, SourceMeta, UiLocale } from "@/data/trait-catalog"
+import type { FeaturedCard, SourceMeta, UiLocale } from "@/data/ui-constants"
 import { SiteHeader } from "@/components/site/SiteHeader"
 import { useLocale } from "@/i18n/use-locale"
-import { chunkFeaturedItems, type FeaturedItemsByLocale } from "@/lib/featured-selection"
+import { chunkFeaturedItems } from "@/lib/featured-selection"
 import { buildAgentLanguagePath, humanizeCatalogValue } from "@/lib/route-projection"
 
 type HomePageShellProps = {
-  featuredItemsByLocale: FeaturedItemsByLocale
+  featuredByLocale: Record<UiLocale, FeaturedCard[]>
   sources: SourceMeta[]
   metrics: {
     totalAgents: number
@@ -18,10 +18,10 @@ type HomePageShellProps = {
   initialLocale?: UiLocale
 }
 
-export function HomePageShell({ featuredItemsByLocale, sources, metrics, initialLocale = "en" }: HomePageShellProps) {
+export function HomePageShell({ featuredByLocale, sources, metrics, initialLocale = "en" }: HomePageShellProps) {
   const { locale, messages, setLocale } = useLocale(initialLocale)
-  const activeFeaturedItems = featuredItemsByLocale[locale] ?? featuredItemsByLocale[initialLocale] ?? []
-  const featuredSlides = chunkFeaturedItems(activeFeaturedItems)
+  const activeFeaturedCards = featuredByLocale[locale] ?? featuredByLocale[initialLocale] ?? []
+  const featuredSlides = chunkFeaturedItems(activeFeaturedCards)
   const [activeSlide, setActiveSlide] = useState(0)
   const normalizedActiveSlide = activeSlide >= featuredSlides.length ? 0 : activeSlide
 
@@ -116,29 +116,27 @@ export function HomePageShell({ featuredItemsByLocale, sources, metrics, initial
               {featuredSlides.map((slideItems, slideIndex) => (
                 <div key={`${locale}-${slideIndex}`} className="min-w-full">
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                    {slideItems.map((item) => {
-                      const activeVariant = pickFeaturedVariant(item, locale)
-
+                    {slideItems.map((card) => {
                       return (
-                        <article key={`${locale}-${item.agentId}`}>
+                        <article key={`${locale}-${card.agentId}`}>
                           <a
                             className="catalog-card group flex h-full max-h-[24rem] flex-col overflow-hidden rounded-[1.75rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-5 transition duration-200 hover:-translate-y-0.5"
-                            href={buildAgentLanguagePath(item, activeVariant.language)}
+                            href={buildAgentLanguagePath(card, card.language)}
                           >
-                            <p className="font-display text-[0.7rem] font-medium uppercase tracking-[0.14em] text-[color:var(--muted-ink)]">{item.sourceLabel}</p>
+                            <p className="font-display text-[0.7rem] font-medium uppercase tracking-[0.14em] text-[color:var(--muted-ink)]">{card.sourceLabel}</p>
                             <h3 className="mt-3 font-display text-[2rem] leading-[0.96] tracking-[-0.04em] text-[color:var(--ink-strong)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden">
-                              {activeVariant.title}
+                              {card.title}
                             </h3>
-                            <p className="mt-4 text-sm leading-7 text-[color:var(--ink-soft)]">{activeVariant.summary}</p>
+                            <p className="mt-4 text-sm leading-7 text-[color:var(--ink-soft)]">{card.summary}</p>
                             <div className="mt-4 flex flex-wrap gap-2">
-                              {item.availableLanguages.map((language) => (
+                              {card.availableLanguages.map((language) => (
                                 <span key={language} className="tag-chip">
                                   {language}
                                 </span>
                               ))}
                             </div>
                             <div className="mt-auto flex items-center justify-between gap-3 border-t border-[color:var(--line-soft)] pt-4 text-[0.78rem] text-[color:var(--muted-ink)]">
-                              <span>{humanizeCatalogValue(item.type)}</span>
+                              <span>{humanizeCatalogValue(card.type)}</span>
                               <span
                                 aria-hidden="true"
                                 className="font-display text-[color:var(--ink-strong)] transition-transform duration-200 group-hover:translate-x-1"
@@ -239,23 +237,6 @@ function formatMetricValue(value: number | null, locale: UiLocale) {
   }
 
   return new Intl.NumberFormat(locale).format(value)
-}
-
-function pickFeaturedVariant(item: AgentCatalogItem, locale: UiLocale) {
-  const candidates = locale === "zh-Hant"
-    ? ["zh-Hant", "zh-CN", "en"]
-    : locale.startsWith("zh")
-      ? [locale, "zh-CN", "en"]
-      : [locale, "en"]
-
-  for (const language of candidates) {
-    const variant = item.variants[language]
-    if (variant) {
-      return variant
-    }
-  }
-
-  return item.variants[item.defaultLanguage] ?? item.variants[item.availableLanguages[0]]
 }
 
 function MetricCard({

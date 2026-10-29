@@ -85,3 +85,10 @@ siteLinksIcpAria: ICP 备案信息
 siteLinksPublicSecurityAria: 公安备案信息
 sourceLastSync: 最近同步
 sourceStars: Star 数
+drawerLoading: "正在加载文章正文…"
+drawerFailed: "无法加载这篇文章。"
+drawerRetry: "重试"
+drawerOpenCanonical: "打开规范页面"
+searchStatusLoading: "正在搜索全文：已加载 {{loaded}} / {{total}} 个语言索引"
+searchStatusIncomplete: "全文搜索结果不完整，元数据匹配仍会显示。"
+searchRetry: "重试搜索"

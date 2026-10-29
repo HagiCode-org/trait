@@ -1,13 +1,12 @@
-import type { ContentLanguage, UiLocale } from "@/data/trait-catalog"
+import type { ContentLanguage, SourceMeta, UiLocale } from "@/data/ui-constants"
 import { formatMessage } from "@/i18n/use-locale"
 import type { LocaleMessages } from "@/i18n/locales/en"
-import { buildAgentLanguagePath, humanizeCatalogValue, type AgentDetailView } from "@/lib/route-projection"
+import { buildAgentLanguagePath, humanizeCatalogValue, type DrawerState } from "@/lib/route-projection"
 
 import { MarkdownArticle } from "./MarkdownArticle"
 
 type AgentDetailPanelProps = {
-  detail: AgentDetailView | null
-  detailNotFound: boolean
+  drawer: DrawerState
   locale: UiLocale
   messages: LocaleMessages
   mode: "desktop" | "mobile"
@@ -17,11 +16,11 @@ type AgentDetailPanelProps = {
   onCopyLink: () => void
   onCopyOriginal: () => void
   onSelectLanguage: (language: ContentLanguage) => void
+  onRetry: () => void
 }
 
 export function AgentDetailPanel({
-  detail,
-  detailNotFound,
+  drawer,
   locale,
   messages,
   mode,
@@ -31,13 +30,14 @@ export function AgentDetailPanel({
   onCopyLink,
   onCopyOriginal,
   onSelectLanguage,
+  onRetry,
 }: AgentDetailPanelProps) {
   const isMobile = mode === "mobile"
   const wrapperClassName = isMobile
     ? "mobile-detail-sheet fixed inset-0 z-50 overflow-y-auto bg-[color:var(--surface-base)] px-4 pb-6 pt-4 lg:hidden"
     : "detail-surface detail-drawer-panel flex h-full w-full flex-col overflow-hidden rounded-[2rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)]"
 
-  if (detailNotFound && !detail) {
+  if (drawer.status === "not-found") {
     return (
       <section
         className={wrapperClassName}
@@ -65,9 +65,11 @@ export function AgentDetailPanel({
     )
   }
 
-  if (!detail) {
-    return null
-  }
+  const isReady = drawer.status === "ready"
+  const item = isReady ? drawer.view.item : drawer.item
+  const activeLanguage = isReady ? drawer.view.activeLanguage : drawer.activeLanguage
+  const fallbackLanguage = isReady ? drawer.view.fallbackLanguage : drawer.fallbackLanguage
+  const source: SourceMeta | null = isReady ? drawer.view.source : drawer.source
 
   const copyLabel =
     copyLinkState === "done"
@@ -81,21 +83,23 @@ export function AgentDetailPanel({
       : copyOriginalState === "failed"
         ? messages.copyFailed
         : messages.copyOriginal
-  const lastSyncedLabel = detail.source
-    ? new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(detail.source.lastSyncedAt))
+  const lastSyncedLabel = source
+    ? new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(source.lastSyncedAt))
     : "n/a"
   const typeLabel =
-    detail.item.type === "reviewer"
+    item.type === "reviewer"
       ? messages.typeReviewer
-      : detail.item.type === "build-resolver"
+      : item.type === "build-resolver"
         ? messages.typeBuildResolver
-        : humanizeCatalogValue(detail.item.type)
+        : humanizeCatalogValue(item.type)
+  const sourceUrl = isReady ? drawer.view.activeVariant.sourceUrl : item.sourceUrl
 
   return (
     <section
       className={wrapperClassName}
       data-panel-mode={mode}
       data-testid={`${mode}-detail-panel`}
+      data-detail-status={drawer.status}
       role="dialog"
       aria-label={isMobile ? messages.mobileDetail : messages.detailTitle}
       aria-modal={isMobile || undefined}
@@ -103,11 +107,9 @@ export function AgentDetailPanel({
       <div className="border-b border-[color:var(--section-border)] bg-[color:var(--section-surface)] px-5 pb-5 pt-5 text-[color:var(--section-text)] sm:px-6">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
-            <p className="font-display text-[0.72rem] font-medium uppercase tracking-[0.14em] text-[color:var(--section-muted)]">{detail.item.sourceLabel}</p>
-            <h2 className="mt-3 font-display text-[2.4rem] leading-[0.94] tracking-[-0.05em] text-[color:var(--section-text)]">
-              {detail.item.name}
-            </h2>
-            <p className="mt-4 text-sm leading-7 text-[color:var(--section-muted)]">{detail.item.summary}</p>
+            <p className="font-display text-[0.72rem] font-medium uppercase tracking-[0.14em] text-[color:var(--section-muted)]">{item.sourceLabel}</p>
+            <h2 className="mt-3 font-display text-[2.4rem] leading-[0.94] tracking-[-0.05em] text-[color:var(--section-text)]">{item.name}</h2>
+            <p className="mt-4 text-sm leading-7 text-[color:var(--section-muted)]">{item.summary}</p>
           </div>
           <button type="button" className="ghost-button shrink-0" onClick={onClose}>
             {messages.closeDetail}
@@ -115,8 +117,8 @@ export function AgentDetailPanel({
         </div>
 
         <div className="mt-5 flex flex-wrap gap-2" aria-label={messages.languageSwitch}>
-          {detail.item.availableLanguages.map((language) => {
-            const href = buildAgentLanguagePath(detail.item, language)
+          {item.availableLanguages.map((language) => {
+            const href = buildAgentLanguagePath(item, language)
 
             return (
               <a
@@ -127,9 +129,9 @@ export function AgentDetailPanel({
                   event.preventDefault()
                   onSelectLanguage(language)
                 }}
-                className={["ghost-button !min-h-0 !px-3 !py-2 !text-xs", detail.activeLanguage === language ? "!text-[color:var(--contrast-pill-active-text)]" : ""].join(" ")}
+                className={["ghost-button !min-h-0 !px-3 !py-2 !text-xs", activeLanguage === language ? "!text-[color:var(--contrast-pill-active-text)]" : ""].join(" ")}
                 style={
-                  detail.activeLanguage === language
+                  activeLanguage === language
                     ? {
                         backgroundColor: "var(--contrast-pill-active-bg)",
                         borderColor: "var(--contrast-pill-active-border)",
@@ -145,29 +147,36 @@ export function AgentDetailPanel({
       </div>
 
       <div className="overflow-y-auto px-5 pb-6 pt-5 sm:px-6">
-        {detail.fallbackLanguage ? (
+        {fallbackLanguage ? (
           <div className="rounded-[1.25rem] border border-[color:var(--warning-border)] bg-[color:var(--warning-surface)] px-4 py-3 text-sm text-[color:var(--warning-ink)]">
-            {formatMessage(messages.fallbackNotice, { language: detail.activeLanguage })}
+            {formatMessage(messages.fallbackNotice, { language: activeLanguage })}
           </div>
         ) : null}
 
         <div className="grid gap-3 sm:grid-cols-3">
-          <MetaCard label={messages.canonicalId} value={detail.item.agentId} />
+          <MetaCard label={messages.canonicalId} value={item.agentId} />
           <MetaCard label={messages.typeFilter} value={typeLabel} />
-          <MetaCard label={messages.sourceRepo} value={detail.item.sourceRepo} />
+          <MetaCard label={messages.sourceRepo} value={item.sourceRepo} />
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
-          <a className="primary-button" href={detail.activeVariant.sourceUrl} target="_blank" rel="noreferrer">
+          <a className="primary-button" href={sourceUrl} target="_blank" rel="noreferrer">
             {messages.openSource}
           </a>
           <button type="button" data-copy-action="link" className="secondary-button" onClick={onCopyLink}>
             {copyLabel}
           </button>
-          <button type="button" data-copy-action="raw" className="secondary-button" onClick={onCopyOriginal}>
+          <button
+            type="button"
+            data-copy-action="raw"
+            className="secondary-button"
+            onClick={onCopyOriginal}
+            disabled={!isReady}
+            aria-disabled={!isReady || undefined}
+          >
             {copyOriginalLabel}
           </button>
-          <a className="secondary-link" href={buildAgentLanguagePath(detail.item, detail.activeLanguage)}>
+          <a className="secondary-link" href={buildAgentLanguagePath(item, activeLanguage)}>
             {messages.viewCanonicalPage}
           </a>
           <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--surface-muted)] px-3 py-2 font-display text-[0.74rem] font-medium uppercase tracking-[0.12em] text-[color:var(--ink-soft)]">
@@ -176,15 +185,15 @@ export function AgentDetailPanel({
         </div>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <MetaCard label={messages.sourceType} value={detail.item.sourceType} />
-          <MetaCard label={messages.model} value={detail.item.model ?? "n/a"} />
-          <MetaCard label={messages.availableLanguages} value={detail.item.availableLanguages.join(" · ")} />
-          <MetaCard label={messages.tools} value={detail.item.tools.join(" · ")} />
+          <MetaCard label={messages.sourceType} value={item.sourceType} />
+          <MetaCard label={messages.model} value={item.model ?? "n/a"} />
+          <MetaCard label={messages.availableLanguages} value={item.availableLanguages.join(" · ")} />
+          <MetaCard label={messages.tools} value={item.tools.join(" · ")} />
         </div>
 
-        {detail.item.tags.length > 0 ? (
+        {item.tags.length > 0 ? (
           <div className="mt-4 flex flex-wrap gap-2">
-            {detail.item.tags.map((tag) => (
+            {item.tags.map((tag) => (
               <span key={tag} className="tag-chip">
                 {tag}
               </span>
@@ -193,7 +202,28 @@ export function AgentDetailPanel({
         ) : null}
 
         <div className="mt-5 rounded-[1.6rem] border border-[color:var(--line-soft)] bg-[color:var(--surface-card)] p-4 sm:p-5">
-          <MarkdownArticle body={detail.activeVariant.body} />
+          {drawer.status === "ready" ? (
+            <MarkdownArticle body={drawer.view.activeVariant.body} />
+          ) : drawer.status === "loading" ? (
+            <div role="status" aria-live="polite" data-testid="drawer-body-loading" className="flex flex-col gap-3">
+              <p className="text-sm leading-7 text-[color:var(--ink-soft)]">{messages.drawerLoading}</p>
+              <span aria-hidden="true" className="block h-2.5 w-11/12 rounded bg-[color:var(--surface-muted)]" />
+              <span aria-hidden="true" className="block h-2.5 w-10/12 rounded bg-[color:var(--surface-muted)]" />
+              <span aria-hidden="true" className="block h-2.5 w-8/12 rounded bg-[color:var(--surface-muted)]" />
+            </div>
+          ) : (
+            <div role="alert" data-testid="drawer-body-failed" className="flex flex-col gap-3">
+              <p className="text-sm leading-7 text-[color:var(--ink-strong)]">{messages.drawerFailed}</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <button type="button" className="primary-button" data-testid="drawer-retry" onClick={onRetry}>
+                  {messages.drawerRetry}
+                </button>
+                <a className="secondary-link" href={buildAgentLanguagePath(item, activeLanguage)}>
+                  {messages.drawerOpenCanonical}
+                </a>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

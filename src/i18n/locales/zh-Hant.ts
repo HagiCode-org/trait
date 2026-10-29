@@ -89,5 +89,12 @@ export const zhHantMessages: LocaleMessages = {
   "siteLinksIcpAria": "ICP 備案資訊",
   "siteLinksPublicSecurityAria": "公安備案資訊",
   "sourceLastSync": "最近同步",
-  "sourceStars": "Star 數"
+  "sourceStars": "Star 數",
+  "drawerLoading": "正在載入文章內容…",
+  "drawerFailed": "無法載入這篇文章。",
+  "drawerRetry": "重試",
+  "drawerOpenCanonical": "開啟標準頁面",
+  "searchStatusLoading": "正在搜尋全文：已載入 {{loaded}} / {{total}} 個語言索引",
+  "searchStatusIncomplete": "全文搜尋結果不完整，中繼資料符合的結果仍會顯示。",
+  "searchRetry": "重試搜尋"
 }

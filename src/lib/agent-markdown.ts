@@ -1,6 +1,8 @@
-import type { AgentVariant } from "@/data/trait-catalog"
+import type { AgentVariant } from "@/data/ui-constants"
 
-export function buildAgentVariantMarkdown(variant: AgentVariant) {
+type MarkdownVariant = Pick<AgentVariant, "attributes" | "body">
+
+export function buildAgentVariantMarkdown(variant: MarkdownVariant) {
   const frontmatter = serializeFrontmatter(variant.attributes)
 
   if (!frontmatter) {
@@ -10,7 +12,7 @@ export function buildAgentVariantMarkdown(variant: AgentVariant) {
   return `---\n${frontmatter}\n---\n\n${variant.body}`
 }
 
-function serializeFrontmatter(attributes: AgentVariant["attributes"]) {
+function serializeFrontmatter(attributes: MarkdownVariant["attributes"]) {
   const entries = Object.entries(attributes).filter(([, value]) => value !== undefined)
   if (entries.length === 0) {
     return ""

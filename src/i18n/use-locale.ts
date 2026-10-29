@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 
-import { DEFAULT_UI_LOCALE, resolveUiLocale, type UiLocale } from "@/data/trait-catalog"
+import { DEFAULT_UI_LOCALE, resolveUiLocale, type UiLocale } from "@/data/ui-constants"
 import { deDEMessages } from "@/i18n/locales/de-DE"
 import { enMessages, type LocaleMessages } from "@/i18n/locales/en"
 import { esESMessages } from "@/i18n/locales/es-ES"

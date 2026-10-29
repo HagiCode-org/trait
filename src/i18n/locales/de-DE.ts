@@ -89,5 +89,12 @@ export const deDEMessages: LocaleMessages = {
   "siteLinksIcpAria": "ICP-Registrierungsinformationen",
   "siteLinksPublicSecurityAria": "Informationen zur Sicherheitsregistrierung",
   "sourceLastSync": "Zuletzt synchronisiert",
-  "sourceStars": "Stars"
+  "sourceStars": "Stars",
+  "drawerLoading": "Artikeltext wird geladen…",
+  "drawerFailed": "Dieser Artikel konnte nicht geladen werden.",
+  "drawerRetry": "Erneut versuchen",
+  "drawerOpenCanonical": "Kanonische Seite öffnen",
+  "searchStatusLoading": "Volltextsuche: {{loaded}} von {{total}} Sprachindizes geladen",
+  "searchStatusIncomplete": "Volltextergebnisse sind unvollständig. Treffer aus Metadaten werden weiterhin angezeigt.",
+  "searchRetry": "Suche erneut versuchen"
 }

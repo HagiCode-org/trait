@@ -5,51 +5,37 @@ import { createRoot } from "react-dom/client"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 
 import { HomePageShell } from "@/components/home/HomePageShell"
-import { uiLocales, type AgentCatalogItem, type SourceMeta } from "@/data/trait-catalog"
+import { uiLocales, type FeaturedCard, type SourceMeta, type UiLocale } from "@/data/ui-constants"
 import { buildAgentLanguagePath } from "@/lib/route-projection"
-import type { FeaturedItemsByLocale } from "@/lib/featured-selection"
 
 let container: HTMLDivElement
 let root: ReturnType<typeof createRoot>
 
-const featuredZhItem = createAgentItem({
+const featuredZhCard: FeaturedCard = {
   agentId: "architect",
-  sourceLabel: "everything-claude-code",
-  type: "architect",
   defaultLanguage: "en",
   availableLanguages: ["en", "zh-CN"],
-  variants: {
-    en: createVariant({
-      language: "en",
-      title: "Architect",
-      summary: "English architecture specialist.",
-    }),
-    "zh-CN": createVariant({
-      language: "zh-CN",
-      title: "架构师",
-      summary: "中文架构专家。",
-    }),
-  },
-})
-
-const featuredEnItem = createAgentItem({
-  agentId: "planner",
+  language: "zh-CN",
   sourceLabel: "everything-claude-code",
-  type: "planner",
+  type: "architect",
+  title: "架构师",
+  summary: "中文架构专家。",
+}
+
+const featuredEnCard: FeaturedCard = {
+  agentId: "planner",
   defaultLanguage: "en",
   availableLanguages: ["en"],
-  variants: {
-    en: createVariant({
-      language: "en",
-      title: "Planner",
-      summary: "English planning specialist.",
-    }),
-  },
-})
+  language: "en",
+  sourceLabel: "everything-claude-code",
+  type: "planner",
+  title: "Planner",
+  summary: "English planning specialist.",
+}
 
-const featuredItemsByLocale = Object.fromEntries(
-  uiLocales.map((locale) => [locale, locale === "zh-CN" ? [featuredZhItem] : [featuredEnItem]])
-) as FeaturedItemsByLocale
+const featuredByLocale = Object.fromEntries(
+  uiLocales.map((locale: UiLocale) => [locale, locale === "zh-CN" ? [featuredZhCard] : [featuredEnCard]])
+) as Record<UiLocale, FeaturedCard[]>
 
 const sources: SourceMeta[] = [
   {
@@ -102,7 +88,7 @@ describe("HomePageShell", () => {
   it("highlights the gallery section and renders locale-specific featured cards", async () => {
     await act(async () => {
       root.render(
-        <HomePageShell featuredItemsByLocale={featuredItemsByLocale} sources={sources} metrics={metrics} initialLocale="zh-CN" />
+        <HomePageShell featuredByLocale={featuredByLocale} sources={sources} metrics={metrics} initialLocale="zh-CN" />
       )
       await Promise.resolve()
     })
@@ -115,7 +101,7 @@ describe("HomePageShell", () => {
     expect(galleryBanner.textContent).toContain("浏览从互联网上收集的，经过大量验证的可靠 Agent 描述。")
     expect(container.querySelector('[data-testid="home-gallery-grid"]')).not.toBeNull()
 
-    const featuredCardLink = getRequiredAnchor(`a.catalog-card[href="${buildAgentLanguagePath(featuredZhItem, "zh-CN")}"]`)
+    const featuredCardLink = getRequiredAnchor(`a.catalog-card[href="${buildAgentLanguagePath(featuredZhCard, "zh-CN")}"]`)
     expect(featuredCardLink.textContent).toContain("架构师")
     expect(featuredCardLink.textContent).toContain("中文架构专家。")
     expect(container.textContent).toContain("Star 数")
@@ -132,55 +118,4 @@ function getRequiredAnchor(selector: string) {
   }
 
   return element
-}
-
-function createAgentItem(overrides: Partial<AgentCatalogItem>): AgentCatalogItem {
-  return {
-    traitCatalogId: overrides.traitCatalogId ?? overrides.agentId ?? "agent",
-    agentId: overrides.agentId ?? "agent",
-    sourceAgentId: overrides.sourceAgentId ?? overrides.agentId ?? "agent",
-    name: overrides.name ?? "Agent",
-    summary: overrides.summary ?? "Agent summary.",
-    type: overrides.type ?? "agent",
-    tags: overrides.tags ?? [],
-    tools: overrides.tools ?? [],
-    model: overrides.model ?? null,
-    sourceId: overrides.sourceId ?? "source",
-    sourceLabel: overrides.sourceLabel ?? "source",
-    sourceRepo: overrides.sourceRepo ?? "example/source",
-    sourceType: overrides.sourceType ?? "git-submodule",
-    sourceUrl: overrides.sourceUrl ?? "https://example.com/source",
-    canonicalPath: overrides.canonicalPath ?? "agents/agent.md",
-    defaultLanguage: overrides.defaultLanguage ?? "en",
-    availableLanguages: overrides.availableLanguages ?? ["en"],
-    variants: overrides.variants ?? {
-      en: createVariant({
-        language: "en",
-        title: overrides.name ?? "Agent",
-        summary: overrides.summary ?? "Agent summary.",
-      }),
-    },
-  }
-}
-
-function createVariant({
-  language,
-  title,
-  summary,
-}: {
-  language: string
-  title: string
-  summary: string
-}) {
-  return {
-    language,
-    title,
-    summary,
-    body: summary,
-    bodyPlainText: summary,
-    sourcePath: `${language}.md`,
-    sourceUrl: `https://example.com/${language}.md`,
-    rawUrl: `https://example.com/${language}.md?raw=1`,
-    attributes: {},
-  }
 }

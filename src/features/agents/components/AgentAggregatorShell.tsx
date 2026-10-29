@@ -1,21 +1,15 @@
 import { useEffect, useRef } from "react"
 
-import type {
-  AgentCatalogItem,
-  AgentCatalogSnapshot,
-  ContentLanguage,
-  FilterState,
-  RouteState,
-  UiLocale,
-} from "@/data/trait-catalog"
+import type { CatalogListItem, ContentLanguage, FilterState, RouteState, UiLocale } from "@/data/ui-constants"
 import type { LocaleMessages } from "@/i18n/locales/en"
 import { formatMessage } from "@/i18n/use-locale"
+import type { SearchStatus } from "@/lib/search-index"
 import { captureSiteEvent } from "@/lib/posthog-events"
 import {
   buildDetailLink,
   humanizeCatalogValue,
-  type AgentDetailView,
   type CatalogFilterOptions,
+  type DrawerState,
 } from "@/lib/route-projection"
 
 import { SiteHeader } from "@/components/site/SiteHeader"
@@ -28,15 +22,14 @@ import { CatalogEmptyState } from "./CatalogEmptyState"
 const CATALOG_SEARCH_SETTLE_MS = 400
 
 type AgentAggregatorShellProps = {
-  snapshot: AgentCatalogSnapshot
   locale: UiLocale
   messages: LocaleMessages
   routeState: RouteState
   filterState: FilterState
   filterOptions: CatalogFilterOptions
-  results: AgentCatalogItem[]
-  detail: AgentDetailView | null
-  detailNotFound: boolean
+  results: CatalogListItem[]
+  drawer: DrawerState | null
+  searchStatus: SearchStatus
   copyLinkState: "idle" | "done" | "failed"
   copyOriginalState: "idle" | "done" | "failed"
   onLocaleChange: (locale: UiLocale) => void
@@ -50,6 +43,8 @@ type AgentAggregatorShellProps = {
   onSelectDetailLanguage: (language: ContentLanguage) => void
   onCopyLink: () => void
   onCopyOriginal: () => void
+  onRetryDetail: () => void
+  onRetrySearch: () => void
 }
 
 export function AgentAggregatorShell({
@@ -59,8 +54,8 @@ export function AgentAggregatorShell({
   filterState,
   filterOptions,
   results,
-  detail,
-  detailNotFound,
+  drawer,
+  searchStatus,
   copyLinkState,
   copyOriginalState,
   onLocaleChange,
@@ -74,6 +69,8 @@ export function AgentAggregatorShell({
   onSelectDetailLanguage,
   onCopyLink,
   onCopyOriginal,
+  onRetryDetail,
+  onRetrySearch,
 }: AgentAggregatorShellProps) {
   const resultLabel =
     results.length === 1
@@ -82,7 +79,8 @@ export function AgentAggregatorShell({
   const detailLink = routeState.detail.agentId
     ? buildDetailLink(routeState, routeState.detail.agentId, routeState.detail.language)
     : null
-  const hasContextualDetail = Boolean(detail) || detailNotFound
+  const hasContextualDetail = drawer !== null
+  const activeAgentId = drawer && drawer.status !== "not-found" ? (drawer.status === "ready" ? drawer.view.item.agentId : drawer.item.agentId) : null
 
   const settledFilterKey = JSON.stringify([
     filterState.query,
@@ -144,6 +142,27 @@ export function AgentAggregatorShell({
                 </button>
               </div>
             </div>
+
+            {searchStatus.state === "loading" || searchStatus.state === "incomplete" ? (
+              <div
+                className="mt-3 flex flex-wrap items-center gap-3 text-sm text-[color:var(--ink-soft)]"
+                data-testid="search-status"
+                data-search-state={searchStatus.state}
+              >
+                {searchStatus.state === "loading" ? (
+                  <span role="status" aria-live="polite">
+                    {formatMessage(messages.searchStatusLoading, { loaded: searchStatus.loaded, total: searchStatus.total })}
+                  </span>
+                ) : (
+                  <>
+                    <span role="alert">{messages.searchStatusIncomplete}</span>
+                    <button type="button" className="secondary-button !min-h-0 !px-3 !py-1.5 !text-xs" onClick={onRetrySearch}>
+                      {messages.searchRetry}
+                    </button>
+                  </>
+                )}
+              </div>
+            ) : null}
 
             <div className="mt-5 grid gap-3 lg:grid-cols-3" data-testid="filter-toolbar">
               <FilterGroup
@@ -213,7 +232,7 @@ export function AgentAggregatorShell({
                   <AgentCard
                     key={item.agentId}
                     item={item}
-                    isActive={item.agentId === detail?.item.agentId}
+                    isActive={item.agentId === activeAgentId}
                     messages={messages}
                     onOpen={onOpenAgent}
                   />
@@ -235,8 +254,7 @@ export function AgentAggregatorShell({
           <div className="pointer-events-none fixed inset-y-0 right-0 z-40 hidden w-full justify-end p-3 lg:flex xl:p-4">
             <div className="pointer-events-auto flex h-full w-[90vw] max-w-[90vw]" data-testid="desktop-detail-layer">
               <AgentDetailPanel
-                detail={detail}
-                detailNotFound={detailNotFound}
+                drawer={drawer}
                 locale={locale}
                 messages={messages}
                 mode="desktop"
@@ -246,6 +264,7 @@ export function AgentAggregatorShell({
                 onCopyLink={onCopyLink}
                 onCopyOriginal={onCopyOriginal}
                 onSelectLanguage={onSelectDetailLanguage}
+                onRetry={onRetryDetail}
               />
             </div>
           </div>
@@ -254,8 +273,7 @@ export function AgentAggregatorShell({
 
       {hasContextualDetail ? (
         <AgentDetailPanel
-          detail={detail}
-          detailNotFound={detailNotFound}
+          drawer={drawer}
           locale={locale}
           messages={messages}
           mode="mobile"
@@ -265,6 +283,7 @@ export function AgentAggregatorShell({
           onCopyLink={onCopyLink}
           onCopyOriginal={onCopyOriginal}
           onSelectLanguage={onSelectDetailLanguage}
+          onRetry={onRetryDetail}
         />
       ) : null}
     </div>

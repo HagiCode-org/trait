@@ -89,5 +89,12 @@ export const jaJPMessages: LocaleMessages = {
   "siteLinksIcpAria": "ICP 登録情報",
   "siteLinksPublicSecurityAria": "公安登録情報",
   "sourceLastSync": "最終同期",
-  "sourceStars": "Star 数"
+  "sourceStars": "Star 数",
+  "drawerLoading": "記事の本文を読み込んでいます…",
+  "drawerFailed": "この記事を読み込めませんでした。",
+  "drawerRetry": "再試行",
+  "drawerOpenCanonical": "正規ページを開く",
+  "searchStatusLoading": "全文を検索中：{{total}} 件中 {{loaded}} 件の言語インデックスを読み込み済み",
+  "searchStatusIncomplete": "全文検索の結果は不完全です。メタデータによる一致は引き続き表示されます。",
+  "searchRetry": "検索を再試行"
 }

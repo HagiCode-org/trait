@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { agentCatalogSnapshot } from "@/data/trait-catalog"
+import { buildEntryPayload } from "@/lib/catalog-loader"
 import { buildAgentDetailMetadata, buildCatalogMetadata, buildHomeMetadata } from "@/lib/metadata-builder"
 
 describe("metadata-builder", () => {
@@ -32,7 +33,7 @@ describe("metadata-builder", () => {
       return
     }
 
-    const metadata = buildAgentDetailMetadata(item, "zh-CN")
+    const metadata = buildAgentDetailMetadata(buildEntryPayload(item, agentCatalogSnapshot).item, "zh-CN")
 
     expect(metadata.canonical).toBe("https://trait.hagicode.com/agents/architect/zh-CN/")
     expect(metadata.alternates.some((alternate) => alternate.hreflang === "en")).toBe(true)

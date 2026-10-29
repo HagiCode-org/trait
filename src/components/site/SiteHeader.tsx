@@ -1,4 +1,4 @@
-import { UI_LOCALE_LABELS, uiLocales, type UiLocale } from "@/data/trait-catalog"
+import { UI_LOCALE_LABELS, uiLocales, type UiLocale } from "@/data/ui-constants"
 import type { LocaleMessages } from "@/i18n/locales/en"
 import { useTheme } from "@/lib/use-theme"
 

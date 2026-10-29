@@ -88,6 +88,13 @@ export type LocaleMessages = {
   "siteLinksPublicSecurityAria": string
   "sourceLastSync": string
   "sourceStars": string
+  "drawerLoading": string
+  "drawerFailed": string
+  "drawerRetry": string
+  "drawerOpenCanonical": string
+  "searchStatusLoading": string
+  "searchStatusIncomplete": string
+  "searchRetry": string
 }
 
 export const enMessages: LocaleMessages = {
@@ -177,5 +184,12 @@ export const enMessages: LocaleMessages = {
   "siteLinksIcpAria": "ICP filing information",
   "siteLinksPublicSecurityAria": "Public security filing information",
   "sourceLastSync": "Last synced",
-  "sourceStars": "Stars"
+  "sourceStars": "Stars",
+  "drawerLoading": "Loading the article body…",
+  "drawerFailed": "Could not load this article.",
+  "drawerRetry": "Retry",
+  "drawerOpenCanonical": "Open canonical page",
+  "searchStatusLoading": "Searching full text: {{loaded}} of {{total}} language indexes loaded",
+  "searchStatusIncomplete": "Full-text results are incomplete. Metadata matches are still shown.",
+  "searchRetry": "Retry search"
 }

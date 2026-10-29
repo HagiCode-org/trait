@@ -89,5 +89,12 @@ export const frFRMessages: LocaleMessages = {
   "siteLinksIcpAria": "Informations d’enregistrement ICP",
   "siteLinksPublicSecurityAria": "Informations d’enregistrement de sécurité publique",
   "sourceLastSync": "Dernière synchronisation",
-  "sourceStars": "Stars"
+  "sourceStars": "Stars",
+  "drawerLoading": "Chargement du corps de l’article…",
+  "drawerFailed": "Impossible de charger cet article.",
+  "drawerRetry": "Réessayer",
+  "drawerOpenCanonical": "Ouvrir la page canonique",
+  "searchStatusLoading": "Recherche plein texte : {{loaded}} sur {{total}} index de langue chargés",
+  "searchStatusIncomplete": "Les résultats en texte intégral sont incomplets. Les correspondances de métadonnées restent affichées.",
+  "searchRetry": "Réessayer la recherche"
 }

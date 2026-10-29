@@ -89,5 +89,12 @@ export const ptBRMessages: LocaleMessages = {
   "siteLinksIcpAria": "Informações de registro ICP",
   "siteLinksPublicSecurityAria": "Informações de registro de segurança pública",
   "sourceLastSync": "Última sincronização",
-  "sourceStars": "Stars"
+  "sourceStars": "Stars",
+  "drawerLoading": "Carregando o corpo do artigo…",
+  "drawerFailed": "Não foi possível carregar este artigo.",
+  "drawerRetry": "Tentar novamente",
+  "drawerOpenCanonical": "Abrir página canônica",
+  "searchStatusLoading": "Pesquisando texto completo: {{loaded}} de {{total}} índices de idioma carregados",
+  "searchStatusIncomplete": "Os resultados de texto completo estão incompletos. Correspondências de metadados continuam visíveis.",
+  "searchRetry": "Tentar a pesquisa novamente"
 }

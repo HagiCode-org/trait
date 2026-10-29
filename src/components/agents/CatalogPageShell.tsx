@@ -3,12 +3,15 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import {
   defaultFilterState,
   emptyDetailRouteState,
-  type AgentCatalogSnapshot,
+  type CatalogListItem,
+  type CatalogMeta,
   type ContentLanguage,
   type RouteState,
+  type SearchShardDescriptor,
   type UiLocale,
-} from "@/data/trait-catalog"
+} from "@/data/ui-constants"
 import { useLocale } from "@/i18n/use-locale"
+import { useAgentDetail } from "@/lib/agent-detail-data"
 import { buildAgentVariantMarkdown } from "@/lib/agent-markdown"
 import {
   buildAgentLanguagePath,
@@ -18,14 +21,16 @@ import {
   readRouteStateFromSearch,
   resolveAgentDetail,
   writeRouteStateToSearch,
+  type DrawerState,
 } from "@/lib/route-projection"
+import { useSearchIndex } from "@/lib/search-index"
 import { AgentAggregatorShell } from "@/features/agents/components/AgentAggregatorShell"
 
 const COPY_RESET_MS = 1600
 
-function readInitialRouteState(): RouteState {
+function readInitialRouteState(meta: CatalogMeta): RouteState {
   if (typeof window !== "undefined") {
-    return readRouteStateFromSearch(window.location.search)
+    return readRouteStateFromSearch(window.location.search, meta)
   }
 
   return {
@@ -39,23 +44,36 @@ function buildUrl(search: string) {
 }
 
 type CatalogPageShellProps = {
-  snapshot: AgentCatalogSnapshot
+  items: CatalogListItem[]
+  meta: CatalogMeta
+  searchShards: SearchShardDescriptor[]
   initialLocale?: UiLocale
 }
 
-export function CatalogPageShell({ snapshot, initialLocale = "en" }: CatalogPageShellProps) {
+export function CatalogPageShell({ items, meta, searchShards, initialLocale = "en" }: CatalogPageShellProps) {
   const { locale, messages, setLocale } = useLocale(initialLocale)
-  const [routeState, setRouteState] = useState<RouteState>(() => readInitialRouteState())
+  const [routeState, setRouteState] = useState<RouteState>(() => readInitialRouteState(meta))
   const [copyLinkState, setCopyLinkState] = useState<"idle" | "done" | "failed">("idle")
   const [copyOriginalState, setCopyOriginalState] = useState<"idle" | "done" | "failed">("idle")
 
-  const filterOptions = useMemo(() => buildFilterOptions(snapshot), [snapshot])
-  const results = useMemo(() => queryCatalog(routeState.filters, snapshot.items), [routeState.filters, snapshot.items])
-  const detail = useMemo(
-    () => resolveAgentDetail(routeState.detail.agentId, routeState.detail.language, snapshot),
-    [routeState.detail.agentId, routeState.detail.language, snapshot]
+  const itemsById = useMemo(() => new Map(items.map((item) => [item.agentId, item])), [items])
+  const filterOptions = useMemo(() => buildFilterOptions(meta), [meta])
+  const search = useSearchIndex({
+    active: routeState.filters.query.trim().length > 0,
+    contentLanguage: routeState.filters.contentLanguage,
+    shards: searchShards,
+  })
+  const results = useMemo(
+    () => queryCatalog(routeState.filters, items, search.fullText),
+    [routeState.filters, items, search.fullText]
   )
-  const detailNotFound = Boolean(routeState.detail.agentId) && !detail
+
+  const detailItem = routeState.detail.agentId ? itemsById.get(routeState.detail.agentId) ?? null : null
+  const entry = useAgentDetail(detailItem ? detailItem.agentId : null)
+  const drawer = useMemo(
+    () => buildDrawerState(routeState, detailItem, entry.state, meta),
+    [routeState, detailItem, entry.state, meta]
+  )
 
   const applyRouteState = useCallback((nextState: RouteState, historyMode: "push" | "replace") => {
     setRouteState(nextState)
@@ -81,12 +99,12 @@ export function CatalogPageShell({ snapshot, initialLocale = "en" }: CatalogPage
     }
 
     function handlePopState() {
-      setRouteState(readRouteStateFromSearch(window.location.search))
+      setRouteState(readRouteStateFromSearch(window.location.search, meta))
     }
 
     window.addEventListener("popstate", handlePopState)
     return () => window.removeEventListener("popstate", handlePopState)
-  }, [])
+  }, [meta])
 
   useEffect(() => {
     if (copyLinkState === "idle") {
@@ -138,7 +156,7 @@ export function CatalogPageShell({ snapshot, initialLocale = "en" }: CatalogPage
   }
 
   function openAgent(agentId: string, language: ContentLanguage | null) {
-    const item = snapshot.items.find((entry) => entry.agentId === agentId)
+    const item = itemsById.get(agentId)
     if (!item) {
       return
     }
@@ -188,12 +206,14 @@ export function CatalogPageShell({ snapshot, initialLocale = "en" }: CatalogPage
   }
 
   async function copyCurrentLink() {
-    if (typeof window === "undefined" || !detail) {
+    if (typeof window === "undefined" || !drawer || drawer.status === "not-found") {
       return
     }
 
     try {
-      const href = new URL(buildAgentLanguagePath(detail.item, detail.activeLanguage), window.location.origin).toString()
+      const activeLanguage = drawer.status === "ready" ? drawer.view.activeLanguage : drawer.activeLanguage
+      const item = drawer.status === "ready" ? drawer.view.item : drawer.item
+      const href = new URL(buildAgentLanguagePath(item, activeLanguage), window.location.origin).toString()
       await navigator.clipboard.writeText(href)
       setCopyLinkState("done")
     } catch {
@@ -202,12 +222,13 @@ export function CatalogPageShell({ snapshot, initialLocale = "en" }: CatalogPage
   }
 
   async function copyCurrentOriginal() {
-    if (typeof window === "undefined" || !detail) {
+    // Copy original needs the loaded body; the button is disabled until the entry has loaded.
+    if (typeof window === "undefined" || !drawer || drawer.status !== "ready") {
       return
     }
 
     try {
-      await navigator.clipboard.writeText(buildAgentVariantMarkdown(detail.activeVariant))
+      await navigator.clipboard.writeText(buildAgentVariantMarkdown(drawer.view.activeVariant))
       setCopyOriginalState("done")
     } catch {
       setCopyOriginalState("failed")
@@ -216,15 +237,14 @@ export function CatalogPageShell({ snapshot, initialLocale = "en" }: CatalogPage
 
   return (
     <AgentAggregatorShell
-      snapshot={snapshot}
       locale={locale}
       messages={messages}
       routeState={routeState}
       filterState={routeState.filters}
       filterOptions={filterOptions}
       results={results}
-      detail={detail}
-      detailNotFound={detailNotFound}
+      drawer={drawer}
+      searchStatus={search.status}
       copyLinkState={copyLinkState}
       copyOriginalState={copyOriginalState}
       onLocaleChange={setLocale}
@@ -238,6 +258,42 @@ export function CatalogPageShell({ snapshot, initialLocale = "en" }: CatalogPage
       onSelectDetailLanguage={selectDetailLanguage}
       onCopyLink={copyCurrentLink}
       onCopyOriginal={copyCurrentOriginal}
+      onRetryDetail={entry.retry}
+      onRetrySearch={search.retry}
     />
   )
+}
+
+/** Maps the URL's `agent` parameter to what the drawer shows: not-found, loading, failed or ready. */
+function buildDrawerState(
+  routeState: RouteState,
+  listItem: CatalogListItem | null,
+  loadState: ReturnType<typeof useAgentDetail>["state"],
+  meta: CatalogMeta
+): DrawerState | null {
+  if (!routeState.detail.agentId) {
+    return null
+  }
+
+  if (!listItem) {
+    return { status: "not-found" }
+  }
+
+  if (loadState.status === "ready") {
+    const view = resolveAgentDetail(loadState.payload, routeState.detail.language)
+    if (view) {
+      return { status: "ready", view }
+    }
+  }
+
+  const activeLanguage = pickDetailLanguage(listItem, routeState.detail.language)
+  const requested = routeState.detail.language
+  const settledWithoutBody = loadState.status === "failed" || loadState.status === "ready"
+  return {
+    status: settledWithoutBody ? "failed" : "loading",
+    item: listItem,
+    source: meta.sources.find((source) => source.id === listItem.sourceId) ?? null,
+    activeLanguage,
+    fallbackLanguage: requested && requested !== activeLanguage ? activeLanguage : null,
+  }
 }

@@ -89,5 +89,12 @@ export const koKRMessages: LocaleMessages = {
   "siteLinksIcpAria": "ICP 등록 정보",
   "siteLinksPublicSecurityAria": "공안 등록 정보",
   "sourceLastSync": "마지막 동기화",
-  "sourceStars": "Star 수"
+  "sourceStars": "Star 수",
+  "drawerLoading": "문서 본문을 불러오는 중…",
+  "drawerFailed": "이 문서를 불러올 수 없습니다.",
+  "drawerRetry": "다시 시도",
+  "drawerOpenCanonical": "표준 페이지 열기",
+  "searchStatusLoading": "전체 텍스트 검색 중: 언어 인덱스 {{total}}개 중 {{loaded}}개 로드됨",
+  "searchStatusIncomplete": "전체 텍스트 검색 결과가 불완전합니다. 메타데이터 일치 결과는 계속 표시됩니다.",
+  "searchRetry": "검색 다시 시도"
 }

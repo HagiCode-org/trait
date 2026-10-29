@@ -1,13 +1,16 @@
 ---
 import { CatalogPageShell } from "@/components/agents/CatalogPageShell"
-import { loadCatalogSnapshot } from "@/lib/catalog-loader"
+import { buildCatalogMeta, buildListItems, buildSearchShards, loadCatalogSnapshot } from "@/lib/catalog-loader"
 import { buildCatalogMetadata } from "@/lib/metadata-builder"
 import BaseLayout from "@/layouts/BaseLayout.astro"
 
 const snapshot = loadCatalogSnapshot()
 const metadata = buildCatalogMetadata(snapshot.items.length)
+const items = buildListItems(snapshot)
+const meta = buildCatalogMeta(snapshot)
+const searchShards = buildSearchShards(snapshot).map(({ language, url, entryCount }) => ({ language, url, entryCount }))
 ---
 
 <BaseLayout metadata={metadata} lang="en">
-  <CatalogPageShell client:load snapshot={snapshot} initialLocale="en" />
+  <CatalogPageShell client:load items={items} meta={meta} searchShards={searchShards} initialLocale="en" />
 </BaseLayout>

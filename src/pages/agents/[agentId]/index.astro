@@ -1,6 +1,6 @@
 ---
 import { AgentDetailPageShell } from "@/components/agents/AgentDetailPageShell"
-import { loadCatalogSnapshot } from "@/lib/catalog-loader"
+import { buildEntryPayload, loadCatalogSnapshot } from "@/lib/catalog-loader"
 import { buildAgentDetailMetadata } from "@/lib/metadata-builder"
 import { deriveDetailUiLocale } from "@/lib/route-projection"
 import BaseLayout from "@/layouts/BaseLayout.astro"
@@ -11,17 +11,17 @@ export function getStaticPaths() {
   return snapshot.items.map((item) => ({
     params: { agentId: item.agentId },
     props: {
-      item,
+      payload: buildEntryPayload(item, snapshot, item.defaultLanguage),
       language: item.defaultLanguage,
     },
   }))
 }
 
-const { item, language } = Astro.props
-const metadata = buildAgentDetailMetadata(item, language)
+const { payload, language } = Astro.props
+const metadata = buildAgentDetailMetadata(payload.item, language)
 const initialLocale = deriveDetailUiLocale(language)
 ---
 
 <BaseLayout metadata={metadata} lang={initialLocale}>
-  <AgentDetailPageShell client:load item={item} initialLanguage={language} initialLocale={initialLocale} />
+  <AgentDetailPageShell client:load payload={payload} initialLanguage={language} initialLocale={initialLocale} />
 </BaseLayout>

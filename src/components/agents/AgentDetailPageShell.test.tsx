@@ -5,11 +5,14 @@ import { createRoot } from "react-dom/client"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { agentCatalogSnapshot } from "@/data/trait-catalog"
+import { buildEntryPayload } from "@/lib/catalog-loader"
+import { clearAgentDetailCache } from "@/lib/agent-detail-data"
 import { AgentDetailPageShell } from "@/components/agents/AgentDetailPageShell"
 
 let container: HTMLDivElement
 let root: ReturnType<typeof createRoot>
 const item = agentCatalogSnapshot.items.find((entry) => entry.agentId === "architect")!
+const payload = buildEntryPayload(item, agentCatalogSnapshot)
 const actEnvironment = globalThis as typeof globalThis & {
   IS_REACT_ACT_ENVIRONMENT?: boolean
 }
@@ -32,6 +35,7 @@ describe("AgentDetailPageShell", () => {
       },
     })
     window.history.replaceState(null, "", "/agents/architect/")
+    clearAgentDetailCache()
   })
 
   afterEach(() => {
@@ -47,6 +51,56 @@ describe("AgentDetailPageShell", () => {
 
     expect(container.querySelector("h1")?.textContent).toContain("Architect")
     expect(container.textContent).toContain("Software architecture specialist")
+  })
+
+  it("loads another language from the per-entry JSON, with a loading state until it arrives", async () => {
+    const pagePayload = buildEntryPayload(item, agentCatalogSnapshot, "en")
+    let resolveEntry: (response: Response) => void = () => undefined
+    const fetchMock = vi.fn(() => new Promise<Response>((resolve) => {
+      resolveEntry = resolve
+    }))
+    vi.stubGlobal("fetch", fetchMock)
+
+    await renderDetail({ payload: pagePayload, initialLanguage: "en" })
+    act(() => {
+      (getRequiredElement('[data-detail-language="zh-CN"]') as HTMLElement).click()
+    })
+
+    expect(container.querySelector('[data-testid="entry-body-loading"]')).not.toBeNull()
+    expect(getRequiredElement('[data-copy-action="raw"]').hasAttribute("disabled")).toBe(true)
+    expect(fetchMock).toHaveBeenCalledWith("/data/agents/architect.json")
+
+    await act(async () => {
+      resolveEntry(new Response(JSON.stringify(buildEntryPayload(item, agentCatalogSnapshot)), { status: 200 }))
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    expect(container.querySelector('[data-testid="entry-body-loading"]')).toBeNull()
+    expect(container.querySelector("h1")?.textContent).toContain("Architect")
+    expect(window.location.pathname).toBe("/agents/architect/zh-CN/")
+    expect(getRequiredElement('[data-copy-action="raw"]').hasAttribute("disabled")).toBe(false)
+  })
+
+  it("shows a failed state with retry when another language cannot load", async () => {
+    const pagePayload = buildEntryPayload(item, agentCatalogSnapshot, "en")
+    const fetchMock = vi.fn(async () => new Response("nope", { status: 500 }))
+    vi.stubGlobal("fetch", fetchMock)
+
+    await renderDetail({ payload: pagePayload, initialLanguage: "en" })
+    act(() => {
+      (getRequiredElement('[data-detail-language="zh-CN"]') as HTMLElement).click()
+    })
+    await waitForElement('[data-testid="entry-body-failed"]')
+
+    fetchMock.mockImplementationOnce(async () => new Response(JSON.stringify(buildEntryPayload(item, agentCatalogSnapshot)), { status: 200 }))
+    await act(async () => {
+      (getRequiredElement('[data-testid="entry-body-failed"] button') as HTMLElement).click()
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+    await waitForAbsence('[data-testid="entry-body-failed"]')
+
+    expect(container.querySelector("h1")?.textContent).toContain("Architect")
+    expect(fetchMock.mock.calls.length).toBeGreaterThanOrEqual(3)
   })
 
   it("honors the route locale over stored preference on a zh-CN deep link", async () => {
@@ -251,7 +305,7 @@ async function renderDetail(
   await act(async () => {
     root.render(
       <AgentDetailPageShell
-        item={item}
+        payload={props.payload ?? payload}
         initialLanguage={props.initialLanguage ?? "en"}
         initialLocale={props.initialLocale ?? "en"}
       />
@@ -268,4 +322,24 @@ function getRequiredElement(selector: string) {
   }
 
   return element
+}
+
+async function waitForElement(selector: string) {
+  await waitUntil(() => container.querySelector(selector) !== null, selector)
+}
+
+async function waitForAbsence(selector: string) {
+  await waitUntil(() => container.querySelector(selector) === null, `absence of ${selector}`)
+}
+
+async function waitUntil(predicate: () => boolean, label: string) {
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    if (predicate()) {
+      return
+    }
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 20))
+    })
+  }
+  throw new Error(`Timed out waiting for ${label}`)
 }
