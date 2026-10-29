@@ -4,10 +4,10 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "npm run prepare:i18n && node ./scripts/dev-server.mjs",
-    "dev:static": "npm run prepare:i18n && node ./scripts/dev-server.mjs",
-    "build": "export NODE_OPTIONS=\"${NODE_OPTIONS:-} --max-old-space-size=8192\"; export NODE_ENV=\"${NODE_ENV:-production}\"; npm run prepare:i18n && npm run sync:agents && astro check && astro build && npm run seo:check",
-    "build:esa": "export NODE_OPTIONS=\"${NODE_OPTIONS:-} --max-old-space-size=8192\"; export NODE_ENV=\"${NODE_ENV:-production}\"; npm run prepare:i18n && npm run sync:agents:build && astro check && astro build && npm run seo:check",
+    "dev": "pnpm run prepare:i18n && node ./scripts/dev-server.mjs",
+    "dev:static": "pnpm run prepare:i18n && node ./scripts/dev-server.mjs",
+    "build": "export NODE_OPTIONS=\"${NODE_OPTIONS:-} --max-old-space-size=8192\"; export NODE_ENV=\"${NODE_ENV:-production}\"; pnpm run prepare:i18n && pnpm run sync:agents && astro check && astro build && pnpm run seo:check",
+    "build:esa": "export NODE_OPTIONS=\"${NODE_OPTIONS:-} --max-old-space-size=8192\"; export NODE_ENV=\"${NODE_ENV:-production}\"; pnpm run prepare:i18n && pnpm run sync:agents:build && astro check && astro build && pnpm run seo:check",
     "lint": "eslint .",
     "preview": "astro preview",
     "sync:agents": "node ./scripts/sync-agents.mjs",
@@ -15,7 +15,7 @@
     "sync:agents:dev": "node ./scripts/sync-agents.mjs --allow-stale-output",
     "sync:agents:update-source": "git submodule update --init --remote",
     "seo:check": "node ./scripts/check-seo.mjs",
-    "test": "npm run prepare:i18n && vitest run",
+    "test": "pnpm run prepare:i18n && vitest run",
     "sync:agent-templates": "node ./scripts/generate-agent-templates.mjs",
     "i18n:audit": "hagi18n audit --config hagi18n.yaml",
     "i18n:report": "hagi18n report --config hagi18n.yaml",
@@ -25,8 +25,10 @@
     "i18n:prune": "hagi18n prune --config hagi18n.yaml --from en-US",
     "i18n:prune:write": "hagi18n prune --config hagi18n.yaml --from en-US --write",
     "i18n:generate": "node scripts/generate-i18n-resources.mjs",
-    "prepare:i18n": "npm run i18n:generate",
-    "i18n:check": "npm run i18n:audit && npm run i18n:doctor && npm run prepare:i18n && node scripts/generate-i18n-resources.mjs --check && vitest run scripts/__tests__/generate-i18n-resources.test.mjs src/components/site/site-links.test.ts"
+    "prepare:i18n": "pnpm run i18n:generate",
+    "i18n:check": "pnpm run i18n:audit && pnpm run i18n:doctor && pnpm run prepare:i18n && node scripts/generate-i18n-resources.mjs --check && vitest run scripts/__tests__/generate-i18n-resources.test.mjs src/components/site/site-links.test.ts",
+    "check:registry": "node scripts/check-registry-neutrality.mjs",
+    "test:registry": "node --test scripts/check-registry-neutrality.node-test.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.1",
@@ -39,6 +41,7 @@
     "react-dom": "^19.2.4",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
+    "sharp": "^0.35.5",
     "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
@@ -58,5 +61,6 @@
     "typescript-eslint": "^8.71.2",
     "vite": "^8.0.2",
     "vitest": "^5.0.5"
-  }
+  },
+  "packageManager": "pnpm@12.16.1"
 }

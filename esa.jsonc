@@ -1,8 +1,8 @@
 {
   "name": "hagicode trait",
   "entry": "./src/index.js",
-  "installCommand": "npm ci --include=dev",
-  "buildCommand": "npm run build:esa",
+  "installCommand": "corepack enable && pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm run build:esa",
   "assets": {
     "directory": "./dist",
     "notFoundStrategy": "singlePageApplication"
