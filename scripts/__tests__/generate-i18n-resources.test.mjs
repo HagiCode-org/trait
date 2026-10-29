@@ -110,7 +110,7 @@ describe("Trait i18n resource generation", () => {
     await fs.writeFile(path.join(fixture.generatedRoot, "zh-CN.ts"), "stale", "utf8")
 
     await expect(verifyGeneratedI18nResources(fixture)).rejects.toThrow(
-      /src\/i18n\/locales|zh-CN\.ts is stale; rerun npm run i18n:generate/,
+      /src\/i18n\/locales|zh-CN\.ts is stale; rerun pnpm run i18n:generate/,
     )
   })
 

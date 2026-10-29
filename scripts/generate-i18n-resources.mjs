@@ -206,7 +206,7 @@ export async function verifyGeneratedI18nResources(options = {}) {
   for (const [filePath, expectedContent] of [...result.files.entries()].sort(([left], [right]) => left.localeCompare(right))) {
     const actualContent = await fs.readFile(filePath, "utf8").catch(() => null)
     if (actualContent !== expectedContent) {
-      errors.push(`${toPosixPath(filePath)} is stale; rerun npm run i18n:generate`)
+      errors.push(`${toPosixPath(filePath)} is stale; rerun pnpm run i18n:generate`)
     }
   }
 

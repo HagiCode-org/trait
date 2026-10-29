@@ -207,7 +207,7 @@ async function verifySourceRoot(source, repoRootPath) {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     throw new Error(
-      `Local source is not ready for ${source.id}: ${path.relative(repoRootPath, rootPath)} (${message}). Run \`npm run sync:agents:update-source\` first.`
+      `Local source is not ready for ${source.id}: ${path.relative(repoRootPath, rootPath)} (${message}). Run \`pnpm run sync:agents:update-source\` first.`
     )
   }
 }
