@@ -11,6 +11,25 @@ targetLocales:
   - es-ES
   - pt-BR
   - ru-RU
+# 与英文基线相同、且在各语言里本就应当相同的值(品牌名、URL、技术标识、通用借词等),按「文件 → 键」逐条精确列出,每条写理由。
+# 名单对所有目标语言生效:只有在所有仍与英文相同的语言里英文写法都正确时才加入;其余一律翻译。
+auditIdenticalAllowlist:
+  ui.yml:
+    - localeEnglish # 语言切换标签
+    - localeChinese # 语言切换标签
+    - homeEyebrow # 品牌名
+    - homeTitle # 产品名
+    - siteLinksSoul # 产品名
+    - siteLinksGithub # 品牌名
+    - siteLinksDiscord # 品牌名
+    - siteLinksSteam # 品牌名
+    - tools # de 通用借词
+    - tags # de/fr/pt 通用借词
+    - siteLinksWebsite # de 通用借词
+    - sourceStars # de 通用借词
+    - homeMetricSources # fr 同形词
+    - sourceFilter # fr 同形词
+    - typeFilter # fr 同形词
 doctor:
   excludedDirectories:
     - .astro
