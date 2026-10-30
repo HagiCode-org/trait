@@ -1,0 +1,10 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#F4ECDF"/>
+  <rect x="48" y="48" width="1104" height="534" rx="40" fill="#FFF8F0" stroke="#D9B99E"/>
+  <circle cx="1030" cy="160" r="96" fill="#EBC8B0" opacity="0.72"/>
+  <circle cx="196" cy="492" r="132" fill="#D3E4DA" opacity="0.58"/>
+  <text x="110" y="190" fill="#9C4F2B" font-size="34" font-family="Manrope, Arial, sans-serif" letter-spacing="8">HAGICODE / TRAIT</text>
+  <text x="110" y="300" fill="#231711" font-size="86" font-family="Georgia, serif">Searchable</text>
+  <text x="110" y="390" fill="#231711" font-size="86" font-family="Georgia, serif">Agent Catalog</text>
+  <text x="110" y="470" fill="#5F4A40" font-size="34" font-family="Manrope, Arial, sans-serif">Crawlable detail pages, multilingual variants, and source-aware filters.</text>
+</svg>
