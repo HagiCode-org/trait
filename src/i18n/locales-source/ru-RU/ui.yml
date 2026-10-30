@@ -8,7 +8,7 @@ homeTitle: HagiTrait
 homeSummary: Каталог Agents с поиском · Многоязычные страницы деталей · Канонические ссылки для шаринга.
 homePrimaryCta: Открыть Gallery
 homeSecondaryCta: Узнать о HagiCode
-homeGalleryEyebrow: Gallery
+homeGalleryEyebrow: Галерея
 homeFeaturedTitle: Ключевые черты высокоэффективных Agents
 homeFeaturedSummary: Просматривайте надёжные описания Agents, собранные из интернета и тщательно проверенные.
 homeSourcesTitle: Отслеживаемые источники
@@ -43,7 +43,7 @@ detailSummary: Читайте и делитесь каноническими с�
 detailNotFoundTitle: Эта глубокая ссылка больше не указывает на отслеживаемого Agent.
 detailNotFoundSummary: Вернитесь в каталог и продолжайте искать надёжных Agents, которые всё ещё отслеживаются.
 fallbackNotice: Запрошенный языковой вариант недоступен. Вместо него показан {{language}}.
-canonicalId: Canonical ID
+canonicalId: Канонический ID
 sourceRepo: Исходный репозиторий
 sourceType: Тип источника
 availableLanguages: Доступные языки
@@ -60,12 +60,12 @@ mobileDetail: Мобильный просмотр деталей
 languageSwitch: Язык варианта
 backToCatalog: Назад к каталогу
 shareableLink: Ссылка для шаринга
-typeReviewer: Reviewer
+typeReviewer: Рецензент
 typeBuildResolver: Решатель сборки
-headerBrandBadge: ASTRO CATALOG
+headerBrandBadge: КАТАЛОГ ASTRO
 headerDescription: Ищите и просматривайте проверенные каталоги Agents для платформы HagiCode.
 headerNavAria: Основная навигация
-siteLinksDocs: Docs
+siteLinksDocs: Документация
 siteLinksDocsAria: Открыть документацию HagiCode
 siteLinksWebsite: Сайт
 siteLinksWebsiteAria: Открыть сайт HagiCode
@@ -84,7 +84,7 @@ siteLinksSteamAria: Открыть официальную страницу HagiC
 siteLinksIcpAria: Информация о регистрации ICP
 siteLinksPublicSecurityAria: Информация о регистрации общественной безопасности
 sourceLastSync: Последняя синхронизация
-sourceStars: Stars
+sourceStars: Звезды
 drawerLoading: "Загрузка текста статьи…"
 drawerFailed: "Не удалось загрузить эту статью."
 drawerRetry: "Повторить"

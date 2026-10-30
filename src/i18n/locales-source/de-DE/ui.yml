@@ -8,7 +8,7 @@ homeTitle: HagiTrait
 homeSummary: Durchsuchbarer Agent-Katalog · Mehrsprachige Detailseiten · Teilbare kanonische Links.
 homePrimaryCta: Zur Gallery
 homeSecondaryCta: HagiCode entdecken
-homeGalleryEyebrow: Gallery
+homeGalleryEyebrow: Galerie
 homeFeaturedTitle: Wesentliche Merkmale leistungsstarker Agents
 homeFeaturedSummary: Durchsuche verlässliche Agent-Beschreibungen, die aus dem Internet gesammelt und umfassend validiert wurden.
 homeSourcesTitle: Verfolgte Quellen
@@ -43,7 +43,7 @@ detailSummary: Lies und teile kanonische Spezifikationen direkt, damit verlässl
 detailNotFoundTitle: Dieser Deep Link verweist nicht mehr auf einen verfolgten Agent.
 detailNotFoundSummary: Kehre zum Verzeichnis zurück und suche weiter nach verlässlichen verfolgten Agents.
 fallbackNotice: Die angeforderte Sprachvariante ist nicht verfügbar. Stattdessen wird {{language}} angezeigt.
-canonicalId: Canonical ID
+canonicalId: Kanonische ID
 sourceRepo: Quell-Repository
 sourceType: Quelltyp
 availableLanguages: Verfügbare Sprachen
@@ -60,9 +60,9 @@ mobileDetail: Mobile Detailansicht
 languageSwitch: Variantensprache
 backToCatalog: Zurück zum Katalog
 shareableLink: Teilbarer Link
-typeReviewer: Reviewer
+typeReviewer: Prüfer
 typeBuildResolver: Build-Resolver
-headerBrandBadge: ASTRO CATALOG
+headerBrandBadge: ASTRO-KATALOG
 headerDescription: Durchsuche und erkunde geprüfte Agent-Kataloge für die HagiCode-Plattform.
 headerNavAria: Hauptnavigation
 siteLinksDocs: Dokumentation

@@ -8,7 +8,7 @@ homeTitle: HagiTrait
 homeSummary: 검색 가능한 Agent 카탈로그 · 다국어 상세 페이지 · 공유 가능한 canonical 링크.
 homePrimaryCta: Gallery 입장
 homeSecondaryCta: HagiCode 알아보기
-homeGalleryEyebrow: Gallery
+homeGalleryEyebrow: 갤러리
 homeFeaturedTitle: 고성능 Agent의 핵심 특성
 homeFeaturedSummary: 인터넷에서 수집하고 충분히 검증한 신뢰 가능한 Agent 설명을 둘러봅니다.
 homeSourcesTitle: 추적 중인 소스
@@ -43,7 +43,7 @@ detailSummary: 정규 명세를 직접 읽고 공유해 신뢰 가능한 Agent �
 detailNotFoundTitle: 이 딥링크는 더 이상 추적 중인 Agent로 연결되지 않습니다.
 detailNotFoundSummary: 디렉터리로 돌아가 계속해서 신뢰 가능한 Agent를 찾아보세요.
 fallbackNotice: 요청한 언어 변형이 없어 {{language}}를 대신 표시합니다.
-canonicalId: Canonical ID
+canonicalId: 표준 ID
 sourceRepo: 소스 저장소
 sourceType: 소스 유형
 availableLanguages: 사용 가능한 언어
@@ -62,7 +62,7 @@ backToCatalog: 카탈로그로 돌아가기
 shareableLink: 공유 링크
 typeReviewer: 리뷰 담당
 typeBuildResolver: 빌드 해결 담당
-headerBrandBadge: ASTRO CATALOG
+headerBrandBadge: ASTRO 카탈로그
 headerDescription: HagiCode 플랫폼용으로 검토된 Agent 카탈로그를 검색하고 둘러봅니다.
 headerNavAria: 기본 탐색
 siteLinksDocs: 문서

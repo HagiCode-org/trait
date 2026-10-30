@@ -8,7 +8,7 @@ homeTitle: HagiTrait
 homeSummary: Catálogo de Agents con búsqueda · Páginas de detalle multilingües · Enlaces canónicos para compartir.
 homePrimaryCta: Entrar en la Gallery
 homeSecondaryCta: Conocer HagiCode
-homeGalleryEyebrow: Gallery
+homeGalleryEyebrow: Galería
 homeFeaturedTitle: Rasgos esenciales de Agents de alto rendimiento
 homeFeaturedSummary: Explora descripciones fiables de Agents recopiladas en internet y ampliamente validadas.
 homeSourcesTitle: Fuentes rastreadas
@@ -43,7 +43,7 @@ detailSummary: Lee y comparte especificaciones canónicas directamente para reut
 detailNotFoundTitle: Este enlace profundo ya no apunta a un Agent rastreado.
 detailNotFoundSummary: Vuelve al directorio y sigue buscando Agents fiables que sigan rastreados.
 fallbackNotice: La variante solicitada no está disponible. Se muestra {{language}} en su lugar.
-canonicalId: Canonical ID
+canonicalId: ID canónico
 sourceRepo: Repositorio fuente
 sourceType: Tipo de fuente
 availableLanguages: Idiomas disponibles
@@ -60,12 +60,12 @@ mobileDetail: Vista móvil del detalle
 languageSwitch: Idioma de la variante
 backToCatalog: Volver al catálogo
 shareableLink: Enlace compartible
-typeReviewer: Reviewer
+typeReviewer: Revisor
 typeBuildResolver: Resolutor de build
-headerBrandBadge: ASTRO CATALOG
+headerBrandBadge: CATÁLOGO ASTRO
 headerDescription: Busca y explora catálogos auditados de Agents para la plataforma HagiCode.
 headerNavAria: Navegación principal
-siteLinksDocs: Docs
+siteLinksDocs: Documentación
 siteLinksDocsAria: Abrir la documentación de HagiCode
 siteLinksWebsite: Sitio web
 siteLinksWebsiteAria: Abrir el sitio de HagiCode
@@ -84,7 +84,7 @@ siteLinksSteamAria: Abrir la página oficial de HagiCode en Steam
 siteLinksIcpAria: Información de registro ICP
 siteLinksPublicSecurityAria: Información de registro de seguridad pública
 sourceLastSync: Última sincronización
-sourceStars: Stars
+sourceStars: Estrellas
 drawerLoading: "Cargando el cuerpo del artículo…"
 drawerFailed: "No se pudo cargar este artículo."
 drawerRetry: "Reintentar"

@@ -8,7 +8,7 @@ homeTitle: HagiTrait
 homeSummary: Catálogo de Agents pesquisável · Páginas de detalhe multilíngues · Links canônicos compartilháveis.
 homePrimaryCta: Entrar na Gallery
 homeSecondaryCta: Conhecer a HagiCode
-homeGalleryEyebrow: Gallery
+homeGalleryEyebrow: Galeria
 homeFeaturedTitle: Traços essenciais de Agents de alta performance
 homeFeaturedSummary: Navegue por descrições confiáveis de Agents coletadas da internet e amplamente validadas.
 homeSourcesTitle: Fontes rastreadas
@@ -43,7 +43,7 @@ detailSummary: Leia e compartilhe especificações canônicas diretamente para m
 detailNotFoundTitle: Este link profundo não aponta mais para um Agent rastreado.
 detailNotFoundSummary: Volte ao diretório e continue procurando Agents confiáveis ainda rastreados.
 fallbackNotice: A variante solicitada não está disponível. Exibindo {{language}} no lugar.
-canonicalId: Canonical ID
+canonicalId: ID canônico
 sourceRepo: Repositório de origem
 sourceType: Tipo de origem
 availableLanguages: Idiomas disponíveis
@@ -60,12 +60,12 @@ mobileDetail: Visualização móvel do detalhe
 languageSwitch: Idioma da variante
 backToCatalog: Voltar ao catálogo
 shareableLink: Link compartilhável
-typeReviewer: Reviewer
+typeReviewer: Revisor
 typeBuildResolver: Resolutor de build
-headerBrandBadge: ASTRO CATALOG
+headerBrandBadge: CATÁLOGO ASTRO
 headerDescription: Pesquise e explore catálogos auditados de Agents para a plataforma HagiCode.
 headerNavAria: Navegação principal
-siteLinksDocs: Docs
+siteLinksDocs: Documentação
 siteLinksDocsAria: Abrir a documentação da HagiCode
 siteLinksWebsite: Site
 siteLinksWebsiteAria: Abrir o site da HagiCode
@@ -84,7 +84,7 @@ siteLinksSteamAria: Abrir a página oficial da HagiCode na Steam
 siteLinksIcpAria: Informações de registro ICP
 siteLinksPublicSecurityAria: Informações de registro de segurança pública
 sourceLastSync: Última sincronização
-sourceStars: Stars
+sourceStars: Estrelas
 drawerLoading: "Carregando o corpo do artigo…"
 drawerFailed: "Não foi possível carregar este artigo."
 drawerRetry: "Tentar novamente"

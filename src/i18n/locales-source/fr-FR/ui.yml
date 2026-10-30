@@ -8,7 +8,7 @@ homeTitle: HagiTrait
 homeSummary: Catalogue d’Agents consultable · Pages de détail multilingues · Liens canoniques partageables.
 homePrimaryCta: Entrer dans la Gallery
 homeSecondaryCta: Découvrir HagiCode
-homeGalleryEyebrow: Gallery
+homeGalleryEyebrow: Galerie
 homeFeaturedTitle: Les traits essentiels des Agents performants
 homeFeaturedSummary: Parcourez des descriptions d’Agents fiables, collectées sur Internet et largement validées.
 homeSourcesTitle: Sources suivies
@@ -43,7 +43,7 @@ detailSummary: Lisez et partagez directement les spécifications canoniques pour
 detailNotFoundTitle: Ce lien profond ne pointe plus vers un Agent suivi.
 detailNotFoundSummary: Revenez au répertoire et continuez à chercher des Agents fiables encore suivis.
 fallbackNotice: La variante demandée est indisponible. {{language}} est affiché à la place.
-canonicalId: Canonical ID
+canonicalId: ID canonique
 sourceRepo: Dépôt source
 sourceType: Type de source
 availableLanguages: Langues disponibles
@@ -60,12 +60,12 @@ mobileDetail: Vue mobile du détail
 languageSwitch: Langue de la variante
 backToCatalog: Retour au catalogue
 shareableLink: Lien partageable
-typeReviewer: Reviewer
+typeReviewer: Réviseur
 typeBuildResolver: Résolveur de build
-headerBrandBadge: ASTRO CATALOG
+headerBrandBadge: CATALOGUE ASTRO
 headerDescription: Recherchez et parcourez des catalogues d’Agents audités pour la plateforme HagiCode.
 headerNavAria: Navigation principale
-siteLinksDocs: Docs
+siteLinksDocs: Documentation
 siteLinksDocsAria: Ouvrir la documentation HagiCode
 siteLinksWebsite: Site web
 siteLinksWebsiteAria: Ouvrir le site HagiCode
@@ -84,7 +84,7 @@ siteLinksSteamAria: Ouvrir la page Steam officielle de HagiCode
 siteLinksIcpAria: Informations d’enregistrement ICP
 siteLinksPublicSecurityAria: Informations d’enregistrement de sécurité publique
 sourceLastSync: Dernière synchronisation
-sourceStars: Stars
+sourceStars: Étoiles
 drawerLoading: "Chargement du corps de l’article…"
 drawerFailed: "Impossible de charger cet article."
 drawerRetry: "Réessayer"
