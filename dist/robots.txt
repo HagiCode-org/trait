@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://trait.hagicode.com/sitemap-index.xml
