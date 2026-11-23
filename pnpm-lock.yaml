@@ -210,8 +210,8 @@ importers:
         specifier: ^9.39.1
         version: 9.39.4
       '@hagicode/hagi18n':
-        specifier: ^0.3.0
-        version: 0.3.0
+        specifier: ^0.3.1
+        version: 0.3.1
       '@types/node':
         specifier: ^24.10.1
         version: 24.12.0
@@ -822,8 +822,8 @@ packages:
   '@fontsource-variable/inter@5.2.8':
     resolution: {integrity: sha512-kOfP2D+ykbcX/P3IFnokOhVRNoTozo5/JxhAIVYLpea/UBmCQ/YWPBfWIDuBImXX/15KH+eKh4xpEUyS2sQQGQ==}
 
-  '@hagicode/hagi18n@0.3.0':
-    resolution: {integrity: sha512-b3Adlxire3/IRulQJRobDzAGvGYXtR2Pw/Gbrzg+tFptgawWInqstIWNk2a4gp19FYrEbS+qjEz7MmDBfEEEtQ==}
+  '@hagicode/hagi18n@0.3.1':
+    resolution: {integrity: sha512-t0L5r7j3jqA/ImnNJTwbLk1glFVyV4j5Uo6/qOX+LK3RnvNT7++zS/bYno6w+ZIyck5uOz6HZHfmkMXFOF3tkA==}
     engines: {node: '>=24.0.0'}
     hasBin: true
 
@@ -4041,7 +4041,7 @@ snapshots:
 
   '@fontsource-variable/inter@5.2.8': {}
 
-  '@hagicode/hagi18n@0.3.0':
+  '@hagicode/hagi18n@0.3.1':
     dependencies:
       '@types/js-yaml': 4.0.9
       commander: 14.0.3
